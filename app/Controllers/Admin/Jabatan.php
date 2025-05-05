@@ -11,7 +11,8 @@ class Jabatan extends BaseController
     {
         $jabatanModel = new JabatanModel(); // Gunakan huruf kapital untuk nama kelas
         $data = [
-            'title' => 'Daftar Jabatan',
+            'title' => 'Daftar
+             Jabatan',
             'jabatan' => $jabatanModel->findAll() // Mengambil semua data jabatan
         ];
         return view('admin/jabatan/jabatan', $data); // Pastikan view ini ada
