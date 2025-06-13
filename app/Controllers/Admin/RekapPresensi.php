@@ -35,41 +35,55 @@ class RekapPresensi extends BaseController
                 $activeWorksheet->setCellValue('A3', 'TANGGAL');
                 $activeWorksheet->setCellValue('C3', $filter_tanggal);
                 $activeWorksheet->setCellValue('A4', 'NO');
-                $activeWorksheet->setCellValue('B4', 'Nama Pegawai');
+                $activeWorksheet->setCellValue('B4', 'Nama Mahasiswa');
                 $activeWorksheet->setCellValue('C4', 'Tanggal Masuk');
                 $activeWorksheet->setCellValue('D4', 'Jam Masuk');
                 $activeWorksheet->setCellValue('E4', 'Tanggal Keluar');
                 $activeWorksheet->setCellValue('F4', 'Jam Keluar');
-                $activeWorksheet->setCellValue('G4', 'Total Jam Kerja');
+                $activeWorksheet->setCellValue('G4', 'Total Jam Kuliah');
                 $activeWorksheet->setCellValue('H4', 'Total Terlambat');
+                $activeWorksheet->setCellValue('I4', 'Total Cepat Pulang');
 
                 $activeWorksheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
-                $activeWorksheet->getStyle('A4:H4')->getFont()->setBold(true);
+                $activeWorksheet->getStyle('A4:I4')->getFont()->setBold(true);
 
                 $rows = 5;
                 $no = 1;
 
                 foreach ($rekap_harian as $rekap) {
-                    $timestamp_jam_masuk = strtotime($rekap['jam_masuk']);
-                    $timestamp_jam_keluar = strtotime($rekap['jam_keluar']);
-                    $selisih = $timestamp_jam_keluar - $timestamp_jam_masuk;
-                    $jam = floor($selisih / 3600);
-                    $menit = floor(($selisih % 3600) / 60);
+                    // Hitung total jam kuliah
+                    $jam_masuk = strtotime($rekap['tanggal_masuk'] . ' ' . $rekap['jam_masuk']);
+                    $jam_keluar = strtotime($rekap['tanggal_keluar'] . ' ' . $rekap['jam_keluar']);
+                    $total_waktu = $jam_keluar - $jam_masuk;
+                    $jam = floor($total_waktu / 3600);
+                    $menit = floor(($total_waktu % 3600) / 60);
 
-                    $jam_masuk_real = strtotime($rekap['jam_masuk']);
-                    $jam_masuk_kantor = isset($rekap['jam_masuk_kantor']) ? strtotime($rekap['jam_masuk_kantor']) : $jam_masuk_real;
-                    $selisih_terlambat = $jam_masuk_real - $jam_masuk_kantor;
-                    $jam_terlambat = floor($selisih_terlambat / 3600);
-                    $menit_terlambat = floor(($selisih_terlambat % 3600) / 60);
+                    // Hitung keterlambatan hanya jika ada presensi keluar
+                    $keterlambatan = 0;
+                    $jam_terlambat = 0;
+                    $menit_terlambat = 0;
 
-                    $jam_keluar_real = strtotime($rekap['jam_keluar']);
-                    $jam_pulang_kantor = strtotime($rekap['jam_pulang_kantor']);
-                    $selisih_cepat_pulang = $jam_pulang_kantor - $jam_keluar_real;
+                    if ($rekap['jam_keluar'] != '00:00:00' && $rekap['tanggal_keluar'] != null) {
+                        $jam_masuk_seharusnya = strtotime($rekap['tanggal_masuk'] . ' ' . $rekap['jam_masuk_kampus']);
+                        if ($jam_masuk > $jam_masuk_seharusnya) {
+                            $keterlambatan = $jam_masuk - $jam_masuk_seharusnya;
+                            $jam_terlambat = floor($keterlambatan / 3600);
+                            $menit_terlambat = floor(($keterlambatan % 3600) / 60);
+                        }
+                    }
+
+                    // Hitung pulang cepat hanya jika ada presensi keluar
+                    $pulang_cepat = 0;
                     $jam_cepat_pulang = 0;
                     $menit_cepat_pulang = 0;
-                    if ($selisih_cepat_pulang > 0) {
-                        $jam_cepat_pulang = floor($selisih_cepat_pulang / 3600);
-                        $menit_cepat_pulang = floor(($selisih_cepat_pulang % 3600) / 60);
+
+                    if ($rekap['jam_keluar'] != '00:00:00' && $rekap['tanggal_keluar'] != null) {
+                        $jam_pulang_seharusnya = strtotime($rekap['tanggal_keluar'] . ' ' . $rekap['jam_pulang_kampus']);
+                        if ($jam_keluar < $jam_pulang_seharusnya) {
+                            $pulang_cepat = $jam_pulang_seharusnya - $jam_keluar;
+                            $jam_cepat_pulang = floor($pulang_cepat / 3600);
+                            $menit_cepat_pulang = floor(($pulang_cepat % 3600) / 60);
+                        }
                     }
 
                     $activeWorksheet->setCellValue('A' . $rows, $no++);
@@ -78,17 +92,16 @@ class RekapPresensi extends BaseController
                     $activeWorksheet->setCellValue('D' . $rows, $rekap['jam_masuk']);
                     $activeWorksheet->setCellValue('E' . $rows, $rekap['tanggal_keluar']);
                     $activeWorksheet->setCellValue('F' . $rows, $rekap['jam_keluar']);
-                    $activeWorksheet->setCellValue('G' . $rows, $jam . ' jam ' . $menit . ' menit');
-                    $activeWorksheet->setCellValue('H' . $rows, $jam_terlambat . ' jam ' . $menit_terlambat . ' menit');
+                    $activeWorksheet->setCellValue('G' . $rows, sprintf('%02d jam %02d menit', $jam, $menit));
+                    $activeWorksheet->setCellValue('H' . $rows, $keterlambatan > 0 ? sprintf('%02d jam %02d menit', $jam_terlambat, $menit_terlambat) : '-');
+                    $activeWorksheet->setCellValue('I' . $rows, $pulang_cepat > 0 ? sprintf('%02d jam %02d menit', $jam_cepat_pulang, $menit_cepat_pulang) : '-');
 
                     $rows++;
                 }
 
-                $lastRow = $rows - 1;
-
-                // Auto-size all columns
-                foreach (range('A', 'H') as $col) {
-                    $spreadsheet->getActiveSheet()->getColumnDimension($col)->setAutoSize(true);
+                // Auto-size columns
+                foreach (range('A', 'I') as $col) {
+                    $activeWorksheet->getColumnDimension($col)->setAutoSize(true);
                 }
 
                 // Border styling
@@ -100,19 +113,16 @@ class RekapPresensi extends BaseController
                         ],
                     ],
                 ];
-                $spreadsheet->getActiveSheet()->getStyle('A4:H' . $lastRow)->applyFromArray($styleArray);
+                $activeWorksheet->getStyle('A4:I' . ($rows - 1))->applyFromArray($styleArray);
 
-                // Bold header
-                $spreadsheet->getActiveSheet()->getStyle('A4:H4')->getFont()->setBold(true);
-
-                // Output to browser
+                // Output Excel file
                 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
                 header('Content-Disposition: attachment;filename="rekap_presensi_harian.xlsx"');
                 header('Cache-Control: max-age=0');
 
                 $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
                 $writer->save('php://output');
-                exit; // penting agar tidak melanjutkan render view
+                exit;
             } else {
                 $rekap_harian = $presensi_model->rekap_harian_filter($filter_tanggal);
             }
@@ -137,44 +147,60 @@ class RekapPresensi extends BaseController
         $filter_tahun = $this->request->getVar('filter_tahun');
 
         if ($filter_bulan) {
-
             if (isset($_GET['pdf'])) {
                 $rekap_bulanan = $presensi_model->rekap_bulanan_filter($filter_bulan, $filter_tahun);
 
                 foreach ($rekap_bulanan as &$rekap) {
-                    // Total jam kerja
-                    $masuk = strtotime($rekap['jam_masuk']);
-                    $keluar = strtotime($rekap['jam_keluar']);
-                    $selisih = $keluar - $masuk;
-                    $rekap['total_jam'] = floor($selisih / 3600) . ' jam ' . floor(($selisih % 3600) / 60) . ' menit';
+                    // Hitung total jam kuliah
+                    $jam_masuk = strtotime($rekap['tanggal_masuk'] . ' ' . $rekap['jam_masuk']);
+                    $jam_keluar = strtotime($rekap['tanggal_keluar'] . ' ' . $rekap['jam_keluar']);
+                    $total_waktu = $jam_keluar - $jam_masuk;
 
-                    // Terlambat
-                    $jam_masuk_kantor = isset($rekap['jam_masuk_kantor']) ? strtotime($rekap['jam_masuk_kantor']) : $masuk;
-                    $terlambat = $masuk - $jam_masuk_kantor;
-                    $rekap['terlambat'] = ($terlambat > 0)
-                        ? floor($terlambat / 3600) . ' jam ' . floor(($terlambat % 3600) / 60) . ' menit'
-                        : '-';
+                    $jam = floor($total_waktu / 3600);
+                    $menit = floor(($total_waktu % 3600) / 60);
+                    $rekap['total_jam'] = sprintf('%02d jam %02d menit', $jam, $menit);
 
-                    // Cepat pulang
-                    $jam_pulang_kantor = strtotime($rekap['jam_pulang_kantor']);
-                    $cepat_pulang = $jam_pulang_kantor - $keluar;
-                    $rekap['cepat_pulang'] = ($cepat_pulang > 0)
-                        ? floor($cepat_pulang / 3600) . ' jam ' . floor(($cepat_pulang % 3600) / 60) . ' menit'
-                        : '-';
+                    // Hitung keterlambatan hanya jika ada presensi keluar
+                    $keterlambatan = 0;
+                    $jam_terlambat = 0;
+                    $menit_terlambat = 0;
+
+                    if ($rekap['jam_keluar'] != '00:00:00' && $rekap['tanggal_keluar'] != null) {
+                        $jam_masuk_seharusnya = strtotime($rekap['tanggal_masuk'] . ' ' . $rekap['jam_masuk_kampus']);
+                        if ($jam_masuk > $jam_masuk_seharusnya) {
+                            $keterlambatan = $jam_masuk - $jam_masuk_seharusnya;
+                            $jam_terlambat = floor($keterlambatan / 3600);
+                            $menit_terlambat = floor(($keterlambatan % 3600) / 60);
+                        }
+                    }
+
+                    // Hitung pulang cepat hanya jika ada presensi keluar
+                    $pulang_cepat = 0;
+                    $jam_cepat_pulang = 0;
+                    $menit_cepat_pulang = 0;
+
+                    if ($rekap['jam_keluar'] != '00:00:00' && $rekap['tanggal_keluar'] != null) {
+                        $jam_pulang_seharusnya = strtotime($rekap['tanggal_keluar'] . ' ' . $rekap['jam_pulang_kampus']);
+                        if ($jam_keluar < $jam_pulang_seharusnya) {
+                            $pulang_cepat = $jam_pulang_seharusnya - $jam_keluar;
+                            $jam_cepat_pulang = floor($pulang_cepat / 3600);
+                            $menit_cepat_pulang = floor(($pulang_cepat % 3600) / 60);
+                        }
+                    }
                 }
-
-                // HTML View
-                $data = [
-                    'rekap_bulanan' => $rekap_bulanan,
-                    'bulan' => $filter_bulan,
-                    'tahun' => $filter_tahun,
-                ];
-                $html = view('admin/rekap_presensi/pdf_rekap_bulanan', $data);
 
                 // Setup PDF
                 $options = new Options();
                 $options->set('defaultFont', 'Arial');
                 $dompdf = new Dompdf($options);
+
+                $data = [
+                    'rekap_bulanan' => $rekap_bulanan,
+                    'bulan' => $filter_bulan,
+                    'tahun' => $filter_tahun,
+                ];
+
+                $html = view('admin/rekap_presensi/pdf_rekap_bulanan', $data);
                 $dompdf->loadHtml($html);
                 $dompdf->setPaper('A4', 'landscape');
                 $dompdf->render();
@@ -195,7 +221,7 @@ class RekapPresensi extends BaseController
             'title' => 'Rekap Bulanan',
             'bulan' => $filter_bulan,
             'tahun' => $filter_tahun,
-            'rekap_bulanan' =>  $rekap_bulanan,
+            'rekap_bulanan' => $rekap_bulanan,
             'tanggal' => $filter_tanggal
         ];
 

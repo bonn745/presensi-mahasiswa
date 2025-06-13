@@ -8,10 +8,11 @@ class LokasiPresensiModel extends Model
 {
     protected $table            = 'lokasi_presensi';
     protected $allowedFields    = [
-        'nama_lokasi',
+        'nama_ruangan',
         'alamat_lokasi',
         'tipe_lokasi',
-        'jadwal_kerja',
+        'jadwal_kuliah',
+        'matkul',
         'latitude',
         'longitude',
         'radius',

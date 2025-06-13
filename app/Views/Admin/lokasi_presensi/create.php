@@ -6,59 +6,62 @@
     <div class="card-body">
         <form method="POST" action="<?= base_url('admin/lokasi_presensi/store') ?>">
             <?= csrf_field() ?>
-            <!-- Input untuk Nama Lokasi -->
+            <!-- Input untuk Nama Ruangan -->
             <div class="input-style-1">
-                <label for="nama_lokasi">Nama Lokasi</label>
-                <input type="text" id="nama_lokasi" class="form-control<?= ($validation->hasError('nama_lokasi')) ? ' is-invalid' : '' ?>"
-                    name="nama_lokasi" placeholder="Nama Lokasi" value="<?= set_value('nama_lokasi', old('nama_lokasi')) ?>" />
-                <div class="invalid-feedback"><?= $validation->getError('nama_lokasi') ?></div>
+                <label for="nama_ruangan">Nama Ruangan</label>
+                <input type="number" id="nama_ruangan" class="form-control<?= ($validation->hasError('nama_ruangan')) ? ' is-invalid' : '' ?>"
+                    name="nama_ruangan" placeholder="Nomor Ruangan" value="<?= set_value('nama_ruangan', old('nama_ruangan')) ?>" />
+                <div class="invalid-feedback"><?= $validation->getError('nama_ruangan') ?></div>
             </div>
+
 
             <!-- Input untuk Alamat Lokasi -->
             <div class="input-style-1">
                 <label for="alamat_lokasi">Alamat Lokasi</label>
-                <textarea id="alamat_lokasi" class="form-control<?= ($validation->hasError('alamat_lokasi')) ? ' is-invalid' : '' ?>"
-                    name="alamat_lokasi" placeholder="Alamat Lokasi" rows="4"><?= set_value('alamat_lokasi', old('alamat_lokasi')) ?></textarea>
+                <select id="alamat_lokasi" name="alamat_lokasi" class="form-control<?= ($validation->hasError('alamat_lokasi')) ? ' is-invalid' : '' ?>">
+                    <option value="" disabled selected>Pilih Alamat Lokasi</option>
+                    <option value="Universitas Bung Hatta I" <?= old('alamat_lokasi') == 'Universitas Bung Hatta I' ? 'selected' : '' ?>>Universitas Bung Hatta I</option>
+                    <option value="Universitas Bung Hatta II" <?= old('alamat_lokasi') == 'Universitas Bung Hatta II' ? 'selected' : '' ?>>Universitas Bung Hatta II</option>
+                </select>
                 <div class="invalid-feedback"><?= $validation->getError('alamat_lokasi') ?></div>
             </div>
 
             <!-- Input untuk Tipe Lokasi -->
             <div class="input-style-1">
                 <label for="tipe_lokasi">Tipe Lokasi</label>
-                <select id="tipe_lokasi" class="form-control<?= ($validation->hasError('tipe_lokasi')) ? ' is-invalid' : '' ?>"
-                    name="tipe_lokasi">
+                <select id="tipe_lokasi" name="tipe_lokasi" class="form-control<?= ($validation->hasError('tipe_lokasi')) ? ' is-invalid' : '' ?>">
                     <option value="" disabled selected>Pilih Tipe Lokasi</option>
-                    <option value="Tipe 1 - Kantor Utama" <?= set_select('tipe_lokasi', 'Tipe 1 - Kantor Utama', old('tipe_lokasi') == 'Tipe 1 - Kantor Utama') ?>>Tipe 1 - Kantor Utama</option>
-                    <option value="Tipe 1 - Ruang Rapat" <?= set_select('tipe_lokasi', 'Tipe 1 - Ruang Rapat', old('tipe_lokasi') == 'Tipe 1 - Ruang Rapat') ?>>Tipe 1 - Ruang Rapat</option>
-                    <option value="Tipe 1 - Lobi" <?= set_select('tipe_lokasi', 'Tipe 1 - Lobi', old('tipe_lokasi') == 'Tipe 1 - Lobi') ?>>Tipe 1 - Lobi</option>
-
-                    <option value="Tipe 2 - Bagian Kepegawaian" <?= set_select('tipe_lokasi', 'Tipe 2 - Bagian Kepegawaian', old('tipe_lokasi') == 'Tipe 2 - Bagian Kepegawaian') ?>>Tipe 2 - Bagian Kepegawaian</option>
-                    <option value="Tipe 2 - Bagian Keuangan" <?= set_select('tipe_lokasi', 'Tipe 2 - Bagian Keuangan', old('tipe_lokasi') == 'Tipe 2 - Bagian Keuangan') ?>>Tipe 2 - Bagian Keuangan</option>
-                    <option value="Tipe 2 - Bagian Umum" <?= set_select('tipe_lokasi', 'Tipe 2 - Bagian Umum', old('tipe_lokasi') == 'Tipe 2 - Bagian Umum') ?>>Tipe 2 - Bagian Umum</option>
-
-                    <option value="Tipe 3 - Area Parkir" <?= set_select('tipe_lokasi', 'Tipe 3 - Area Parkir', old('tipe_lokasi') == 'Tipe 3 - Area Parkir') ?>>Tipe 3 - Area Parkir</option>
-                    <option value="Tipe 3 - Kantin" <?= set_select('tipe_lokasi', 'Tipe 3 - Kantin', old('tipe_lokasi') == 'Tipe 3 - Kantin') ?>>Tipe 3 - Kantin</option>
-                    <option value="Tipe 3 - Pos Keamanan" <?= set_select('tipe_lokasi', 'Tipe 3 - Pos Keamanan', old('tipe_lokasi') == 'Tipe 3 - Pos Keamanan') ?>>Tipe 3 - Pos Keamanan</option>
+                    <!-- Opsi akan terisi otomatis lewat JavaScript -->
                 </select>
                 <div class="invalid-feedback"><?= $validation->getError('tipe_lokasi') ?></div>
             </div>
 
-            <!-- Input untuk Jam Kerja -->
+            <!-- Input untuk Jadwal Kuliah -->
             <div class="input-style-1 mb-3">
-                <label for="jadwal_kerja" class="font-weight-bold">Jadwal Kerja</label>
+                <label for="jadwal_kuliah" class="font-weight-bold">Jadwal Kuliah</label>
+                <select name="jadwal_kuliah" id="jadwal_kuliah" class="form-control<?= ($validation->hasError('jadwal_kuliah')) ? ' is-invalid' : '' ?>">
+                    <option value="" disabled selected>-- Pilih Hari --</option>
+                    <?php
+                    $hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+                    foreach ($hari as $h) :
+                    ?>
+                        <option value="<?= $h ?>" <?= old('jadwal_kuliah') == $h ? 'selected' : '' ?>><?= $h ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <div class="invalid-feedback"><?= $validation->getError('jadwal_kuliah') ?></div>
             </div>
-            <div class="form-check form-check-inline <?= ($validation->hasError('jadwal_kerja')) ? 'is-invalid' : '' ?> mb-2">
-                <input class="form-check-input" type="radio" name="jadwal_kerja" value="Senin-Kamis"
-                    <?= old('jadwal_kerja') == 'Senin-Kamis' ? 'checked' : '' ?>>
-                <label class="form-check-label">Senin - Kamis</label>
-            </div>
-            <div class="form-check form-check-inline <?= ($validation->hasError('jadwal_kerja')) ? 'is-invalid' : '' ?> mb-2">
-                <input class="form-check-input" type="radio" name="jadwal_kerja" value="Jumat"
-                    <?= old('jadwal_kerja') == 'Jumat' ? 'checked' : '' ?>>
-                <label class="form-check-label">Jumat</label>
-            </div>
-            <div class="invalid-feedback"><?= $validation->getError('jadwal_kerja') ?></div>
 
+            <!-- Matkul -->
+            <div class="input-style-1 mb-3">
+                <label for="matkul">Matkul</label>
+                <select id="matkul" class="form-control<?= ($validation->hasError('matkul')) ? ' is-invalid' : '' ?>" name="matkul">
+                    <option value="" disabled selected>--Pilih Matkul--</option>
+                    <?php foreach ($matkul as $mk) : ?>
+                        <option value="<?= $mk['matkul'] ?>" <?= set_select('matkul', $mk['matkul'], ($mahasiswa['matkul'] ?? '') == $mk['matkul']) ?>><?= $mk['matkul'] ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <div class="invalid-feedback"><?= $validation->getError('matkul') ?></div>
+            </div>
 
             <!-- Input untuk Latitude -->
             <div class="input-style-1">
@@ -114,6 +117,46 @@
 
             <button type="submit" class="btn btn-primary">Simpan</button>
         </form>
+        <script>
+            const tipeLokasiData = {
+                "Universitas Bung Hatta I": [
+                    "Fakultas Teknik Mesin",
+                    "Fakultas Teknik Sipil"
+                ],
+                "Universitas Bung Hatta II": [
+                    "Fakultas FKIP",
+                    "Fakultas Ekonomi",
+                    "Fakultas Hukum"
+                ]
+            };
+
+            document.addEventListener("DOMContentLoaded", function() {
+                const alamatSelect = document.getElementById("alamat_lokasi");
+                const tipeSelect = document.getElementById("tipe_lokasi");
+
+                function updateTipeLokasi() {
+                    const selectedAlamat = alamatSelect.value;
+                    const options = tipeLokasiData[selectedAlamat] || [];
+
+                    tipeSelect.innerHTML = '<option disabled selected>Pilih Tipe Lokasi</option>';
+                    options.forEach(tipe => {
+                        const option = document.createElement("option");
+                        option.value = tipe;
+                        option.text = tipe;
+                        option.selected = tipe === "<?= old('tipe_lokasi') ?>";
+                        tipeSelect.appendChild(option);
+                    });
+                }
+
+                alamatSelect.addEventListener("change", updateTipeLokasi);
+
+                // Jalankan saat load jika old() sudah ada
+                if (alamatSelect.value) {
+                    updateTipeLokasi();
+                }
+            });
+        </script>
+
     </div>
 </div>
 

@@ -1,22 +1,27 @@
 <?php
 
+use App\Controllers\Login;
 use CodeIgniter\Router\RouteCollection;
 
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Login::index');
+$routes->get('login', 'Login::login');
+$routes->get('/', function () {
+    return redirect()->to('/login');
+});
 $routes->get('logout', 'Login::logout');
 $routes->post('login', 'Login::login_action');
 
 
 $routes->get('admin/home', 'Admin\Home::index', ['filter' => 'adminFilter']);
-$routes->get('admin/jabatan', 'Admin\Jabatan::index', ['filter' => 'adminFilter']);
-$routes->get('admin/jabatan/create', 'Admin\Jabatan::create', ['filter' => 'adminFilter']);
-$routes->post('admin/jabatan/store', 'Admin\Jabatan::store', ['filter' => 'adminFilter']);
-$routes->get('admin/jabatan/edit/(:segment)', 'Admin\Jabatan::edit/$1', ['filter' => 'adminFilter']);
-$routes->post('admin/jabatan/update/(:segment)', 'Admin\Jabatan::update/$1', ['filter' => 'adminFilter']);
-$routes->get('admin/jabatan/delete/(:segment)', 'Admin\Jabatan::delete/$1', ['filter' => 'adminFilter']);
+
+$routes->get('admin/matkul', 'Admin\Matkul::index', ['filter' => 'adminFilter']);
+$routes->get('admin/matkul/create', 'Admin\Matkul::create', ['filter' => 'adminFilter']);
+$routes->post('admin/matkul/store', 'Admin\Matkul::store', ['filter' => 'adminFilter']);
+$routes->get('admin/matkul/edit/(:segment)', 'Admin\Matkul::edit/$1', ['filter' => 'adminFilter']);
+$routes->post('admin/matkul/update/(:segment)', 'Admin\Matkul::update/$1', ['filter' => 'adminFilter']);
+$routes->get('admin/matkul/delete/(:segment)', 'Admin\Matkul::delete/$1', ['filter' => 'adminFilter']);
 
 $routes->get('admin/lokasi_presensi', 'Admin\LokasiPresensi::index', ['filter' => 'adminFilter']);
 $routes->get('admin/lokasi_presensi/create', 'Admin\LokasiPresensi::create', ['filter' => 'adminFilter']);
@@ -26,39 +31,56 @@ $routes->post('admin/lokasi_presensi/update/(:segment)', 'Admin\LokasiPresensi::
 $routes->get('admin/lokasi_presensi/delete/(:segment)', 'Admin\LokasiPresensi::delete/$1', ['filter' => 'adminFilter']);
 $routes->get('admin/lokasi_presensi/detail/(:segment)', 'Admin\LokasiPresensi::detail/$1', ['filter' => 'adminFilter']);
 
-$routes->get('admin/data_pegawai', 'Admin\DataPegawai::index', ['filter' => 'adminFilter']);
-$routes->get('admin/data_pegawai/create', 'Admin\DataPegawai::create', ['filter' => 'adminFilter']);
-$routes->post('admin/data_pegawai/store', 'Admin\DataPegawai::store', ['filter' => 'adminFilter']);
-$routes->get('admin/data_pegawai/edit/(:segment)', 'Admin\DataPegawai::edit/$1', ['filter' => 'adminFilter']);
-$routes->post('admin/data_pegawai/update/(:segment)', 'Admin\DataPegawai::update/$1', ['filter' => 'adminFilter']);
-$routes->get('admin/data_pegawai/delete/(:segment)', 'Admin\DataPegawai::delete/$1', ['filter' => 'adminFilter']);
-$routes->get('admin/data_pegawai/detail/(:segment)', 'Admin\DataPegawai::detail/$1', ['filter' => 'adminFilter']);
+$routes->get('admin/data_dosen', 'Admin\DataDosen::index', ['filter' => 'adminFilter']);
+$routes->get('admin/data_dosen/create', 'Admin\DataDosen::create', ['filter' => 'adminFilter']);
+$routes->post('admin/data_dosen/store', 'Admin\DataDosen::store', ['filter' => 'adminFilter']);
+$routes->get('admin/data_dosen/edit/(:segment)', 'Admin\DataDosen::edit/$1', ['filter' => 'adminFilter']);
+$routes->post('admin/data_dosen/update/(:segment)', 'Admin\DataDosen::update/$1', ['filter' => 'adminFilter']);
+$routes->get('admin/data_dosen/delete/(:segment)', 'Admin\DataDosen::delete/$1', ['filter' => 'adminFilter']);
+$routes->get('admin/data_dosen/detail/(:segment)', 'Admin\DataDosen::detail/$1', ['filter' => 'adminFilter']);
+$routes->get('admin/data_dosen/jadwal/(:segment)', 'Admin\DataDosen::jadwal/$1', ['filter' => 'adminFilter']);
+
+$routes->get('admin/data_mahasiswa', 'Admin\DataMahasiswa::index', ['filter' => 'adminFilter']);
+$routes->get('admin/data_mahasiswa/create', 'Admin\DataMahasiswa::create', ['filter' => 'adminFilter']);
+$routes->post('admin/data_mahasiswa/store', 'Admin\DataMahasiswa::store', ['filter' => 'adminFilter']);
+$routes->get('admin/data_mahasiswa/edit/(:segment)', 'Admin\DataMahasiswa::edit/$1', ['filter' => 'adminFilter']);
+$routes->post('admin/data_mahasiswa/update/(:segment)', 'Admin\DataMahasiswa::update/$1', ['filter' => 'adminFilter']);
+$routes->get('admin/data_mahasiswa/delete/(:segment)', 'Admin\DataMahasiswa::delete/$1', ['filter' => 'adminFilter']);
+$routes->get('admin/data_mahasiswa/detail/(:segment)', 'Admin\DataMahasiswa::detail/$1', ['filter' => 'adminFilter']);
 
 $routes->get('admin/rekap_harian', 'Admin\RekapPresensi::rekap_harian', ['filter' => 'adminFilter']);
 $routes->get('admin/rekap_bulanan', 'Admin\RekapPresensi::rekap_bulanan', ['filter' => 'adminFilter']);
 $routes->get('admin/rekap_bulanan_pdf', 'Admin\RekapPresensi::rekap_bulanan_pdf', ['filter' => 'adminFilter']);
 
-$routes->get('admin/kehadiran', 'Admin\Kehadiran::index', ['filter' => 'adminFilter']);
-$routes->get('admin/approved_kehadiran/(:segment)', 'Admin\Kehadiran::approved/$1', ['filter' => 'adminFilter']);
-$routes->get('admin/rejected_kehadiran/(:segment)', 'Admin\Kehadiran::rejected/$1', ['filter' => 'adminFilter']);
-$routes->get('admin/delete_kehadiran/(:segment)', 'Admin\Kehadiran::delete/$1', ['filter' => 'adminFilter']);
+$routes->get('admin/ketidakhadiran', 'Admin\Ketidakhadiran::index', ['filter' => 'adminFilter']);
+$routes->get('admin/approved_ketidakhadiran/(:segment)', 'Admin\Ketidakhadiran::approved/$1', ['filter' => 'adminFilter']);
+$routes->get('admin/rejected_ketidakhadiran/(:segment)', 'Admin\Ketidakhadiran::rejected/$1', ['filter' => 'adminFilter']);
+$routes->get('admin/delete_ketidakhadiran/(:segment)', 'Admin\Ketidakhadiran::delete/$1', ['filter' => 'adminFilter']);
+
+$routes->get('admin/kelas', 'Admin\Kelas::index', ['filter' => 'adminFilter']);
+$routes->get('admin/kelas/create', 'Admin\Kelas::create', ['filter' => 'adminFilter']);
+$routes->post('admin/kelas/store', 'Admin\Kelas::store', ['filter' => 'adminFilter']);
+$routes->get('admin/kelas/edit/(:segment)', 'Admin\Kelas::edit/$1', ['filter' => 'adminFilter']);
+$routes->post('admin/kelas/update/(:segment)', 'Admin\Kelas::update/$1', ['filter' => 'adminFilter']);
+$routes->get('admin/kelas/delete/(:segment)', 'Admin\Kelas::delete/$1', ['filter' => 'adminFilter']);
 
 
+$routes->get('dosen/home', 'Dosen\Home::index', ['filter' => 'dosenFilter']);
 
 
-$routes->get('pegawai/home', 'Pegawai\Home::index', ['filter' => 'pegawaiFilter']);
-$routes->post('pegawai/presensi_masuk', 'Pegawai\Home::presensi_masuk', ['filter' => 'pegawaiFilter']);
-$routes->post('pegawai/presensi_masuk_aksi', 'Pegawai\Home::presensi_masuk_aksi', ['filter' => 'pegawaiFilter']);
+$routes->get('mahasiswa/home', 'Mahasiswa\Home::index', ['filter' => 'mahasiswaFilter']);
+$routes->post('mahasiswa/presensi_masuk', 'Mahasiswa\Home::presensi_masuk', ['filter' => 'mahasiswaFilter']);
+$routes->post('mahasiswa/presensi_masuk_aksi', 'Mahasiswa\Home::presensi_masuk_aksi', ['filter' => 'mahasiswaFilter']);
 
-$routes->post('pegawai/presensi_keluar/(:segment)', 'Pegawai\Home::presensi_keluar/$1', ['filter' => 'pegawaiFilter']);
-$routes->post('pegawai/presensi_keluar_aksi/(:segment)', 'Pegawai\Home::presensi_keluar_aksi/$1', ['filter' => 'pegawaiFilter']);
+$routes->post('mahasiswa/presensi_keluar/(:segment)', 'Mahasiswa\Home::presensi_keluar/$1', ['filter' => 'mahasiswaFilter']);
+$routes->post('mahasiswa/presensi_keluar_aksi/(:segment)', 'Mahasiswa\Home::presensi_keluar_aksi/$1', ['filter' => 'mahasiswaFilter']);
 
-$routes->get('pegawai/rekap_presensi', 'Pegawai\RekapPresensi::index', ['filter' => 'pegawaiFilter']);
+$routes->get('mahasiswa/rekap_presensi', 'Mahasiswa\RekapPresensi::index', ['filter' => 'mahasiswaFilter']);
 
-$routes->get('pegawai/kehadiran', 'Pegawai\Kehadiran::index', ['filter' => 'pegawaiFilter']);
-$routes->get('pegawai/kehadiran/create', 'Pegawai\Kehadiran::create', ['filter' => 'pegawaiFilter']);
-$routes->post('pegawai/kehadiran/store', 'Pegawai\Kehadiran::store', ['filter' => 'pegawaiFilter']);
-$routes->get('pegawai/kehadiran/edit/(:segment)', 'Pegawai\Kehadiran::edit/$1', ['filter' => 'pegawaiFilter']);
-$routes->post('pegawai/kehadiran/update/(:segment)', 'Pegawai\Kehadiran::update/$1', ['filter' => 'pegawaiFilter']);
-$routes->get('pegawai/kehadiran/delete/(:segment)', 'Pegawai\Kehadiran::delete/$1', ['filter' => 'pegawaiFilter']);
-$routes->get('pegawai/kehadiran/detail/(:segment)', 'Pegawai\Kehadiran::detail/$1', ['filter' => 'pegawaiFilter']);
+$routes->get('mahasiswa/ketidakhadiran', 'Mahasiswa\Ketidakhadiran::index', ['filter' => 'mahasiswaFilter']);
+$routes->get('mahasiswa/ketidakhadiran/create', 'Mahasiswa\Ketidakhadiran::create', ['filter' => 'mahasiswaFilter']);
+$routes->post('mahasiswa/ketidakhadiran/store', 'Mahasiswa\Ketidakhadiran::store', ['filter' => 'mahasiswaFilter']);
+$routes->get('mahasiswa/ketidakhadiran/edit/(:segment)', 'Mahasiswa\Ketidakhadiran::edit/$1', ['filter' => 'mahasiswaFilter']);
+$routes->post('mahasiswa/ketidakhadiran/update/(:segment)', 'Mahasiswa\Ketidakhadiran::update/$1', ['filter' => 'mahasiswaFilter']);
+$routes->get('mahasiswa/ketidakhadiran/delete/(:segment)', 'Mahasiswa\Ketidakhadiran::delete/$1', ['filter' => 'mahasiswaFilter']);
+$routes->get('mahasiswa/ketidakhadiran/detail/(:segment)', 'Mahasiswa\Ketidakhadiran::detail/$1', ['filter' => 'mahasiswaFilter']);

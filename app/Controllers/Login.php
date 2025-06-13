@@ -8,20 +8,21 @@ use CodeIgniter\HTTP\ResponseInterface;
 
 class Login extends BaseController
 {
-    public function index()
+    public function login()
     {
         $data = [
-            'validation' =>  \config\services::validation()
+            'validation' => \Config\Services::validation()
         ];
         return view('login', $data);
     }
+
     public function login_action()
     {
-
         $rules = [
             'username' => 'required',
             'password' => 'required'
         ];
+
         if (!$this->validate($rules)) {
             $data['validation'] = $this->validator;
             return view('login', $data);
@@ -36,29 +37,34 @@ class Login extends BaseController
             if ($cekusername) {
                 $password_db = $cekusername['password'];
                 $cek_password = password_verify($password, $password_db);
+
                 if ($cek_password) {
                     $session_data = [
                         'username' => $cekusername['username'],
                         'logged_in' => true,
                         'role_id' => $cekusername['role'],
-                        'id_pegawai' => $cekusername['id']
+                        'id_mahasiswa' => $cekusername['id_mahasiswa'],
+                        'id_dosen' => $cekusername['id_dosen']
                     ];
                     $session->set($session_data);
+
                     switch ($cekusername['role']) {
                         case "admin":
                             return redirect()->to('admin/home');
-                        case "pegawai":
-                            return redirect()->to('pegawai/home');
+                        case "mahasiswa":
+                            return redirect()->to('mahasiswa/home');
+                        case "dosen":
+                            return redirect()->to('dosen/home');
                         default:
-                            $session->setFlashdata('pesan', 'Akun anda belum terdaftar');
+                            $session->setFlashdata('pesan', 'Akun anda belum terdaftar.');
                             return redirect()->to('/');
                     }
                 } else {
-                    $session->setFlashdata('pesan', 'Password salah silahkan coba lagi');
+                    $session->setFlashdata('pesan', 'Password salah, silakan coba lagi.');
                     return redirect()->to('/');
                 }
             } else {
-                $session->setFlashdata('pesan', 'Username salah silahkan coba lagi');
+                $session->setFlashdata('pesan', 'Username tidak ditemukan.');
                 return redirect()->to('/');
             }
         }

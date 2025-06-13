@@ -15,7 +15,7 @@
                         <tr>
                             <td><strong>Nama Lokasi</strong></td>
                             <td>:</td>
-                            <td><?= esc($lokasi_presensi['nama_lokasi']) ?></td>
+                            <td><?= esc($lokasi_presensi['nama_ruangan']) ?></td>
                         </tr>
                         <tr>
                             <td><strong>Alamat Lokasi</strong></td>

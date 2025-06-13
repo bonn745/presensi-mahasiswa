@@ -69,9 +69,24 @@ use App\Database\Migrations\Jabatan;
                     </a>
                 </li>
 
+                <!-- Data Admin -->
+                <li class="nav-item mb-2">
+                    <a href="<?= base_url('admin/data_dosen') ?>">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                            <path d="M3 7l1 -2h16l1 2" />
+                            <path d="M4 7v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-11" />
+                            <path d="M12 12l0 .01" />
+                        </svg>
+                        <span class="text">Data Dosen</span>
+                    </a>
+                </li>
+
+
                 <!-- Data Pegawai -->
                 <li class="nav-item mb-2">
-                    <a href="<?= base_url('admin/data_pegawai') ?>">
+                    <a href="<?= base_url('admin/data_mahasiswa') ?>">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -80,7 +95,7 @@ use App\Database\Migrations\Jabatan;
                             <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                             <path d="M21 21v-2a4 4 0 0 0 -3 -3.85" />
                         </svg>
-                        <span class="text">Data Pegawai</span>
+                        <span class="text">Data Mahasiswa</span>
                     </a>
                 </li>
 
@@ -98,7 +113,8 @@ use App\Database\Migrations\Jabatan;
                         <span class="text">Master Data</span>
                     </a>
                     <ul id="master-data" class="collapse dropdown-nav">
-                        <li><a href="<?= base_url('admin/jabatan') ?>">Data Jabatan</a></li>
+                        <li><a href="<?= base_url('admin/matkul') ?>">Data Matkul</a></li>
+                        <li><a href="<?= base_url('admin/kelas') ?>">Data Kelas</a></li>
                         <li><a href="<?= base_url('admin/lokasi_presensi') ?>">Lokasi Presensi</a></li>
                     </ul>
                 </li>
@@ -125,9 +141,44 @@ use App\Database\Migrations\Jabatan;
                     </ul>
                 </li>
 
+                <!-- Cicilan Uang Kuliah -->
+                <li class="nav-item nav-item-has-children mb-2">
+                    <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_cicilan"
+                        aria-controls="ddmenu_cicilan" aria-expanded="false" aria-label="Toggle navigation">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 1v22M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2H5a2 2 0 0 1 -2 -2V8a2 2 0 0 1 2 -2z" />
+                        </svg>
+                        <span class="text">Cicilan Uang Kuliah</span>
+                    </a>
+                    <ul id="ddmenu_cicilan" class="collapse dropdown-nav">
+                        <li>
+                            <a href="<?= base_url('admin/cicilan/tahap1') ?>">
+                                <i class="bi bi-1-circle me-2"></i>Tahap 1
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/cicilan/tahap2') ?>">
+                                <i class="bi bi-2-circle me-2"></i>Tahap 2
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/cicilan/tahap3') ?>">
+                                <i class="bi bi-3-circle me-2"></i>Tahap 3
+                            </a>
+                        </li>
+                        <li>
+                            <a href="<?= base_url('admin/cicilan/lunas') ?>">
+                                <i class="bi bi-cash-stack me-2"></i>Pembayaran Lunas
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+
                 <!-- Kehadiran -->
                 <li class="nav-item mb-2">
-                    <a href="<?= base_url('admin/kehadiran') ?>">
+                    <a href="<?= base_url('admin/ketidakhadiran') ?>">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -135,7 +186,7 @@ use App\Database\Migrations\Jabatan;
                             <path d="M6 21v-2a4 4 0 0 1 4 -4h4" />
                             <path d="M15 19l2 2l4 -4" />
                         </svg>
-                        <span class="text">Kehadiran</span>
+                        <span class="text">Ketidakhadiran</span>
                     </a>
                 </li>
 

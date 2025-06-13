@@ -14,10 +14,11 @@
             <thead class="table-primary">
                 <tr>
                     <th>No</th>
-                    <th>Nama Lokasi</th>
+                    <th>Nama Ruangan</th>
                     <th>Alamat Lokasi</th>
                     <th>Tipe Lokasi</th>
-                    <th>Hari Kerja</th>
+                    <th>Hari Kuliah</th>
+                    <th>Mata Kuliah</th>
                     <th>Jam Masuk</th>
                     <th>Jam Pulang</th>
                     <th class="text-center">Aksi</th>
@@ -28,10 +29,11 @@
                 foreach ($lokasi_presensi as $lok) : ?>
                     <tr>
                         <td><?= $no++ ?></td>
-                        <td><?= $lok['nama_lokasi'] ?></td>
+                        <td><?= $lok['nama_ruangan'] ?></td>
                         <td><?= $lok['alamat_lokasi'] ?></td>
                         <td><?= $lok['tipe_lokasi'] ?></td>
-                        <td><?= $lok['jadwal_kerja'] ?></td>
+                        <td><?= $lok['jadwal_kuliah'] ?></td>
+                        <td><?= $lok['matkul'] ?></td>
                         <td><?= $lok['jam_masuk'] ?></td>
                         <td><?= $lok['jam_pulang'] ?></td>
 

@@ -62,11 +62,12 @@
         <thead>
             <tr>
                 <th>No</th>
-                <th>Nama Pegawai</th>
+                <th>Nama Mahasiswa</th>
+                <th>Mata Kuliah</th>
                 <th>Tanggal</th>
                 <th>Jam Masuk</th>
                 <th>Jam Keluar</th>
-                <th>Total Jam Kerja</th>
+                <th>Total Jam Kuliah</th>
                 <th>Keterlambatan</th>
                 <th>Cepat Pulang</th>
             </tr>
@@ -82,23 +83,29 @@
                     $jam = floor($jam_kerja / 3600);
                     $menit = floor(($jam_kerja % 3600) / 60);
 
-                    $jam_masuk_kantor = isset($rekap['jam_masuk_kantor']) ? strtotime($rekap['jam_masuk_kantor']) : $jam_masuk;
+                    $jam_masuk_kantor = isset($rekap['jam_masuk_kampus']) ? strtotime($rekap['jam_masuk_kampus']) : $jam_masuk;
                     $terlambat = $jam_masuk - $jam_masuk_kantor;
                     $jam_terlambat = floor($terlambat / 3600);
                     $menit_terlambat = floor(($terlambat % 3600) / 60);
 
-                    $jam_pulang_kantor = strtotime($rekap['jam_pulang_kantor']);
-                    $cepat_pulang = $jam_pulang_kantor - $jam_keluar;
+                    // Hitung pulang cepat hanya jika ada presensi keluar
                     $jam_cepat_pulang = 0;
                     $menit_cepat_pulang = 0;
-                    if ($cepat_pulang > 0) {
-                        $jam_cepat_pulang = floor($cepat_pulang / 3600);
-                        $menit_cepat_pulang = floor(($cepat_pulang % 3600) / 60);
+                    $cepat_pulang = 0;
+
+                    if ($rekap['jam_keluar'] != '00:00:00' && $rekap['tanggal_keluar'] != null) {
+                        $jam_pulang_kantor = strtotime($rekap['jam_pulang_kampus']);
+                        if ($jam_keluar < $jam_pulang_kantor) {
+                            $cepat_pulang = $jam_pulang_kantor - $jam_keluar;
+                            $jam_cepat_pulang = floor($cepat_pulang / 3600);
+                            $menit_cepat_pulang = floor(($cepat_pulang % 3600) / 60);
+                        }
                     }
                     ?>
                     <tr>
                         <td><?= $no++ ?></td>
                         <td><?= $rekap['nama'] ?></td>
+                        <td><?= $rekap['nama_matkul'] ?></td>
                         <td><?= date('d-m-Y', strtotime($rekap['tanggal_masuk'])) ?></td>
                         <td><?= $rekap['jam_masuk'] ?></td>
                         <td><?= $rekap['jam_keluar'] ?></td>
@@ -111,7 +118,9 @@
                             <?php endif; ?>
                         </td>
                         <td>
-                            <?php if ($jam_cepat_pulang > 0 || $menit_cepat_pulang > 0): ?>
+                            <?php if ($rekap['jam_keluar'] == '00:00:00' || $rekap['tanggal_keluar'] == null): ?>
+                                <span class="badge-warning">Menunggu Presensi Keluar</span>
+                            <?php elseif ($cepat_pulang > 0): ?>
                                 <span class="badge-warning"><?= $jam_cepat_pulang . ' jam ' . $menit_cepat_pulang . ' menit' ?></span>
                             <?php else: ?>
                                 <span class="badge-success">Tepat Waktu</span>
@@ -121,7 +130,7 @@
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="8">Data tidak tersedia</td>
+                    <td colspan="9">Data tidak tersedia</td>
                 </tr>
             <?php endif; ?>
         </tbody>

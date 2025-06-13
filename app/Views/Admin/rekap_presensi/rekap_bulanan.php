@@ -67,11 +67,12 @@ if (empty($tanggal) && !empty($filter_bulan) && !empty($filter_tahun)) {
         <thead class="table-primary">
             <tr>
                 <th>No</th>
-                <th>Nama Pegawai</th>
+                <th>Nama Mahasiswa</th>
+                <th>Mata Kuliah</th>
                 <th>Tanggal</th>
                 <th>Jam Masuk</th>
                 <th>Jam Keluar</th>
-                <th>Total Jam Kerja</th>
+                <th>Total Jam Kuliah</th>
                 <th>Total Keterlambatan</th>
                 <th>Total Cepat Pulang</th>
             </tr>
@@ -87,26 +88,34 @@ if (empty($tanggal) && !empty($filter_bulan) && !empty($filter_tahun)) {
                     $jam = floor($selisih / 3600);
                     $menit = floor(($selisih % 3600) / 60);
 
+                    // Hitung keterlambatan
                     $jam_masuk_real = strtotime($rekap['jam_masuk']);
-                    $jam_masuk_kantor = isset($rekap['jam_masuk_kantor']) ? strtotime($rekap['jam_masuk_kantor']) : $jam_masuk_real;
-                    $selisih_terlambat = $jam_masuk_real - $jam_masuk_kantor;
+                    $jam_masuk_kampus = isset($rekap['jam_masuk_kampus']) ? strtotime($rekap['jam_masuk_kampus']) : $jam_masuk_real;
+                    $selisih_terlambat = $jam_masuk_real - $jam_masuk_kampus;
                     $jam_terlambat = floor($selisih_terlambat / 3600);
                     $menit_terlambat = floor(($selisih_terlambat % 3600) / 60);
 
-                    $jam_keluar_real = strtotime($rekap['jam_keluar']);
-                    $jam_pulang_kantor = strtotime($rekap['jam_pulang_kantor']);
-                    $selisih_cepat_pulang = $jam_pulang_kantor - $jam_keluar_real;
+                    // Hitung pulang cepat hanya jika ada presensi keluar
                     $jam_cepat_pulang = 0;
                     $menit_cepat_pulang = 0;
-                    if ($selisih_cepat_pulang > 0) {
-                        $jam_cepat_pulang = floor($selisih_cepat_pulang / 3600);
-                        $menit_cepat_pulang = floor(($selisih_cepat_pulang % 3600) / 60);
+                    $selisih_cepat_pulang = 0;
+
+                    if ($rekap['jam_keluar'] != '00:00:00' && $rekap['tanggal_keluar'] != null) {
+                        $jam_keluar_real = strtotime($rekap['jam_keluar']);
+                        $jam_pulang_kampus = strtotime($rekap['jam_pulang_kampus']);
+
+                        if ($jam_keluar_real < $jam_pulang_kampus) {
+                            $selisih_cepat_pulang = $jam_pulang_kampus - $jam_keluar_real;
+                            $jam_cepat_pulang = floor($selisih_cepat_pulang / 3600);
+                            $menit_cepat_pulang = floor(($selisih_cepat_pulang % 3600) / 60);
+                        }
                     }
 
                     ?>
                     <tr>
                         <td><?= $no++ ?></td>
                         <td><?= $rekap['nama'] ?></td>
+                        <td><?= $rekap['nama_matkul'] ?></td>
                         <td><?= \Carbon\Carbon::parse($rekap['tanggal_masuk'])->locale('id')->isoFormat('D MMMM YYYY') ?></td>
                         <td><?= $rekap['jam_masuk'] ?></td>
                         <td><?= $rekap['jam_keluar'] ?></td>
@@ -127,7 +136,9 @@ if (empty($tanggal) && !empty($filter_bulan) && !empty($filter_tahun)) {
                             <?php endif; ?>
                         </td>
                         <td>
-                            <?php if ($jam_cepat_pulang > 0 || $menit_cepat_pulang > 0) : ?>
+                            <?php if ($rekap['jam_keluar'] == '00:00:00' || $rekap['tanggal_keluar'] == null) : ?>
+                                <span class="badge bg-warning">Menunggu Presensi Keluar</span>
+                            <?php elseif ($selisih_cepat_pulang > 0) : ?>
                                 <span class="badge bg-warning">
                                     <?= $jam_cepat_pulang . ' Jam ' . $menit_cepat_pulang . ' Menit' ?>
                                 </span>
@@ -139,7 +150,7 @@ if (empty($tanggal) && !empty($filter_bulan) && !empty($filter_tahun)) {
                 <?php endforeach; ?>
             <?php else : ?>
                 <tr>
-                    <td colspan="7" class="text-muted">Data Tidak Tersedia</td>
+                    <td colspan="9" class="text-muted">Data Tidak Tersedia</td>
                 </tr>
             <?php endif; ?>
         </tbody>

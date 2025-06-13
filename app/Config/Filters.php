@@ -35,7 +35,8 @@ class Filters extends BaseFilters
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
         'adminFilter'   => \App\Filters\AdminFilter::class,
-        'pegawaiFilter' => \App\Filters\PegawaiFilter::class
+        'dosenFilter'   => \App\Filters\DosenFilter::class,
+        'mahasiswaFilter' => \App\Filters\MahasiswaFilter::class
     ];
 
     /**

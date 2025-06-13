@@ -5,6 +5,7 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\LokasiPresensiModel;
+use App\Models\MatkulModel;
 
 class LokasiPresensi extends BaseController
 {
@@ -36,8 +37,10 @@ class LokasiPresensi extends BaseController
 
     public function create()
     {
+        $matkul_model = new MatkulModel();
         $data = [
             'title' => 'Tambah Lokasi',
+            'matkul' => $matkul_model->orderBy('matkul', 'ASC')->findAll(),
             'validation' => \Config\Services::validation() // Pastikan ini menggunakan huruf kapital
         ];
         return view('admin/lokasi_presensi/create', $data);
@@ -46,7 +49,7 @@ class LokasiPresensi extends BaseController
     public function store()
     {
         $rules = [
-            'nama_lokasi' => [
+            'nama_ruangan' => [
                 'rules' => 'required',
                 'errors' => [
                     'required' => "Nama Lokasi Wajib Diisi"
@@ -64,10 +67,16 @@ class LokasiPresensi extends BaseController
                     'required' => "Tipe Lokasi Wajib Diisi"
                 ],
             ],
-            'jadwal_kerja' => [
+            'jadwal_kuliah' => [
                 'rules' => 'required',
                 'errors' => [
                     'required' => "Jadwal Kerja Wajib Diisi"
+                ],
+            ],
+            'matkul' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => "Matkul Wajib Diisi"
                 ],
             ],
             'latitude' => [
@@ -104,8 +113,10 @@ class LokasiPresensi extends BaseController
         ];
 
         if (!$this->validate($rules)) {
+            $matkul_model = new MatkulModel();
             $data = [
                 'title' => 'Tambah Lokasi',
+                'matkul' => $matkul_model->orderBy('matkul', 'ASC')->findAll(),
                 'validation' => \Config\Services::validation() // Pastikan ini menggunakan huruf kapital
             ];
             return view('admin/lokasi_presensi/create', $data);
@@ -114,10 +125,11 @@ class LokasiPresensi extends BaseController
         // Jika validasi berhasil, simpan data lokasi presensi
         $lokasipresensiModel = new LokasiPresensiModel();
         $lokasipresensiModel->save([
-            'nama_lokasi' => $this->request->getPost('nama_lokasi'),
+            'nama_ruangan' => $this->request->getPost('nama_ruangan'),
             'alamat_lokasi' => $this->request->getPost('alamat_lokasi'),
             'tipe_lokasi' => $this->request->getPost('tipe_lokasi'),
-            'jadwal_kerja' => $this->request->getPost('jadwal_kerja'),
+            'jadwal_kuliah' => $this->request->getPost('jadwal_kuliah'),
+            'matkul' => $this->request->getPost('matkul'),
             'latitude' => $this->request->getPost('latitude'),
             'longitude' => $this->request->getPost('longitude'),
             'radius' => $this->request->getPost('radius'),
@@ -132,9 +144,11 @@ class LokasiPresensi extends BaseController
     public function edit($id)
     {
         $lokasipresensiModel = new LokasiPresensiModel();
+        $matkul_model = new MatkulModel();
         $data = [
             'title' => 'Edit Jabatan',
             'lokasi_presensi' => $lokasipresensiModel->find($id),
+            'matkul' => $matkul_model->orderBy('matkul', 'ASC')->findAll(),
             'validation' => \Config\Services::validation()
         ];
 
@@ -146,7 +160,7 @@ class LokasiPresensi extends BaseController
         $lokasipresensiModel = new LokasiPresensiModel();
 
         $rules = [
-            'nama_lokasi' => [
+            'nama_ruangan' => [
                 'rules' => 'required',
                 'errors' => [
                     'required' => "Nama Lokasi Wajib Diisi"
@@ -164,10 +178,16 @@ class LokasiPresensi extends BaseController
                     'required' => "Tipe Lokasi Wajib Diisi"
                 ],
             ],
-            'jadwal_kerja' => [
+            'jadwal_kuliah' => [
                 'rules' => 'required',
                 'errors' => [
                     'required' => "Jadwal Kerja Wajib Diisi"
+                ],
+            ],
+            'matkul' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => "Matkul Wajib Diisi"
                 ],
             ],
             'latitude' => [
@@ -204,19 +224,22 @@ class LokasiPresensi extends BaseController
         ];
 
         if (!$this->validate($rules)) {
+            $matkul_model = new MatkulModel();
             $data = [
                 'title' => 'Edit Jabatan',
                 'lokasi_presensi' => $lokasipresensiModel->find($id),
+                'matkul' => $matkul_model->orderBy('matkul', 'ASC')->findAll(),
                 'validation' => \Config\Services::validation()
             ];
             echo view('admin/lokasi_presensi/edit', $data);
         } else {
             $lokasipresensiModel = new LokasiPresensiModel();
             $lokasipresensiModel->update($id, [
-                'nama_lokasi' => $this->request->getPost('nama_lokasi'),
+                'nama_ruangan' => $this->request->getPost('nama_ruangan'),
                 'alamat_lokasi' => $this->request->getPost('alamat_lokasi'),
                 'tipe_lokasi' => $this->request->getPost('tipe_lokasi'),
-                'jadwal_kerja' => $this->request->getPost('jadwal_kerja'),
+                'jadwal_kuliah' => $this->request->getPost('jadwal_kuliah'),
+                'matkul' => $this->request->getPost('matkul'),
                 'latitude' => $this->request->getPost('latitude'),
                 'longitude' => $this->request->getPost('longitude'),
                 'radius' => $this->request->getPost('radius'),

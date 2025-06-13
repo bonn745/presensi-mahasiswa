@@ -8,7 +8,8 @@ class UserModel extends Model
 {
     protected $table            = 'users';
     protected $allowedFields    = [
-        'id_pegawai',
+        'id_mahasiswa',
+        'id_dosen',
         'username',
         'password',
         'status',
