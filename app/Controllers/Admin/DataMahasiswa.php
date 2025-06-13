@@ -29,6 +29,7 @@ class DataMahasiswa extends BaseController
 
     public function detail($id)
     {
+        //cobagithub
         $mahasiswaModel = new MahasiswaModel();
         $data = [
             'title' => 'Detail Data mahasiswa',
