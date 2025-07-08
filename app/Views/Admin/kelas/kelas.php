@@ -17,9 +17,8 @@
                     <th>Mata Kuliah</th>
                     <th>Hari</th>
                     <th>Ruangan</th>
-                    <th>Jam Masuk</th>
-                    <th>Jam Pulang</th>
-
+                    <th>Jadwal</th>
+                    <th>Program Studi</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -28,12 +27,11 @@
                 <?php foreach ($kelas as $kelas_item): ?>
                     <tr>
                         <td><?= $no++ ?></td>
-                        <td><?= $kelas_item['matkul'] ?> <!-- Bisa diubah untuk nama mata kuliah jika perlu --></td>
+                        <td align="left"><?= $kelas_item['matkul'].'<br>('.$kelas_item['nama_dosen'].')' ?> <!-- Bisa diubah untuk nama mata kuliah jika perlu --></td>
                         <td><?= $kelas_item['hari'] ?></td>
                         <td><?= $kelas_item['ruangan'] ?></td>
-                        <td><?= $kelas_item['jam_masuk'] ?></td>
-                        <td><?= $kelas_item['jam_pulang'] ?></td>
-
+                        <td style="width: 1%; white-space:nowrap;"><?= date('H:i',strtotime($kelas_item['jam_masuk'])).'-'.date('H:i', strtotime($kelas_item['jam_pulang'])).'<br>('.$kelas_item['jenis_kelas'].')' ?></td>
+                        <td align="left"><?= $kelas_item['nama_prodi'] ?></td>
                         <td>
                             <a href="<?= base_url('admin/kelas/edit/' . $kelas_item['id']) ?>" class="btn btn-sm btn-warning">
                                 <i class="fas fa-edit"></i> Edit

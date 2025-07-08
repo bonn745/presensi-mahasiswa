@@ -29,14 +29,14 @@
                     <tr>
                         <td><?= $no++ ?></td>
                         <td><?= $dsn['nidn'] ?></td>
-                        <td><?= $dsn['nama_dosen'] ?></td>
+                        <td id="nama-<?= $dsn['id'] ?>"><?= $dsn['nama_dosen'] ?></td>
                         <td><?= $dsn['jenis_kelamin'] ?></td>
                         <td><?= $dsn['no_hp'] ?></td>
                         <td><?= $dsn['alamat'] ?></td>
                         <td>
-                            <a href="<?= base_url('admin/data_dosen/jadwal/' . $dsn['id']) ?>" style="text-decoration: none; color: inherit;">
-                                Lihat Jadwal
-                            </a>
+                            <button class="btn btn-primary" type="button" id="dosen-<?= $dsn['id'] ?>" data-id="<?= $dsn['id'] ?>" onclick="refreshJadwal(<?= $dsn['id'] ?>,'<?= url_to('admin.dosen.jadwal', $dsn['id']) ?>')">
+                                Lihat
+                            </button>
                         </td>
                         <td class="text-center">
                             <div class="d-flex justify-content-center gap-1">
@@ -53,6 +53,43 @@
                         </td>
                     </tr>
                 <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <div id="display-jadwal" class="table-responsive mt-5 d-none">
+        <div id="jadwal-dosen" class="fs-5 text-dark text-center">
+            Jadwal
+        </div>
+        <table class="table table-striped table-bordered text-center" id="jadwal-datatable">
+            <thead class="table-primary">
+                <tr>
+                    <th>No</th>
+                    <th>Hari</th>
+                    <th>Mata Kuliah</th>
+                    <th>Ruangan</th>
+                    <th>Jam Masuk</th>
+                    <th>Jam Pulang</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (!empty($jadwal)) : ?>
+                    <?php $no = 1;
+                    foreach ($jadwal as $row) : ?>
+                        <tr>
+                            <td><?= $no++ ?></td>
+                            <td><?= $row['hari'] ?></td>
+                            <td><?= $row['nama_matkul'] ?></td>
+                            <td><?= $row['ruangan'] ?></td>
+                            <td><?= $row['jam_masuk'] ?></td>
+                            <td><?= $row['jam_pulang'] ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                    <tr>
+                        <td colspan="6" class="text-center">Jadwal tidak ditemukan</td>
+                    </tr>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
@@ -81,6 +118,16 @@
         });
     <?php endif; ?>
 
+    <?php if (session()->getFlashdata('error')) : ?>
+        Swal.fire({
+            icon: "error",
+            title: "Import Gagal!",
+            text: "<?= session()->getFlashdata('error') ?>",
+            showConfirmButton: false,
+            timer: 2000
+        });
+    <?php endif; ?>
+
     // Konfirmasi sebelum menghapus data
     document.querySelectorAll('.btn-delete').forEach(button => {
         button.addEventListener('click', function() {
@@ -103,4 +150,8 @@
     });
 </script>
 
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script src="<?= base_url('assets/js/dosen.js') ?>"></script>
 <?= $this->endSection() ?>

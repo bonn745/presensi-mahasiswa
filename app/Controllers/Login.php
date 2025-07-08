@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\LoginModel;
 use App\Controllers\BaseController;
+use App\Models\MahasiswaModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Login extends BaseController
@@ -39,12 +40,30 @@ class Login extends BaseController
                 $cek_password = password_verify($password, $password_db);
 
                 if ($cek_password) {
+                    $lengkapiData = false;
+                    if ($cekusername['role'] == 'mahasiswa') {
+                        $mahasiswaModel = new MahasiswaModel();
+                        $dataMahasiswa = $mahasiswaModel->find($cekusername['id_mahasiswa']);
+                        if (!is_null($dataMahasiswa)) {
+                            if (
+                                is_null($dataMahasiswa['nama_ortu']) ||
+                                empty($dataMahasiswa['nama_ortu']) ||
+                                is_null($dataMahasiswa['jk_ortu']) ||
+                                empty($dataMahasiswa['jk_ortu']) ||
+                                is_null($dataMahasiswa['nohp_ortu']) ||
+                                empty($dataMahasiswa['nohp_ortu'])
+                            ) {
+                                $lengkapiData = true;
+                            }
+                        }
+                    }
                     $session_data = [
                         'username' => $cekusername['username'],
                         'logged_in' => true,
                         'role_id' => $cekusername['role'],
                         'id_mahasiswa' => $cekusername['id_mahasiswa'],
-                        'id_dosen' => $cekusername['id_dosen']
+                        'id_dosen' => $cekusername['id_dosen'],
+                        'lengkapi_data' => $lengkapiData,
                     ];
                     $session->set($session_data);
 

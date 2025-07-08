@@ -3,6 +3,7 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
+use App\Models\MatkulModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\PresensiModel;
 use Carbon\Carbon;
@@ -16,38 +17,65 @@ class RekapPresensi extends BaseController
 {
     public function rekap_harian()
     {
+        $rules = [
+            'filter_tanggal' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Pilih tanggal.'
+                ],
+            ]
+        ];
+
         $presensi_model = new PresensiModel();
         $filter_tanggal = $this->request->getVar('filter_tanggal');
+        $filter_matkul = $this->request->getVar('filter_matkul');
+        $nama_matkul = null;
 
-        if ($filter_tanggal) {
+        if (!is_null($filter_tanggal) || (!is_null($filter_tanggal) && !is_null($filter_matkul))) {
             if (isset($_GET['excel'])) {
-                $rekap_harian = $presensi_model->rekap_harian_filter($filter_tanggal);
+                if (!$this->validate($rules)) return redirect()->back()->with('error', array_values($this->validator->getErrors())[0]);
+                $rekap_harian = $presensi_model->rekap_harian_filter($filter_tanggal, $filter_matkul);
                 $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
                 $activeWorksheet = $spreadsheet->getActiveSheet();
 
                 // Merge cells for title
-                $spreadsheet->getActiveSheet()->mergeCells('A1:C1');
+                $spreadsheet->getActiveSheet()->mergeCells('A1:I1');
                 $spreadsheet->getActiveSheet()->mergeCells('A3:B3');
                 $spreadsheet->getActiveSheet()->mergeCells('C3:E3');
-
+                if (!is_null($filter_matkul)) {
+                    $spreadsheet->getActiveSheet()->mergeCells('A4:B4');
+                    $spreadsheet->getActiveSheet()->mergeCells('C4:E4');
+                }
                 // Set title and headers
+                $headNo = 4;
+                $rows = 5;
                 $activeWorksheet->setCellValue('A1', 'REKAP PRESENSI HARIAN');
                 $activeWorksheet->setCellValue('A3', 'TANGGAL');
-                $activeWorksheet->setCellValue('C3', $filter_tanggal);
-                $activeWorksheet->setCellValue('A4', 'NO');
-                $activeWorksheet->setCellValue('B4', 'Nama Mahasiswa');
-                $activeWorksheet->setCellValue('C4', 'Tanggal Masuk');
-                $activeWorksheet->setCellValue('D4', 'Jam Masuk');
-                $activeWorksheet->setCellValue('E4', 'Tanggal Keluar');
-                $activeWorksheet->setCellValue('F4', 'Jam Keluar');
-                $activeWorksheet->setCellValue('G4', 'Total Jam Kuliah');
-                $activeWorksheet->setCellValue('H4', 'Total Terlambat');
-                $activeWorksheet->setCellValue('I4', 'Total Cepat Pulang');
+                $activeWorksheet->setCellValue('C3', Carbon::createFromFormat('Y-m-d',$filter_tanggal)->locale('id')->translatedFormat('j F Y'));
+                if (!is_null($filter_matkul)) {
+                    $matkul = new MatkulModel();
+                    $matkul_result = $matkul->select('matkul.id, matkul.matkul, dosen.nama_dosen')
+                        ->join('dosen', 'dosen.id = matkul.dosen_pengampu')
+                        ->find($filter_matkul);
+                    $nama_matkul = $matkul_result['matkul'] . ' - ' . $matkul_result['nama_dosen'];
+                    $activeWorksheet->setCellValue('A' . $headNo, 'Mata Kuliah');
+                    $activeWorksheet->setCellValue('C' . $headNo, $nama_matkul);
+                    $headNo++;
+                    $rows++;
+                }
+                $activeWorksheet->setCellValue('A' . $headNo, 'NO');
+                $activeWorksheet->setCellValue('B' . $headNo, 'Nama Mahasiswa');
+                $activeWorksheet->setCellValue('C' . $headNo, 'Tanggal Masuk');
+                $activeWorksheet->setCellValue('D' . $headNo, 'Jam Masuk');
+                $activeWorksheet->setCellValue('E' . $headNo, 'Tanggal Keluar');
+                $activeWorksheet->setCellValue('F' . $headNo, 'Jam Keluar');
+                $activeWorksheet->setCellValue('G' . $headNo, 'Total Jam Kuliah');
+                $activeWorksheet->setCellValue('H' . $headNo, 'Total Terlambat');
+                $activeWorksheet->setCellValue('I' . $headNo, 'Total Cepat Pulang');
 
                 $activeWorksheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
-                $activeWorksheet->getStyle('A4:I4')->getFont()->setBold(true);
+                $activeWorksheet->getStyle('A' . $headNo . ':I' . $headNo)->getFont()->setBold(true);
 
-                $rows = 5;
                 $no = 1;
 
                 foreach ($rekap_harian as $rekap) {
@@ -88,10 +116,10 @@ class RekapPresensi extends BaseController
 
                     $activeWorksheet->setCellValue('A' . $rows, $no++);
                     $activeWorksheet->setCellValue('B' . $rows, $rekap['nama']);
-                    $activeWorksheet->setCellValue('C' . $rows, $rekap['tanggal_masuk']);
-                    $activeWorksheet->setCellValue('D' . $rows, $rekap['jam_masuk']);
-                    $activeWorksheet->setCellValue('E' . $rows, $rekap['tanggal_keluar']);
-                    $activeWorksheet->setCellValue('F' . $rows, $rekap['jam_keluar']);
+                    $activeWorksheet->setCellValue('C' . $rows, Carbon::createFromFormat('Y-m-d',$rekap['tanggal_masuk'])->locale('id')->translatedFormat('j F Y'));
+                    $activeWorksheet->setCellValue('D' . $rows, Carbon::createFromFormat('H:i:s',$rekap['jam_masuk'])->format('H:i'));
+                    $activeWorksheet->setCellValue('E' . $rows, Carbon::createFromFormat('Y-m-d',$rekap['tanggal_keluar'])->locale('id')->translatedFormat('j F Y'));
+                    $activeWorksheet->setCellValue('F' . $rows, Carbon::createFromFormat('H:i:s',$rekap['jam_keluar'])->format('H:i'));
                     $activeWorksheet->setCellValue('G' . $rows, sprintf('%02d jam %02d menit', $jam, $menit));
                     $activeWorksheet->setCellValue('H' . $rows, $keterlambatan > 0 ? sprintf('%02d jam %02d menit', $jam_terlambat, $menit_terlambat) : '-');
                     $activeWorksheet->setCellValue('I' . $rows, $pulang_cepat > 0 ? sprintf('%02d jam %02d menit', $jam_cepat_pulang, $menit_cepat_pulang) : '-');
@@ -113,7 +141,8 @@ class RekapPresensi extends BaseController
                         ],
                     ],
                 ];
-                $activeWorksheet->getStyle('A4:I' . ($rows - 1))->applyFromArray($styleArray);
+                $activeWorksheet->getStyle('A' . $headNo . ':I' . $headNo)->applyFromArray($styleArray);
+                $activeWorksheet->getStyle('A' . $rows-1 . ':I' . $rows-1)->applyFromArray($styleArray);
 
                 // Output Excel file
                 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -124,17 +153,32 @@ class RekapPresensi extends BaseController
                 $writer->save('php://output');
                 exit;
             } else {
-                $rekap_harian = $presensi_model->rekap_harian_filter($filter_tanggal);
+                if (!$this->validate($rules)) return redirect()->back()->with('error', array_values($this->validator->getErrors())[0]);
+                $rekap_harian = $presensi_model->rekap_harian_filter($filter_tanggal, $filter_matkul);
+                $matkul = new MatkulModel();
+                if (!is_null($filter_matkul)) {
+                    $matkul_result = $matkul->select('matkul.id, matkul.matkul, dosen.nama_dosen')
+                        ->join('dosen', 'dosen.id = matkul.dosen_pengampu')
+                        ->find($filter_matkul);
+                    $nama_matkul = $matkul_result['matkul'] . ' - ' . $matkul_result['nama_dosen'];
+                }
             }
         } else {
             $rekap_harian = $presensi_model->rekap_harian();
         }
 
+        $matkulModel = new MatkulModel();
+
         $data = [
             'title' => 'Rekap Harian',
             'tanggal' => $filter_tanggal,
-            'rekap_harian' => $rekap_harian
+            'nama_matkul' => $nama_matkul,
+            'rekap_harian' => $rekap_harian,
+            'matkul' => $matkulModel->select('matkul.id, matkul.matkul, dosen.nama_dosen')
+                ->join('dosen', 'dosen.id = matkul.dosen_pengampu')
+                ->findAll() // Mengambil semua data Matkul
         ];
+
 
         return view('admin/rekap_presensi/rekap_harian', $data);
     }

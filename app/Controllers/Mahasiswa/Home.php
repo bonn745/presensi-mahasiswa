@@ -224,9 +224,9 @@ class Home extends BaseController
 
         // Update lokasi presensi mahasiswa
         $mahasiswaModel = new MahasiswaModel();
-        $mahasiswaModel->update($id_mahasiswa, [
-            'lokasi_presensi' => $id_lokasi_presensi
-        ]);
+        // $mahasiswaModel->update($id_mahasiswa, [
+        //     'lokasi_presensi' => $id_lokasi_presensi
+        // ]);
 
         // Simpan Foto di Folder
         if ($file = $request->getFile('foto_masuk')) {

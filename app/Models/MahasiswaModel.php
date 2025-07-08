@@ -16,7 +16,10 @@ class MahasiswaModel extends Model
         'semester',
         'jurusan',
         'foto',
-        'lokasi_presensi'
+        'lokasi_presensi',
+        'nama_ortu',
+        'jk_ortu',
+        'nohp_ortu',
     ];
 
     public function detailmahasiswa($id)

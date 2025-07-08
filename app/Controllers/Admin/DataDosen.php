@@ -313,9 +313,23 @@ class DataDosen extends BaseController
         $jadwal = $dosenModel->getJadwalNgajarByDosenId($id);
 
         if (!$jadwal) {
-            return $this->response->setJSON([]);
+            return $this->response->setJSON(
+                array(
+                    "draw" =>  1,
+                    "recordsTotal" => 0,
+                    "recordsFiltered" => 0,
+                    'data' => []
+                )
+            );
         }
 
-        return $this->response->setJSON($jadwal);
+        return $this->response->setJSON(
+            array(
+                "draw" =>  1,
+                "recordsTotal" => count($jadwal),
+                "recordsFiltered" => count($jadwal),
+                'data' => $jadwal
+            )
+        );
     }
 }

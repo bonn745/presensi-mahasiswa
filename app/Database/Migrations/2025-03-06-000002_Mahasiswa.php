@@ -15,7 +15,7 @@ class Mahasiswa extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'nim' => [
+            'npm' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '50',
             ],
@@ -26,26 +26,47 @@ class Mahasiswa extends Migration
             'jenis_kelamin' => [
                 'type' => 'VARCHAR',
                 'constraint' => '10',
+                'null' => true
             ],
             'alamat' => [
                 'type' => 'VARCHAR',
                 'constraint' => '255',
+                'null' => true
             ],
             'no_handphone' => [
                 'type' => 'VARCHAR',
                 'constraint' => '20',
+                'null' => true
             ],
             'semester' => [
                 'type' => 'VARCHAR',
                 'constraint' => '20',
+                'null' => true
             ],
-            'jurusan' => [
+            'prodi' => [
                 'type' => 'VARCHAR',
                 'constraint' => '50',
+                'null' => true
             ],
             'foto' => [
                 'type' => 'VARCHAR',
                 'constraint' => '255',
+                'null' => true
+            ],
+            'nama_ortu' => [
+                'type' => 'VARCHAR',
+                'constraint' => '50',
+                'null' => true
+            ],
+            'jk_ortu' => [
+                'type' => 'VARCHAR',
+                'constraint' => '11',
+                'null' => true
+            ],
+            'nohp_ortu' => [
+                'type' => 'VARCHAR',
+                'constraint' => '13',
+                'null' => true
             ],
         ]);
         $this->forge->addKey('id', true);

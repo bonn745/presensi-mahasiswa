@@ -580,22 +580,22 @@
                                     <?php endif; ?>
 
                                     <!-- Debug info -->
-                                    <div class="mt-2">
+                                    <!-- <div class="mt-2">
                                         <small class="text-muted">Debug Info:</small>
                                         <pre id="debug-info" class="small"></pre>
-                                    </div>
+                                    </div> -->
 
                                     <script>
                                         // Fungsi untuk update debug info
                                         function updateDebugInfo() {
                                             const select = document.getElementById('pilih_lokasi');
                                             const option = select.options[select.selectedIndex];
-                                            const debugInfo = {
-                                                selectedValue: select.value,
-                                                idMatkul: option ? option.dataset.idMatkul : null,
-                                                hiddenFieldValue: document.getElementById('id_matkul').value
-                                            };
-                                            document.getElementById('debug-info').textContent = JSON.stringify(debugInfo, null, 2);
+                                            // const debugInfo = {
+                                            //     selectedValue: select.value,
+                                            //     idMatkul: option ? option.dataset.idMatkul : null,
+                                            //     hiddenFieldValue: document.getElementById('id_matkul').value
+                                            // };
+                                            // document.getElementById('debug-info').textContent = JSON.stringify(debugInfo, null, 2);
                                         }
 
                                         // Update debug info saat dropdown berubah

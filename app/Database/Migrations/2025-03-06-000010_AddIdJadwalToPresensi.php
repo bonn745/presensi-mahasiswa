@@ -26,7 +26,7 @@ class AddIdJadwalToPresensi extends Migration
     public function down()
     {
         // Hapus foreign key terlebih dahulu
-        $this->forge->dropForeignKey('presensi', 'presensi_id_jadwal_foreign');
+        // $this->forge->dropForeignKey('presensi', 'presensi_id_jadwal_foreign');
 
         // Kemudian hapus kolom
         $this->forge->dropColumn('presensi', 'id_jadwal');

@@ -35,7 +35,7 @@
                     <div class="rounded-circle bg-success bg-opacity-10 p-3">
                         <i class="fas fa-check-circle fa-lg text-success"></i>
                     </div>
-                    <span class="badge bg-success"><?= round(($total_hadir / $total_mahasiswa) * 100) ?>%</span>
+                    <span class="badge bg-success"><?= $total_mahasiswa > 0 ? round(($total_hadir / $total_mahasiswa) * 100) : 0 ?>%</span>
                 </div>
                 <h3 class="fw-bold mb-1"><?= $total_hadir ?></h3>
                 <p class="text-muted mb-0">Mahasiswa Hadir</p>
@@ -51,7 +51,7 @@
                     <div class="rounded-circle bg-danger bg-opacity-10 p-3">
                         <i class="fas fa-times-circle fa-lg text-danger"></i>
                     </div>
-                    <span class="badge bg-danger"><?= round((($total_mahasiswa - $total_hadir) / $total_mahasiswa) * 100) ?>%</span>
+                    <span class="badge bg-danger"><?= $total_mahasiswa > 0 ? round((($total_mahasiswa - $total_hadir) / $total_mahasiswa) * 100) : 0 ?>%</span>
                 </div>
                 <h3 class="fw-bold mb-1"><?= $total_mahasiswa - $total_hadir ?></h3>
                 <p class="text-muted mb-0">Mahasiswa Absen</p>

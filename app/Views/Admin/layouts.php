@@ -9,7 +9,7 @@ use App\Database\Migrations\Jabatan;
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="assets/images/favicon.svg" type="image/x-icon" />
+    <link rel="shortcut icon" href="<?= base_url('assets/images/favicon.svg') ?>" type="image/x-icon" />
     <title><?= $title ?></title>
 
     <!-- ========== All CSS files linkup ========= -->
@@ -18,6 +18,8 @@ use App\Database\Migrations\Jabatan;
     <link rel="stylesheet" href=" <?= base_url('assets/css/materialdesignicons.min.css') ?>" />
     <link rel="stylesheet" href=" <?= base_url('assets/css/fullcalendar.css') ?>" />
     <link rel="stylesheet" href=" <?= base_url('assets/css/main.css') ?>" />
+    <?= $this->renderSection('styles') ?>
+
 
     <!-- ========== Tabler Icon ========= -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.28.1/tabler-icons.min.css" integrity="sha512-UuL1Le1IzormILxFr3ki91VGuPYjsKQkRFUvSrEuwdVCvYt6a1X73cJ8sWb/1E726+rfDRexUn528XRdqrSAOw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -35,10 +37,9 @@ use App\Database\Migrations\Jabatan;
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
         crossorigin=""></script>
 
-
 </head>
 
-<body>
+<body class="bg-white">
     <!-- ======== Preloader =========== -->
     <div id="preloader">
         <div class="spinner"></div>
@@ -115,6 +116,7 @@ use App\Database\Migrations\Jabatan;
                     <ul id="master-data" class="collapse dropdown-nav">
                         <li><a href="<?= base_url('admin/matkul') ?>">Data Matkul</a></li>
                         <li><a href="<?= base_url('admin/kelas') ?>">Data Kelas</a></li>
+                        <li><a href="<?= base_url('admin/prodi') ?>">Data Prodi</a></li>
                         <li><a href="<?= base_url('admin/lokasi_presensi') ?>">Lokasi Presensi</a></li>
                     </ul>
                 </li>
@@ -154,22 +156,12 @@ use App\Database\Migrations\Jabatan;
                     <ul id="ddmenu_cicilan" class="collapse dropdown-nav">
                         <li>
                             <a href="<?= base_url('admin/cicilan/tahap1') ?>">
-                                <i class="bi bi-1-circle me-2"></i>Tahap 1
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<?= base_url('admin/cicilan/tahap2') ?>">
-                                <i class="bi bi-2-circle me-2"></i>Tahap 2
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<?= base_url('admin/cicilan/tahap3') ?>">
-                                <i class="bi bi-3-circle me-2"></i>Tahap 3
+                                <i class="bi bi-1-circle me-2"></i>Cicilan Bertahap
                             </a>
                         </li>
                         <li>
                             <a href="<?= base_url('admin/cicilan/lunas') ?>">
-                                <i class="bi bi-cash-stack me-2"></i>Pembayaran Lunas
+                                <i class="bi bi-cash-stack me-2"></i>Data Pembayaran
                             </a>
                         </li>
                     </ul>
@@ -199,7 +191,7 @@ use App\Database\Migrations\Jabatan;
     <!-- ======== main-wrapper start =========== -->
     <main class="main-wrapper">
         <!-- ========== header start ========== -->
-        <header class="header">
+        <header class="header border-bottom">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-5 col-md-5 col-6">
@@ -405,6 +397,8 @@ use App\Database\Migrations\Jabatan;
             });
         });
     </script>
+    <?= $this->renderSection('scripts') ?>
+
 
 </body>
 
