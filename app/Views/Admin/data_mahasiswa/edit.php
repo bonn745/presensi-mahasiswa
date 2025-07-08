@@ -7,6 +7,18 @@
         <form action="<?= base_url('admin/data_mahasiswa/update/' . $mahasiswa['id']) ?>" method="POST" enctype="multipart/form-data">
             <?= csrf_field() ?>
 
+            <div class="text-dark w-100 text-center">Data Mahasiswa</div>
+            <hr>
+
+            <!-- NIM -->
+            <div class="input-style-1">
+                <label for="nim">NIM</label>
+                <input type="text" class="form-control<?= ($validation->hasError('nim')) ? ' is-invalid' : '' ?>"
+                    name="nim" id="nim" placeholder="Nomor Induk Mahasiswa"
+                    value="<?= set_value('nim', $mahasiswa['nim'] ?? '') ?>" />
+                <div class="invalid-feedback"><?= $validation->getError('nim') ?></div>
+            </div>
+
             <!-- Nama -->
             <div class="input-style-1">
                 <label for="nama">Nama</label>
@@ -38,7 +50,7 @@
             <div class="input-style-1">
                 <label for="no_handphone">No Handphone</label>
                 <input type="text" class="form-control<?= ($validation->hasError('no_handphone')) ? ' is-invalid' : '' ?>"
-                    name="no_handphone" placeholder="No Handphone" value="<?= old('no_handphone', $mahasiswa['no_handphone']) ?>" />
+                    name="no_handphone" placeholder="No Handphone" value="<?= old('no_handphone', $mahasiswa['no_handphone']) ?>" onblur="formatPhoneNumber(this)"/>
                 <div class="invalid-feedback"><?= $validation->getError('no_handphone') ?></div>
             </div>
 
@@ -104,6 +116,37 @@
                 <div class="invalid-feedback"><?= $validation->getError('role') ?></div>
             </div>
 
+            <hr>
+            <div class="text-dark w-100 text-center">Data Orang Tua</div>
+            
+            <!-- Nama Orang Tua -->
+            <div class="input-style-1">
+                <label for="nama_ortu">Nama Orang Tua</label>
+                <input id="nama_ortu" type="text" class="form-control<?= ($validation->hasError('nama_ortu')) ? ' is-invalid' : '' ?>"
+                    name="nama_ortu" placeholder="Masukkan Nama Lengkap"
+                    value="<?= set_value('nama_ortu', $mahasiswa['nama_ortu'] ?? '') ?>" />
+                <div class="invalid-feedback"><?= $validation->getError('nama_ortu') ?></div>
+            </div>
+            
+            <!-- Jenis Kelamin Orang Tua -->
+            <div class="input-style-1">
+                <label for="jenis_kelamin_ortu">Jenis Kelamin</label>
+                <select id="jenis_kelamin_ortu" class="form-control<?= ($validation->hasError('jenis_kelamin_ortu')) ? ' is-invalid' : '' ?>" name="jenis_kelamin_ortu">
+                    <option value="" disabled selected>--Jenis Kelamin--</option>
+                    <option value="Laki-laki" <?= set_select('jenis_kelamin_ortu', 'Laki-laki', ($mahasiswa['jk_ortu'] ?? '') == 'Laki-laki') ?>>Laki-laki</option>
+                    <option value="Perempuan" <?= set_select('jenis_kelamin_ortu', 'Perempuan', ($mahasiswa['jk_ortu'] ?? '') == 'Perempuan') ?>>Perempuan</option>
+                </select>
+                <div class="invalid-feedback"><?= $validation->getError('jenis_kelamin_ortu') ?></div>
+            </div>
+            
+            <!-- No WhatsApp Orang Tua -->
+            <div class="input-style-1">
+                <label for="no_whatsapp">No WhatsApp</label>
+                <input id="no_whatsapp" type="tel" class="form-control<?= ($validation->hasError('no_whatsapp')) ? ' is-invalid' : '' ?>"
+                    name="no_whatsapp" placeholder="No WhatsApp"
+                    value="<?= set_value('no_whatsapp', $mahasiswa['nohp_ortu'] ?? '') ?>" onblur="formatPhoneNumber(this)"/>
+                <div class="invalid-feedback"><?= $validation->getError('no_whatsapp') ?></div>
+            </div>
 
             <button type="submit" class="btn btn-primary">Update</button>
         </form>

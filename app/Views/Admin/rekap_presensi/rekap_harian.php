@@ -7,6 +7,14 @@
             <div class="col-md-4">
                 <input type="date" class="form-control" name="filter_tanggal">
             </div>
+            <div class="col-md-4">
+                <select name="filter_matkul" id="filter_matkul" class="form-control select2">
+                    <option value="0" selected disabled>--Pilih Mata Kuliah--</option>
+                    <?php foreach ($matkul as $x) : ?>
+                        <option value="<?= $x['id'] ?>"><?= $x['matkul'] . ' - ' . $x['nama_dosen'] ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
             <div class="col-md-auto">
                 <button type="submit" class="btn btn-primary">Tampilkan</button>
             </div>
@@ -22,6 +30,10 @@
             <?php else : ?>
                 <?= \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM YYYY') ?>
             <?php endif; ?>
+            <?php if ($nama_matkul) : ?>
+                <?= ' | '.$nama_matkul ?>
+            <?php endif; ?>
+
         </p>
 
         <div class="table-responsive">
@@ -78,8 +90,8 @@
                                 <td><?= $rekap['nama'] ?></td>
                                 <td><?= $rekap['nama_matkul'] ?></td>
                                 <td><?= \Carbon\Carbon::parse($rekap['tanggal_masuk'])->locale('id')->isoFormat('D MMMM YYYY') ?></td>
-                                <td><?= $rekap['jam_masuk'] ?></td>
-                                <td><?= $rekap['jam_keluar'] ?></td>
+                                <td><?= date('H:i',strtotime($rekap['jam_masuk'])) ?></td>
+                                <td><?= date('H:i', strtotime($rekap['jam_keluar'])) ?></td>
                                 <td>
                                     <?php if ($rekap['jam_keluar'] == '00:00:00') : ?>
                                         0 Jam 0 Menit

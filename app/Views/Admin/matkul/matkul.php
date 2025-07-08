@@ -14,8 +14,9 @@
             <thead class="table-primary">
                 <tr>
                     <th>No</th>
-                    <th>Nama Matkul</th>
+                    <th>Mata Kuliah</th>
                     <th>Dosen Pengampu</th>
+                    <th>Program Studi</th>
                     <th class="text-center">Aksi</th>
                 </tr>
             </thead>
@@ -25,7 +26,8 @@
                     <tr>
                         <td><?= $no++ ?></td>
                         <td><?= $mk['matkul'] ?></td>
-                        <td><?= $mk['dosen_pengampu'] ?></td>
+                        <td><?= $mk['nama_dosen'] ?></td>
+                        <td><?= $mk['nama_prodi'] ?></td>
                         <td class="text-center">
                             <a href="<?= base_url('admin/matkul/edit/') . $mk['id'] ?>" class="btn btn-sm btn-warning">
                                 <i class="fas fa-edit"></i>

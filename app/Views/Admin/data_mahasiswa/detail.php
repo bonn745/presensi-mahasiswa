@@ -6,6 +6,11 @@
         <table class="table table-bordered">
             <tbody>
                 <tr>
+                    <td colspan="3" align="center">
+                        <strong>Mahasiswa</strong>
+                    </td>
+                </tr>
+                <tr>
                     <td><strong>Foto</strong></td>
                     <td>:</td>
                     <td>
@@ -43,14 +48,30 @@
                     <td><?= esc($mahasiswa['no_handphone']) ?></td>
                 </tr>
                 <tr>
-                    <td><strong>Lokasi Presensi</strong></td>
-                    <td>:</td>
-                    <td><?= esc($mahasiswa['lokasi_presensi']) ?></td>
-                </tr>
-                <tr>
                     <td><strong>Role</strong></td>
                     <td>:</td>
                     <td><?= esc($mahasiswa['role']) ?></td>
+                </tr>
+                <tr>
+                    <td colspan="3" align="center">
+                        <hr>
+                        <strong>Orang Tua</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Nama</strong></td>
+                    <td>:</td>
+                    <td><?= esc($mahasiswa['nama_ortu']) ?></td>
+                </tr>
+                <tr>
+                    <td><strong>Jenis Kelamin</strong></td>
+                    <td>:</td>
+                    <td><?= esc($mahasiswa['jk_ortu']) ?></td>
+                </tr>
+                <tr>
+                    <td style="width: 1%; white-space:nowrap; padding-right: 10px"><strong>No Handphone</strong></td>
+                    <td>:</td>
+                    <td><?= esc($mahasiswa['nohp_ortu']) ?></td>
                 </tr>
             </tbody>
         </table>
@@ -59,4 +80,12 @@
 
 <a href="<?= base_url('admin/data_mahasiswa') ?>" class="btn btn-secondary mt-3">Kembali</a>
 
+<?= $this->endSection() ?>
+
+<?= $this->section('styles') ?>
+<style>
+    td {
+        border: none;
+    }
+</style>
 <?= $this->endSection() ?>

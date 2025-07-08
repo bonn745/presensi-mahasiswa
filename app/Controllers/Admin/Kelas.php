@@ -24,7 +24,12 @@ class Kelas extends BaseController
     {
         $data = [
             'title' => 'Data Kelas',
-            'kelas' => $this->kelasModel->findAll()
+            'kelas' => $this->kelasModel
+                ->select('kelas.*, dosen.nama_dosen, matkul.matkul, prodi.nama as nama_prodi')
+                ->join('matkul', 'matkul.id = kelas.id_matkul')
+                ->join('dosen', 'dosen.id = matkul.dosen_pengampu')
+                ->join('prodi', 'prodi.id = matkul.prodi_id')
+                ->findAll()
         ];
         return view('admin/kelas/kelas', $data);
     }
@@ -33,47 +38,37 @@ class Kelas extends BaseController
     {
         $data = [
             'title' => 'Tambah Data Kelas',
-            'matkul' => $this->matkulModel->findAll()
+            'matkul' => $this->matkulModel->select('matkul.id, matkul.matkul')->findAll() // Mengambil semua data Matkul
         ];
         return view('admin/kelas/create', $data);
     }
 
     public function store()
     {
-        $validation = \Config\Services::validation();
-
         if (!$this->validate([
-            'ruangan'    => 'required|max_length[100]',
+            'ruangan'    => 'required|numeric',
             'hari'       => 'required|in_list[Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu]',
             'jam_masuk'  => 'required',
             'jam_pulang' => 'required',
-            'matkul'     => 'required|max_length[255]',
+            'matkul'     => 'required',
+            'jenis_kelas'     => 'required|in_list[Daring,Luring]',
         ])) {
-            return redirect()->to('/admin/kelas/create')->withInput()->with('errors', $validation->getErrors());
+            return redirect()->back()->withInput()->with('error', array_values($this->validator->getErrors())[0]);
         }
-
-        $matkulNama = $this->request->getPost('matkul');
-        $matkulData = $this->matkulModel->where('matkul', $matkulNama)->first();
-
-        if (!$matkulData) {
-            return redirect()->to('/admin/kelas/create')->withInput()->with('errors', ['matkul' => 'Mata kuliah tidak ditemukan di database.']);
-        }
-
 
         $data = [
             'ruangan'    => $this->request->getPost('ruangan'),
             'hari'       => $this->request->getPost('hari'),
             'jam_masuk'  => $this->request->getPost('jam_masuk'),
             'jam_pulang' => $this->request->getPost('jam_pulang'),
-            'matkul'     => $matkulNama,
-            'id_matkul'  => $matkulData['id']
+            'id_matkul'  => $this->request->getPost('matkul'),
+            'jenis_kelas'  => $this->request->getPost('jenis_kelas'),
 
         ];
 
         $this->kelasModel->insert($data);
 
-        session()->setFlashdata('success_add', 'Jadwal kelas berhasil ditambahkan.');
-        return redirect()->to('/admin/kelas');
+        return redirect()->to('/admin/kelas')->with('success_add', 'Jadwal kelas berhasil ditambahkan.');
     }
 
 
@@ -103,20 +98,11 @@ class Kelas extends BaseController
             'jam_masuk'  => 'required',
             'jam_pulang' => 'required',
             'matkul'     => 'required',
+            'jenis_kelas'     => 'required',
         ])) {
             return redirect()->to('/admin/kelas/edit/' . $id)
                 ->withInput()
                 ->with('errors', $validation->getErrors());
-        }
-
-        // Ambil data dari form
-        $matkulNama = $this->request->getPost('matkul');
-        $matkulData = $this->matkulModel->where('matkul', $matkulNama)->first();
-
-        if (!$matkulData) {
-            return redirect()->to('/admin/kelas/edit/' . $id)
-                ->withInput()
-                ->with('errors', ['matkul' => 'Mata kuliah tidak ditemukan di database.']);
         }
 
         // Siapkan data untuk update
@@ -125,8 +111,8 @@ class Kelas extends BaseController
             'hari'       => $this->request->getPost('hari'),
             'jam_masuk'  => $this->request->getPost('jam_masuk'),
             'jam_pulang' => $this->request->getPost('jam_pulang'),
-            'matkul'     => $matkulNama,
-            'id_matkul'  => $matkulData['id']
+            'id_matkul'     => $this->request->getPost('matkul'),
+            'jenis_kelas'  => $this->request->getPost('jenis_kelas'),
         ];
 
         // Lakukan update menggunakan builder

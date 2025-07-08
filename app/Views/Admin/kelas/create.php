@@ -12,7 +12,7 @@
 
             <div class="mb-3">
                 <label for="ruangan" class="form-label">Ruangan</label>
-                <input type="text" class="form-control" id="ruangan" name="ruangan" value="<?= old('ruangan') ?>" required>
+                <input type="number" class="form-control" id="ruangan" name="ruangan" value="<?= old('ruangan') ?>" required>
                 <?php if (isset($errors['ruangan'])): ?>
                     <div class="text-danger"><?= $errors['ruangan'] ?></div>
                 <?php endif; ?>
@@ -49,18 +49,39 @@
                 <?php endif; ?>
             </div>
 
-            <select name="matkul" class="form-control">
-                <option value="">-- Pilih Mata Kuliah --</option>
-                <?php foreach ($matkul as $m): ?>
-                    <option value="<?= esc($m['matkul']) ?>"><?= esc($m['matkul']) ?></option>
-                <?php endforeach; ?>
-            </select>
+            <div class="mb-3">
+                <label for="matkul" class="form-label">Mata Kuliah</label>
+                <select id="matkul" name="matkul" class="form-control">
+                    <option value="" selected disabled>-- Pilih Mata Kuliah --</option>
+                    <?php foreach ($matkul as $m): ?>
+                        <option value="<?= esc($m['id']) ?>"><?= esc($m['matkul']) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="jenis_kelas" class="form-label">Jenis Kelas</label>
+                <select id="jenis_kelas" name="jenis_kelas" class="form-control">
+                    <option value="" selected disabled>-- Pilih Jenis Kelas --</option>
+                        <option value="Daring">Daring</option>
+                        <option value="Luring">Luring</option>
+                </select>
+            </div>
 
-
-            <button type="submit" class="btn btn-primary">Simpan Jadwal Kelas</button>
+            <button type="submit" class="btn btn-primary mt-3">Simpan Jadwal Kelas</button>
         </form>
-
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="application/javascript">
+    <?php if (session()->getFlashdata('error')) : ?>
+        Swal.fire({
+            icon: "error",
+            title: "Import Gagal!",
+            text: "<?= session()->getFlashdata('error') ?>",
+            showConfirmButton: false,
+            timer: 2000
+        });
+    <?php endif; ?>
+</script>
 
 <?= $this->endSection() ?>

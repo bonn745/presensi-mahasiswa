@@ -42,20 +42,20 @@ class DosenModel extends Model
     {
         $builder = $this->db->table('dosen');
 
-        $builder->select('
+        $builder->select("
         dosen.nama_dosen,
         kelas.hari,
         kelas.ruangan,
         kelas.jam_masuk,
         kelas.jam_pulang,
         matkul.matkul AS nama_matkul
-    ');
+    ");
 
         // Join ke matkul berdasarkan nama dosen
-        $builder->join('matkul', 'matkul.dosen_pengampu = dosen.nama_dosen', 'left');
+        $builder->join('matkul', 'matkul.dosen_pengampu = dosen.id');
 
         // Join ke kelas berdasarkan id_matkul dan id_dosen
-        $builder->join('kelas', 'kelas.id_matkul = matkul.id', 'left');
+        $builder->join('kelas', 'kelas.id_matkul = matkul.id');
 
         // Filter berdasarkan ID dosen
         $builder->where('dosen.id', $id);

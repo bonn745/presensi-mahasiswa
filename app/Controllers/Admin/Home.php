@@ -28,7 +28,7 @@ class Home extends BaseController
         $db = \Config\Database::connect();
         $builder = $db->table('presensi');
         $mahasiswa_hadir = $builder->select('id_mahasiswa')
-            ->where('tanggal_masuk', $tanggal)
+            ->where('tanggal', $tanggal)
             ->distinct()
             ->get()
             ->getResultArray();

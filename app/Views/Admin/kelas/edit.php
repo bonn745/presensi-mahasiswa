@@ -36,13 +36,23 @@
             </div>
 
             <div class="mb-3">
+            <label for="jenis_kelas" class="form-label">Mata Kuliah</label>
                 <select name="matkul" class="form-control">
-                    <option value="" disabled <?= empty($kelas['matkul']) ? 'selected' : '' ?>>-- Pilih Mata Kuliah --</option>
+                    <option value="" selected disabled>-- Pilih Mata Kuliah --</option>
                     <?php foreach ($matkul as $m): ?>
-                        <option value="<?= esc($m['matkul']) ?>" <?= (isset($kelas['matkul']) && $kelas['matkul'] === $m['matkul']) ? 'selected' : '' ?>>
+                        <option value="<?= esc($m['id']) ?>" <?= ($kelas['id_matkul'] == $m['id']) ? 'selected' : '' ?>>
                             <?= esc($m['matkul']) ?>
                         </option>
                     <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="jenis_kelas" class="form-label">Jenis Kelas</label>
+                <select name="jenis_kelas" class="form-control">
+                    <option value="" selectd disabled>-- Pilih Jenis Kelas --</option>
+                        <option value="Daring" <?= ($kelas['jenis_kelas'] == 'Daring') ? 'selected' : '' ?>>Daring</option>
+                        <option value="Luring" <?= ($kelas['jenis_kelas'] == 'Luring') ? 'selected' : '' ?>>Luring</option>
                 </select>
             </div>
 

@@ -20,7 +20,7 @@ class Presensi extends Migration
                 'constraint' => 11,
                 'unsigned'       => true,
             ],
-            'tanggal_masuk' => [
+            'tanggal' => [
                 'type' => 'DATE',
             ],
             'jam_masuk' => [
@@ -35,9 +35,9 @@ class Presensi extends Migration
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
-            'tanggal_keluar' => [
-                'type' => 'DATE',
-            ],
+            // 'tanggal_keluar' => [
+            //     'type' => 'DATE',
+            // ],
             'jam_keluar' => [
                 'type' => 'TIME',
             ],
@@ -55,12 +55,16 @@ class Presensi extends Migration
                 'constraint' => 11,
                 'unsigned'   => true,
             ],
+            'pertemuan_ke' => [
+                'type'       => 'INT',
+                'constraint' => 2,
+            ],
         ]);
         $this->forge->addKey('id', true);
-        $this->forge->addForeignKey('id_mahasiswa', 'mahasiswa', 'id');
-        $this->forge->addForeignKey('id_lokasi_presensi', 'lokasi_presensi', 'id');
-        $this->forge->addForeignKey('id_lokasi_presensi_keluar', 'lokasi_presensi', 'id');
-        $this->forge->addForeignKey('id_matkul', 'matkul', 'id');
+        // $this->forge->addForeignKey('id_mahasiswa', 'mahasiswa', 'id');
+        // $this->forge->addForeignKey('id_lokasi_presensi', 'lokasi_presensi', 'id');
+        // $this->forge->addForeignKey('id_lokasi_presensi_keluar', 'lokasi_presensi', 'id');
+        // $this->forge->addForeignKey('id_matkul', 'matkul', 'id');
         $this->forge->createTable('Presensi');
     }
 

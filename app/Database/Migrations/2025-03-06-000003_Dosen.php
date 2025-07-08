@@ -20,6 +20,14 @@ class Dosen extends Migration
                 'constraint' => 20,
                 'unique'     => true,
             ],
+            'jenis_kelamin' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 20,
+            ],
+            'alamat' => [
+                'type'       => 'TEXT',
+                'constraint' => 20,
+            ],
             'nama_dosen' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 100,
@@ -29,16 +37,16 @@ class Dosen extends Migration
                 'constraint' => 20,
                 'null'       => true,
             ],
-            'matkul' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 100,
-                'null'       => true,
-            ],
-            'jadwal_ngajar' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 100,
-                'null'       => true,
-            ],
+            // 'matkul' => [
+            //     'type'       => 'VARCHAR',
+            //     'constraint' => 100,
+            //     'null'       => true,
+            // ],
+            // 'jadwal_ngajar' => [
+            //     'type'       => 'VARCHAR',
+            //     'constraint' => 100,
+            //     'null'       => true,
+            // ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,

@@ -12,45 +12,45 @@ class KelasModel extends Model
     protected $returnType = 'array';
 
     protected $allowedFields = [
-        'id_matkul',
         'ruangan',
         'hari',
         'jam_masuk',
         'jam_pulang',
-        'matkul'
+        'jenis_kelas',
+        'id_matkul',
     ];
 
-    protected $validationRules = [
-        'ruangan'    => 'required',
-        'hari'       => 'required|in_list[Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu]',
-        'jam_masuk'  => 'required',
-        'jam_pulang' => 'required',
-        'matkul'     => 'required',
-    ];
+    // protected $validationRules = [
+    //     'ruangan'    => 'required',
+    //     'hari'       => 'required|in_list[Senin,Selasa,Rabu,Kamis,Jumat,Sabtu,Minggu]',
+    //     'jam_masuk'  => 'required',
+    //     'jam_pulang' => 'required',
+    //     'matkul'     => 'required',
+    // ];
 
-    protected $validationMessages = [
-        'ruangan' => [
-            'required' => 'Ruangan harus diisi.',
-            'max_length' => 'Ruangan maksimal 100 karakter.',
-        ],
-        'hari' => [
-            'required' => 'Hari harus dipilih.',
-            'in_list' => 'Pilih hari yang valid.',
-        ],
-        'jam_masuk' => [
-            'required' => 'Jam masuk harus diisi.',
-            'regex_match' => 'Format jam masuk harus HH:MM.',
-        ],
-        'jam_pulang' => [
-            'required' => 'Jam pulang harus diisi.',
-            'regex_match' => 'Format jam pulang harus HH:MM.',
-        ],
-        'matkul' => [
-            'required' => 'Mata kuliah harus dipilih.',
-        ],
-    ];
+    // protected $validationMessages = [
+    //     'ruangan' => [
+    //         'required' => 'Ruangan harus diisi.',
+    //         'max_length' => 'Ruangan maksimal 100 karakter.',
+    //     ],
+    //     'hari' => [
+    //         'required' => 'Hari harus dipilih.',
+    //         'in_list' => 'Pilih hari yang valid.',
+    //     ],
+    //     'jam_masuk' => [
+    //         'required' => 'Jam masuk harus diisi.',
+    //         'regex_match' => 'Format jam masuk harus HH:MM.',
+    //     ],
+    //     'jam_pulang' => [
+    //         'required' => 'Jam pulang harus diisi.',
+    //         'regex_match' => 'Format jam pulang harus HH:MM.',
+    //     ],
+    //     'matkul' => [
+    //         'required' => 'Mata kuliah harus dipilih.',
+    //     ],
+    // ];
 
-    protected $skipValidation = false;
+    // protected $skipValidation = false;
 
     public function getKelasByMatkul($matkul)
     {

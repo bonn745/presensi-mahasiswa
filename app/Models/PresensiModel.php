@@ -39,7 +39,7 @@ class PresensiModel extends Model
         return $builder->get()->getResultArray();
     }
 
-    public function rekap_harian_filter($filter_tanggal)
+    public function rekap_harian_filter($filter_tanggal,$filter_matkul = null)
     {
         $db      = \Config\Database::connect();
         $builder = $db->table('presensi');
@@ -54,6 +54,7 @@ class PresensiModel extends Model
         $builder->join('kelas', 'kelas.id_matkul = presensi.id_matkul');
         $builder->join('matkul', 'matkul.id = presensi.id_matkul');
         $builder->where('tanggal_masuk', $filter_tanggal);
+        if(!is_null($filter_matkul)) $builder->where('matkul.id', $filter_matkul);
         $builder->orderBy('presensi.tanggal_masuk', 'DESC');
         return $builder->get()->getResultArray();
     }

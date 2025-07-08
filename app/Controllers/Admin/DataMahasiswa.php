@@ -3,11 +3,13 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
+use App\Controllers\ImportController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\MahasiswaModel;
 use App\Models\UserMahasiswa;
 use App\Models\LokasiPresensiModel;
 use App\Models\UserModel;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class DataMahasiswa extends BaseController
 {
@@ -18,7 +20,6 @@ class DataMahasiswa extends BaseController
             'title' => 'Data mahasiswa',
             'mahasiswa' => $mahasiswaModel->findAll()
         ];
-        // return json_encode($data);
         return view('admin/data_mahasiswa/data_mahasiswa', $data);
     }
 
@@ -61,6 +62,12 @@ class DataMahasiswa extends BaseController
     public function store()
     {
         $rules = [
+            'nim' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => "NIM Wajib Diisi"
+                ],
+            ],
             'nama' => [
                 'rules' => 'required',
                 'errors' => [
@@ -127,6 +134,24 @@ class DataMahasiswa extends BaseController
                     'matches' => "Konfirmasi password tidak cocok"
                 ],
             ],
+            'nama_ortu' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => "Nama Orang Tua Wajib Diisi"
+                ],
+            ],
+            'jenis_kelamin_ortu' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => "Jenis Kelamin Orang Tua Wajib Diisi"
+                ],
+            ],
+            'no_whatsapp' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => "No WhatsApp Orang Tua Wajib Diisi"
+                ],
+            ],
         ];
 
         if (!$this->validate($rules)) {
@@ -138,7 +163,7 @@ class DataMahasiswa extends BaseController
         }
 
         $mahasiswaModel = new MahasiswaModel();
-        $nimBaru = $this->generateNIM();
+        // $nimBaru = $this->generateNIM();
 
         $foto = $this->request->getFile('foto');
         if ($foto->getError() == 4) {
@@ -149,7 +174,7 @@ class DataMahasiswa extends BaseController
         }
 
         $mahasiswaModel->insert([
-            'nim' => $nimBaru,
+            'nim' => $this->request->getPost('nim'),
             'nama' => $this->request->getPost('nama'),
             'jenis_kelamin' => $this->request->getPost('jenis_kelamin'),
             'alamat' => $this->request->getPost('alamat'),
@@ -157,6 +182,9 @@ class DataMahasiswa extends BaseController
             'semester' => $this->request->getPost('semester'),
             'jurusan' => $this->request->getPost('jurusan'),
             'foto' => $nama_foto,
+            'nama_ortu' => $this->request->getPost('nama_ortu'),
+            'jk_ortu' => $this->request->getPost('jenis_kelamin_ortu'),
+            'nohp_ortu' => $this->request->getPost('no_whatsapp'),
         ]);
 
         $id_mahasiswa = $mahasiswaModel->insertID();
@@ -189,6 +217,12 @@ class DataMahasiswa extends BaseController
     public function update($id)
     {
         $rules = [
+            'nim' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => "NIM Wajib Diisi"
+                ],
+            ],
             'nama' => [
                 'rules' => 'required',
                 'errors' => [
@@ -241,6 +275,24 @@ class DataMahasiswa extends BaseController
                     'min_length' => "Password minimal 6 karakter"
                 ],
             ],
+            'nama_ortu' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => "Nama Orang Tua Wajib Diisi"
+                ],
+            ],
+            'jenis_kelamin_ortu' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => "Jenis Kelamin Orang Tua Wajib Diisi"
+                ],
+            ],
+            'no_whatsapp' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => "No WhatsApp Orang Tua Wajib Diisi"
+                ],
+            ],
         ];
 
         if (!$this->validate($rules)) {
@@ -290,6 +342,9 @@ class DataMahasiswa extends BaseController
                 'semester' => $this->request->getPost('semester'),
                 'jurusan' => $this->request->getPost('jurusan'),
                 'foto' => $nama_foto,
+                'nama_ortu' => $this->request->getPost('nama_ortu'),
+                'jk_ortu' => $this->request->getPost('jenis_kelamin_ortu'),
+                'nohp_ortu' => $this->request->getPost('no_whatsapp'),
             ]);
 
             // Cek apakah password diubah
@@ -329,5 +384,35 @@ class DataMahasiswa extends BaseController
         }
 
         return redirect()->to('/admin/data_mahasiswa')->with('error', 'Data mahasiswa tidak ditemukan.');
+    }
+
+    public function import()
+    {
+        $rules = [
+            'file' => [
+                'rules' => 'uploaded[file]|mime_in[file,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet]|ext_in[file,xls,xlsx]',
+                'errors' => [
+                    'uploaded' => 'File tidak boleh kosong!',
+                    'mime_in' => 'Format tidak didukung.',
+                    'ext_in' => 'File harus xls atau xlsx.'
+                ]
+            ]
+        ];
+
+        if (!$this->validate($rules)) return redirect()->back()->with('error', array_values($this->validator->getErrors())[0]);
+
+        $file = $this->request->getFile('file');
+
+        $import = new ImportController();
+        $return = $import->saveToModel($file, new MahasiswaModel(), ['nim', 'nama']);
+
+        if (!$return['success']) {
+            return redirect()->back()->with('error', $return['message']);
+        }
+
+        $success = $return['totalOfSuccessData'] . ' data berhasil disimpan';
+        $failed = $return['totalOfFailedData'] > 0 ? ' dan ' . $return['totalOfFailedData'] . ' gagal tersimpan.' : '.';
+
+        return redirect()->back()->with('success', $success . $failed);
     }
 }
