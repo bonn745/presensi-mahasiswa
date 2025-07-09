@@ -34,7 +34,7 @@
                         <td><?= $dsn['no_hp'] ?></td>
                         <td><?= $dsn['alamat'] ?></td>
                         <td>
-                            <button class="btn btn-primary" type="button" id="dosen-<?= $dsn['id'] ?>" data-id="<?= $dsn['id'] ?>" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="refreshJadwal(<?= $dsn['id'] ?>,'<?= url_to('admin.dosen.jadwal', $dsn['id']) ?>')">
+                            <button class="btn btn-primary" type="button" id="dosen-<?= $dsn['id'] ?>" data-id="<?= $dsn['id'] ?>" data-bs-toggle="modal" data-bs-target="#modal-jadwal" onclick="refreshJadwal(<?= $dsn['id'] ?>,'<?= url_to('admin.dosen.jadwal', $dsn['id']) ?>')">
                                 Lihat
                             </button>
                         </td>
@@ -58,11 +58,11 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modal-jadwal" tabindex="-1" aria-labelledby="modal-jadwal" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <h5 class="modal-title" id="modal-jadwal"></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -104,8 +104,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>

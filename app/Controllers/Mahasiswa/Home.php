@@ -8,12 +8,29 @@ use App\Models\LokasiPresensiMOdel;
 use App\Models\MahasiswaModel;
 use App\Models\PresensiModel;
 use App\Models\KelasModel;
+use App\Models\MatkulMahasiswa;
 use App\Models\MatkulModel;
 
 class Home extends BaseController
 {
     public function index()
     {
+        $matkul_mhs = new MatkulMahasiswa();
+        $matkulModel = new MatkulModel();
+        $mahasiswaModel = new MahasiswaModel();
+        $id_mhs = session()->get('id_mahasiswa');
+        $matkul = $matkul_mhs->find($id_mhs);
+        $mhs = $mahasiswaModel->find($id_mhs);
+
+        $data = [
+            'title' => 'Pilih Mata Kuliah',
+            'matkul' => $matkulModel->where('prodi_id',$mhs['prodi'])->findAll(),
+            'info' => 'Anda belum memilih Mata Kuliah, silakan <strong>Pilih</strong> dan <strong>Tambahkan</strong> Mata Kuliah untuk melanjutkan.',
+            'validation' => \Config\Services::validation(),
+        ];
+
+        if(empty($matkul)) return view('Mahasiswa/pilih_matkul', $data);
+
         date_default_timezone_set('Asia/Jakarta'); // Pastikan zona waktu sesuai
 
         $lokasi_presensi = new LokasiPresensiModel();
@@ -46,7 +63,7 @@ class Home extends BaseController
             ->select('presensi.*, lokasi_presensi.nama_ruangan, lokasi_presensi.latitude, lokasi_presensi.longitude, lokasi_presensi.radius')
             ->join('lokasi_presensi', 'lokasi_presensi.id = presensi.id_lokasi_presensi')
             ->where('presensi.id_mahasiswa', $id_mahasiswa)
-            ->where('presensi.tanggal_masuk', date('Y-m-d'))
+            ->where('presensi.tanggal', date('Y-m-d'))
             ->orderBy('presensi.jam_masuk', 'DESC')
             ->first();
 
@@ -69,7 +86,7 @@ class Home extends BaseController
         // Ambil semua presensi hari ini untuk mahasiswa ini
         $presensi_hari_ini = $presensi_model
             ->where('id_mahasiswa', $id_mahasiswa)
-            ->where('tanggal_masuk', date('Y-m-d'))
+            ->where('tanggal', date('Y-m-d'))
             ->orderBy('jam_masuk', 'DESC')
             ->findAll();
 

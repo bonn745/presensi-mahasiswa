@@ -69,3 +69,11 @@
 <a href="<?= base_url('admin/data_dosen') ?>" class="btn btn-secondary mt-3">Kembali</a>
 
 <?= $this->endSection() ?>
+
+<?= $this->section('styles') ?>
+<style>
+    td {
+        border: none;
+    }
+</style>
+<?= $this->endSection() ?>

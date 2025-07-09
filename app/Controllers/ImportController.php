@@ -15,10 +15,10 @@ class ImportController extends BaseController
     {
         try {
             $rule = [
-                'nim'   => [
+                'npm'   => [
                     'rules' => 'required',
                     'errors' => [
-                        'required' => 'Field NIM tidak ditemukan pada file!'
+                        'required' => 'Field NPM tidak ditemukan pada file!'
                     ]
                 ],
 
@@ -85,13 +85,13 @@ class ImportController extends BaseController
             }
 
             foreach($filteredData as $data) {
-                $password = password_hash($data['nim'], PASSWORD_DEFAULT);
+                $password = password_hash($data['npm'], PASSWORD_DEFAULT);
                 $mahasiswa = new MahasiswaModel();
                 $user = new UserModel();
                 $id = $mahasiswa->insert($data);
                 $userData = array(
                     'id_mahasiswa' => $id,
-                    'username' => $data['nim'],
+                    'username' => $data['npm'],
                     'password' => $password,
                     'status' => 'aktif',
                     'role' => 'mahasiswa'

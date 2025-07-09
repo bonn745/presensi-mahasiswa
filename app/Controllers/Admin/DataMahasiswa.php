@@ -404,7 +404,7 @@ class DataMahasiswa extends BaseController
         $file = $this->request->getFile('file');
 
         $import = new ImportController();
-        $return = $import->saveToModel($file, new MahasiswaModel(), ['nim', 'nama']);
+        $return = $import->saveToModel($file, new MahasiswaModel(), ['npm', 'nama']);
 
         if (!$return['success']) {
             return redirect()->back()->with('error', $return['message']);
