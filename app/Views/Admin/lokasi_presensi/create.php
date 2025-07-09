@@ -36,33 +36,6 @@
                 <div class="invalid-feedback"><?= $validation->getError('tipe_lokasi') ?></div>
             </div>
 
-            <!-- Input untuk Jadwal Kuliah -->
-            <div class="input-style-1 mb-3">
-                <label for="jadwal_kuliah" class="font-weight-bold">Jadwal Kuliah</label>
-                <select name="jadwal_kuliah" id="jadwal_kuliah" class="form-control<?= ($validation->hasError('jadwal_kuliah')) ? ' is-invalid' : '' ?>">
-                    <option value="" disabled selected>-- Pilih Hari --</option>
-                    <?php
-                    $hari = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
-                    foreach ($hari as $h) :
-                    ?>
-                        <option value="<?= $h ?>" <?= old('jadwal_kuliah') == $h ? 'selected' : '' ?>><?= $h ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <div class="invalid-feedback"><?= $validation->getError('jadwal_kuliah') ?></div>
-            </div>
-
-            <!-- Matkul -->
-            <div class="input-style-1 mb-3">
-                <label for="matkul">Matkul</label>
-                <select id="matkul" class="form-control<?= ($validation->hasError('matkul')) ? ' is-invalid' : '' ?>" name="matkul">
-                    <option value="" disabled selected>--Pilih Matkul--</option>
-                    <?php foreach ($matkul as $mk) : ?>
-                        <option value="<?= $mk['matkul'] ?>" <?= set_select('matkul', $mk['matkul'], ($mahasiswa['matkul'] ?? '') == $mk['matkul']) ?>><?= $mk['matkul'] ?></option>
-                    <?php endforeach; ?>
-                </select>
-                <div class="invalid-feedback"><?= $validation->getError('matkul') ?></div>
-            </div>
-
             <!-- Input untuk Latitude -->
             <div class="input-style-1">
                 <label for="latitude">Latitude</label>
@@ -86,35 +59,6 @@
                     name="radius" placeholder="Radius" value="<?= set_value('radius', old('radius')) ?>" />
                 <div class="invalid-feedback"><?= $validation->getError('radius') ?></div>
             </div>
-
-            <!-- Input untuk Zona Waktu -->
-            <div class="input-style-1">
-                <label>Zona Waktu</label>
-                <select name="zona_waktu" class="form-control <?=
-                                                                ($validation->hasError('zona_waktu'))  ? 'is-invalid' :
-                                                                    '' ?>">
-                    <option value="" disabled selected>--Pilih Zona Waktu--</option>
-                    <option value="WIB">WIB</option>
-                    <option value="WITA">WITA</option>
-                    <option value="WIT">WIT</option>
-                </select>
-                <div class="invalid feedback"><?= $validation->getError('zona_waktu') ?></div>
-            </div>
-
-            <div class="input-style-1">
-                <label>Jam Masuk</label>
-                <input type="time" class="form-control<?= ($validation->hasError('jam_masuk')) ? ' is-invalid' : '' ?>"
-                    name="jam_masuk" placeholder="Jam Masuk" value="<?= set_value('jam_masuk', old('jam_masuk')) ?>" />
-                <div class="invalid-feedback"><?= $validation->getError('jam_masuk') ?></div>
-            </div>
-
-            <div class="input-style-1">
-                <label>Jam Pulang</label>
-                <input type="time" class="form-control<?= ($validation->hasError('jam_pulang')) ? ' is-invalid' : '' ?>"
-                    name="jam_pulang" placeholder="Jam Pulang" value="<?= set_value('jam_pulang', old('jam_pulang')) ?>" />
-                <div class="invalid-feedback"><?= $validation->getError('jam_pulang') ?></div>
-            </div>
-
             <button type="submit" class="btn btn-primary">Simpan</button>
         </form>
         <script>

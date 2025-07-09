@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\KelasModel;
 use App\Models\MatkulModel;
 use App\Models\DosenModel;
+use App\Models\LokasiPresensiModel;
 
 class Kelas extends BaseController
 {
@@ -25,10 +26,11 @@ class Kelas extends BaseController
         $data = [
             'title' => 'Data Kelas',
             'kelas' => $this->kelasModel
-                ->select('kelas.*, dosen.nama_dosen, matkul.matkul, prodi.nama as nama_prodi')
+                ->select('kelas.*, dosen.nama_dosen, matkul.matkul, prodi.nama as nama_prodi, lokasi_presensi.nama_ruangan, lokasi_presensi.alamat_lokasi,lokasi_presensi.tipe_lokasi,')
                 ->join('matkul', 'matkul.id = kelas.id_matkul')
                 ->join('dosen', 'dosen.id = matkul.dosen_pengampu')
                 ->join('prodi', 'prodi.id = matkul.prodi_id')
+                ->join('lokasi_presensi', 'lokasi_presensi.id = kelas.ruangan')
                 ->findAll()
         ];
         return view('admin/kelas/kelas', $data);
@@ -36,8 +38,12 @@ class Kelas extends BaseController
 
     public function create()
     {
+        $lokasiModel = new LokasiPresensiModel();
+        $ruangan = $lokasiModel->findAll();
+
         $data = [
             'title' => 'Tambah Data Kelas',
+            'ruangan' => $ruangan,
             'matkul' => $this->matkulModel->select('matkul.id, matkul.matkul')->findAll() // Mengambil semua data Matkul
         ];
         return view('admin/kelas/create', $data);

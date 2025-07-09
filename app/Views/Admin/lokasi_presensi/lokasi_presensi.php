@@ -17,10 +17,6 @@
                     <th>Nama Ruangan</th>
                     <th>Alamat Lokasi</th>
                     <th>Tipe Lokasi</th>
-                    <th>Hari Kuliah</th>
-                    <th>Mata Kuliah</th>
-                    <th>Jam Masuk</th>
-                    <th>Jam Pulang</th>
                     <th class="text-center">Aksi</th>
                 </tr>
             </thead>
@@ -32,11 +28,6 @@
                         <td><?= $lok['nama_ruangan'] ?></td>
                         <td><?= $lok['alamat_lokasi'] ?></td>
                         <td><?= $lok['tipe_lokasi'] ?></td>
-                        <td><?= $lok['jadwal_kuliah'] ?></td>
-                        <td><?= $lok['matkul'] ?></td>
-                        <td><?= $lok['jam_masuk'] ?></td>
-                        <td><?= $lok['jam_pulang'] ?></td>
-
                         <td class="text-center">
 
                             <a href="<?= base_url('admin/lokasi_presensi/detail/' . $lok['id']) ?>" class="btn btn-sm btn-info">

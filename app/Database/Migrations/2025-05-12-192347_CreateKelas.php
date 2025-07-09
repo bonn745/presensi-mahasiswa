@@ -29,6 +29,10 @@ class Kelas extends Migration
             'jam_pulang' => [
                 'type'           => 'TIME',
             ],
+            'zona_waktu' => [
+                'type' => 'VARCHAR',
+                'constraint' => '4',
+            ],
             'jenis_kelas' => [
                 'type'           => 'ENUM',
                 'constraint'     => ['Daring', 'Luring'],

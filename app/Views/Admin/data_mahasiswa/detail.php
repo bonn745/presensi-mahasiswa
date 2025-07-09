@@ -14,13 +14,17 @@
                     <td><strong>Foto</strong></td>
                     <td>:</td>
                     <td>
-                        <img width="200px" src="<?= base_url('profile/' . $mahasiswa['foto']) ?>" alt="Foto Mahasiswa" class="img-thumbnail">
+                        <?php if (!empty($mahasiswa['foto'])) : ?>
+                            <img width="200px" src="<?= base_url('profile/' . $mahasiswa['foto']) ?>" alt="Foto Mahasiswa" class="img-thumbnail">
+                        <?php else : ?>
+                            Tidak ada foto.
+                        <?php endif; ?>
                     </td>
                 </tr>
                 <tr>
-                    <td><strong>NIM</strong></td>
+                    <td><strong>NPM</strong></td>
                     <td>:</td>
-                    <td><?= esc($mahasiswa['nim']) ?></td>
+                    <td><?= esc($mahasiswa['npm']) ?></td>
                 </tr>
                 <tr>
                     <td><strong>Nama Lengkap</strong></td>
