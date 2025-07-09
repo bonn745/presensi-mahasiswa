@@ -3,7 +3,7 @@
 <?= $this->section('content') ?>
 <div class="card col-md-6"> <!-- Menghapus mx-auto untuk menempatkan kartu di sebelah kiri -->
     <div class="card-body">
-        <form action="<?= base_url('mahasiswa/ketidakhadiran/store') ?>" method="POST" enctype="multipart/form-data">
+        <form action="<?= url_to('mahasiswa.matkul.store') ?>" method="POST" enctype="multipart/form-data">
             <?= csrf_field() ?>
             <input type="hidden" value="<?= session()->get('id_mahasiswa') ?>" name="id_mahasiswa">
             <?php if (isset($info)) : ?>
@@ -18,7 +18,7 @@
                         <option value="<?= $mtk['id'] ?>" <?= (isset(session()->getFlashdata('data')['matkul']) ? session()->getFlashdata('data')['matkul'] : '') == $mtk['id'] ? 'selected' : '' ?>><?= $mtk['matkul'] ?></option>
                     <?php endforeach; ?>
                 </select>
-                <div class="invalid-feedback"><?= session()->getFlashdata('errors')['matkul'] ?? '' ?></div>
+                <div class="invalid-feedback"><?= session()->getFlashdata('error') ?? '' ?></div>
             </div>
             <hr>
             <button type="submit" class="btn btn-primary">Simpan</button>

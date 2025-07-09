@@ -19,7 +19,7 @@ class Home extends BaseController
         $matkulModel = new MatkulModel();
         $mahasiswaModel = new MahasiswaModel();
         $id_mhs = session()->get('id_mahasiswa');
-        $matkul = $matkul_mhs->find($id_mhs);
+        $matkul = $matkul_mhs->where('mhs_id',$id_mhs)->findAll();
         $mhs = $mahasiswaModel->find($id_mhs);
 
         $data = [

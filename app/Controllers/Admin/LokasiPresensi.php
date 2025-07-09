@@ -67,18 +67,6 @@ class LokasiPresensi extends BaseController
                     'required' => "Tipe Lokasi Wajib Diisi"
                 ],
             ],
-            'jadwal_kuliah' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => "Jadwal Kerja Wajib Diisi"
-                ],
-            ],
-            'matkul' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => "Matkul Wajib Diisi"
-                ],
-            ],
             'latitude' => [
                 'rules' => 'required',
                 'errors' => [
@@ -96,18 +84,6 @@ class LokasiPresensi extends BaseController
                 'errors' => [
                     'required' => "Radius Wajib Diisi",
                     'numeric' => "Radius harus berupa angka"
-                ],
-            ],
-            'jam_masuk' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => "Jam Masuk Wajib Diisi"
-                ],
-            ],
-            'jam_pulang' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => "Jam Pulang Wajib Diisi"
                 ],
             ],
         ];
@@ -128,14 +104,9 @@ class LokasiPresensi extends BaseController
             'nama_ruangan' => $this->request->getPost('nama_ruangan'),
             'alamat_lokasi' => $this->request->getPost('alamat_lokasi'),
             'tipe_lokasi' => $this->request->getPost('tipe_lokasi'),
-            'jadwal_kuliah' => $this->request->getPost('jadwal_kuliah'),
-            'matkul' => $this->request->getPost('matkul'),
             'latitude' => $this->request->getPost('latitude'),
             'longitude' => $this->request->getPost('longitude'),
             'radius' => $this->request->getPost('radius'),
-            'zona_waktu' => $this->request->getPost('zona_waktu'),
-            'jam_masuk' => $this->request->getPost('jam_masuk'),
-            'jam_pulang' => $this->request->getPost('jam_pulang')
         ]);
 
         return redirect()->to('/admin/lokasi_presensi')->with('success', 'Lokasi berhasil ditambahkan.'); // Redirect setelah menyimpan
@@ -178,18 +149,6 @@ class LokasiPresensi extends BaseController
                     'required' => "Tipe Lokasi Wajib Diisi"
                 ],
             ],
-            'jadwal_kuliah' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => "Jadwal Kerja Wajib Diisi"
-                ],
-            ],
-            'matkul' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => "Matkul Wajib Diisi"
-                ],
-            ],
             'latitude' => [
                 'rules' => 'required',
                 'errors' => [
@@ -209,18 +168,6 @@ class LokasiPresensi extends BaseController
                     'numeric' => "Radius harus berupa angka"
                 ],
             ],
-            'jam_masuk' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => "Jam Masuk Wajib Diisi"
-                ],
-            ],
-            'jam_pulang' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => "Jam Pulang Wajib Diisi"
-                ],
-            ],
         ];
 
         if (!$this->validate($rules)) {
@@ -238,14 +185,9 @@ class LokasiPresensi extends BaseController
                 'nama_ruangan' => $this->request->getPost('nama_ruangan'),
                 'alamat_lokasi' => $this->request->getPost('alamat_lokasi'),
                 'tipe_lokasi' => $this->request->getPost('tipe_lokasi'),
-                'jadwal_kuliah' => $this->request->getPost('jadwal_kuliah'),
-                'matkul' => $this->request->getPost('matkul'),
                 'latitude' => $this->request->getPost('latitude'),
                 'longitude' => $this->request->getPost('longitude'),
                 'radius' => $this->request->getPost('radius'),
-                'zona_waktu' => $this->request->getPost('zona_waktu'),
-                'jam_masuk' => $this->request->getPost('jam_masuk'),
-                'jam_pulang' => $this->request->getPost('jam_pulang')
             ]);
 
             session()->setFlashData('success', 'Data Lokasi Berhasil di Update');

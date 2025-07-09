@@ -12,10 +12,12 @@
 
             <div class="mb-3">
                 <label for="ruangan" class="form-label">Ruangan</label>
-                <input type="number" class="form-control" id="ruangan" name="ruangan" value="<?= old('ruangan') ?>" required>
-                <?php if (isset($errors['ruangan'])): ?>
-                    <div class="text-danger"><?= $errors['ruangan'] ?></div>
-                <?php endif; ?>
+                <select id="ruangan" name="ruangan" class="form-control">
+                    <option value="" selected disabled>-- Pilih Ruangan --</option>
+                    <?php foreach ($ruangan as $r): ?>
+                        <option value="<?= $r['id'] ?>"><?= $r['nama_ruangan'].' - '.$r['tipe_lokasi'].' - '.$r['alamat_lokasi'] ?></option>
+                    <?php endforeach; ?>
+                </select>
             </div>
 
             <div class="mb-3">

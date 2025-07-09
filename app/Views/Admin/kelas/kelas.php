@@ -29,7 +29,11 @@
                         <td><?= $no++ ?></td>
                         <td align="left"><?= $kelas_item['matkul'].'<br>('.$kelas_item['nama_dosen'].')' ?> <!-- Bisa diubah untuk nama mata kuliah jika perlu --></td>
                         <td><?= $kelas_item['hari'] ?></td>
-                        <td><?= $kelas_item['ruangan'] ?></td>
+                        <td>
+                            <?= 'Ruangan '.$kelas_item['nama_ruangan'] ?><br>
+                            <?= $kelas_item['tipe_lokasi'] ?><br>
+                            <?= $kelas_item['alamat_lokasi'] ?>
+                        </td>
                         <td style="width: 1%; white-space:nowrap;"><?= date('H:i',strtotime($kelas_item['jam_masuk'])).'-'.date('H:i', strtotime($kelas_item['jam_pulang'])).'<br>('.$kelas_item['jenis_kelas'].')' ?></td>
                         <td align="left"><?= $kelas_item['nama_prodi'] ?></td>
                         <td>

@@ -27,14 +27,6 @@ class Lokasipresensi extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => '255',
             ],
-            'jadwal_kuliah' => [
-                'type' => 'VARCHAR',
-                'constraint' => '20',
-            ],
-            'matkul' => [
-                'type' => 'VARCHAR',
-                'constraint' => '255',
-            ],
             'latitude' => [
                 'type' => 'VARCHAR',
                 'constraint' => '50',
@@ -47,18 +39,6 @@ class Lokasipresensi extends Migration
                 'type' => 'INT',
                 'constraint' => 11,
             ],
-            'zona_waktu' => [
-                'type' => 'VARCHAR',
-                'constraint' => '4',
-            ],
-            'jam_masuk' => [
-                'type' => 'TIME',
-            ],
-            'jam_pulang' => [
-                'type' => 'TIME',
-            ],
-
-
         ]);
         $this->forge->addKey('id', true);
         $this->forge->createTable('lokasi_presensi');

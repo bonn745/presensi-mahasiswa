@@ -42,16 +42,6 @@
                             <td>:</td>
                             <td><?= esc($lokasi_presensi['radius']) ?> meter</td>
                         </tr>
-                        <tr>
-                            <td><strong>Jam Masuk</strong></td>
-                            <td>:</td>
-                            <td><?= esc($lokasi_presensi['jam_masuk']) ?></td>
-                        </tr>
-                        <tr>
-                            <td><strong>Jam Pulang</strong></td>
-                            <td>:</td>
-                            <td><?= esc($lokasi_presensi['jam_pulang']) ?></td>
-                        </tr>
                     </tbody>
                 </table>
             </div>

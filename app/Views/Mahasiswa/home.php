@@ -773,8 +773,17 @@
     <i class="fas fa-circle-notch fa-2x"></i>
     <p>Memuat...</p>
 </div>
-
-<script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="application/javascript">
+    <?php if (session()->getFlashdata('message')) : ?>
+        Swal.fire({
+            icon: "success",
+            title: "berhasil!",
+            text: "<?= session()->getFlashdata('message') ?>",
+            showConfirmButton: false,
+            timer: 2000
+        });
+    <?php endif; ?>
     // Fungsi untuk mengaktifkan GPS akurasi tinggi
     function enableHighAccuracy() {
         console.log('Memulai pengambilan lokasi...');
