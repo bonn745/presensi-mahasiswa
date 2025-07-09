@@ -8,13 +8,13 @@ class MahasiswaModel extends Model
 {
     protected $table            = 'mahasiswa';
     protected $allowedFields    = [
-        'nim',
+        'npm',
         'nama',
         'jenis_kelamin',
         'alamat',
         'no_handphone',
         'semester',
-        'jurusan',
+        'prodi',
         'foto',
         'lokasi_presensi',
         'nama_ortu',

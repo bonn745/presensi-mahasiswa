@@ -4,6 +4,7 @@ namespace App\Controllers\Mahasiswa;
 
 use App\Controllers\BaseController;
 use App\Models\MahasiswaModel;
+use App\Models\ProdiModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Data extends BaseController
@@ -16,10 +17,13 @@ class Data extends BaseController
     public function index($id)
     {
         $mahasiswaModel = new MahasiswaModel();
+        $prodiModel = new ProdiModel();
         $mahasiswa = $mahasiswaModel->find($id);
+        $prodi = $prodiModel->findAll();
         $data = [
             'title' => $mahasiswa['nama'],
             'mahasiswa' => $mahasiswa,
+            'prodi' => $prodi,
             'validation' => \Config\Services::validation(),
         ];
 
@@ -56,10 +60,10 @@ class Data extends BaseController
                     'required' => "Semester Wajib Diisi"
                 ],
             ],
-            'jurusan' => [
+            'prodi' => [
                 'rules' => 'required',
                 'errors' => [
-                    'required' => "Jurusan Wajib Diisi"
+                    'required' => "Program studi Wajib Diisi"
                 ],
             ],
             'foto' => [
@@ -109,7 +113,7 @@ class Data extends BaseController
             'alamat' => $this->request->getPost('alamat'),
             'no_handphone' => $this->request->getPost('no_handphone'),
             'semester' => $this->request->getPost('semester'),
-            'jurusan' => $this->request->getPost('jurusan'),
+            'prodi' => $this->request->getPost('prodi'),
             'foto' => $nama_foto,
             'nama_ortu' => $this->request->getPost('nama_ortu'),
             'jk_ortu' => $this->request->getPost('jenis_kelamin_ortu'),

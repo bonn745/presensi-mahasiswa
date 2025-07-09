@@ -88,14 +88,14 @@ use App\Database\Migrations\Jabatan;
                 <hr>
                 <div class="d-flex justify-content-center">
                     <form action="<?= url_to('mahasiswa.lengkapi.store') ?>" method="post" enctype="multipart/form-data">
-                            <input type="hidden" name="id" value="<?= $mahasiswa['id'] ?>">
+                        <input type="hidden" name="id" value="<?= $mahasiswa['id'] ?>">
                         <!-- Jenis Kelamin -->
                         <div class="input-style-1">
                             <label for="jenis_kelamin">Jenis Kelamin</label>
                             <select id="jenis_kelamin" class="form-control<?= isset(session()->getFlashdata('errors')['jenis_kelamin']) ? ' is-invalid' : '' ?>" name="jenis_kelamin">
                                 <option value="" disabled <?= isset(session()->getFlashdata('data')['jenis_kelamin']) ? '' : 'selected' ?>>--Pilih Jenis Kelamin--</option>
                                 <option value="Laki-laki" <?= (isset(session()->getFlashdata('data')['jenis_kelamin']) ? session()->getFlashdata('data')['jenis_kelamin'] : $mahasiswa['jenis_kelamin']) == 'Laki-laki' ? 'selected' : '' ?>>Laki-laki</option>
-                                <option value="Perempuan" <?= (isset(session()->getFlashdata('data')['jenis_kelamin']) ? session()->getFlashdata('data')['jenis_kelamin'] : $mahasiswa['jenis_kelamin'] ) == 'Perempuan' ? 'selected' : '' ?>>Perempuan</option>
+                                <option value="Perempuan" <?= (isset(session()->getFlashdata('data')['jenis_kelamin']) ? session()->getFlashdata('data')['jenis_kelamin'] : $mahasiswa['jenis_kelamin']) == 'Perempuan' ? 'selected' : '' ?>>Perempuan</option>
                             </select>
                             <div class="invalid-feedback"><?= session()->getFlashdata('errors')['jenis_kelamin'] ?? '' ?></div>
                         </div>
@@ -120,18 +120,21 @@ use App\Database\Migrations\Jabatan;
                             <select id="semester" name="semester" class="form-control<?= isset(session()->getFlashdata('errors')['semester']) ? ' is-invalid' : '' ?>">
                                 <option value="" disabled <?= isset(session()->getFlashdata('data')['semester']) ? '' : 'selected' ?>>-- Pilih Semester --</option>
                                 <?php for ($i = 1; $i <= 8; $i++): ?>
-                                    <option value="Semester <?= $i ?>" <?= (isset(session()->getFlashdata('data')['semester']) ? session()->getFlashdata('data')['semester'] : $mahasiswa['semester'] ) == "Semester $i" ? 'selected' : '' ?>>Semester <?= $i ?></option>
+                                    <option value="Semester <?= $i ?>" <?= (isset(session()->getFlashdata('data')['semester']) ? session()->getFlashdata('data')['semester'] : $mahasiswa['semester']) == "Semester $i" ? 'selected' : '' ?>>Semester <?= $i ?></option>
                                 <?php endfor; ?>
                             </select>
                             <div class="invalid-feedback"><?= session()->getFlashdata('errors')['semester'] ?? '' ?></div>
                         </div>
                         <!-- Jurusan -->
                         <div class="input-style-1">
-                            <label for="jurusan">Jurusan</label>
-                            <input id="jurusan" type="text" class="form-control<?= isset(session()->getFlashdata('errors')['jurusan']) ? ' is-invalid' : '' ?>"
-                                name="jurusan" placeholder="Jurusan"
-                                value="<?= isset(session()->getFlashdata('data')['jurusan']) ? session()->getFlashdata('data')['jurusan'] : $mahasiswa['jurusan']  ?>" />
-                            <div class="invalid-feedback"><?= session()->getFlashdata('errors')['jurusan'] ?? '' ?></div>
+                            <label for="prodi">Program Studi</label>
+                            <select id="prodi" name="prodi" class="form-control<?= isset(session()->getFlashdata('errors')['prodi']) ? ' is-invalid' : '' ?>">
+                                <option value="" disabled <?= isset(session()->getFlashdata('data')['prodi']) ? '' : 'selected' ?>>-- Pilih Semester --</option>
+                                <?php foreach($prodi as $prd): ?>
+                                    <option value="<?= $prd['id'] ?>" <?= (isset(session()->getFlashdata('data')['prodi']) ? session()->getFlashdata('data')['prodi'] : $mahasiswa['prodi']) == $prd['id'] ? 'selected' : '' ?>><?= $prd['nama'] ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <div class="invalid-feedback"><?= session()->getFlashdata('errors')['prodi'] ?? '' ?></div>
                         </div>
                         <!-- Foto -->
                         <div class="input-style-1 mb-4">

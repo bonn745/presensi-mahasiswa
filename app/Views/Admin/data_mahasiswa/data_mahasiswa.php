@@ -18,7 +18,7 @@
             <thead class="table-primary">
                 <tr>
                     <th style="width: 5%;">No</th>
-                    <th style="width: 10%;">NIM</th>
+                    <th style="width: 10%;">NPM</th>
                     <th style="width: 15%;">Nama Lengkap</th>
                     <th style="width: 15%;">Jenis Kelamin</th>
                     <th style="width: 10%;">Semester</th>
@@ -34,11 +34,11 @@
                 foreach ($mahasiswa as $mhs) : ?>
                     <tr>
                         <td><?= $no++ ?></td>
-                        <td><?= $mhs['nim'] ?></td>
+                        <td><?= $mhs['npm'] ?></td>
                         <td><?= $mhs['nama'] ?></td>
                         <td><?= $mhs['jenis_kelamin'] ?></td>
                         <td><?= $mhs['semester'] ?></td>
-                        <td><?= $mhs['jurusan'] ?></td>
+                        <td><?= $mhs['prodi'] ?></td>
                         <td>
                             <?php if (!empty($mhs['foto'])) : ?>
                                 <img src="<?= base_url('profile/' . $mhs['foto']) ?>"

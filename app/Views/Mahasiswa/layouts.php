@@ -27,6 +27,8 @@
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
         crossorigin="" />
 
+    <?= $this->renderSection('styles') ?>
+
     <!-- ========== leaflet js ========= -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
@@ -306,6 +308,9 @@
 
     <!-- SweetAlert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <?= $this->renderSection('scripts') ?>
+
     <script>
         //datatables
         $(document).ready(function() {
