@@ -70,7 +70,7 @@
             <div class="input-style-1">
                 <label for="jurusan">Program Studi</label>
                 <input id="jurusan" type="text" class="form-control<?= ($validation->hasError('jurusan')) ? ' is-invalid' : '' ?>"
-                    name="jurusan" placeholder="Jurusan"
+                    name="jurusan" placeholder="Program Studi"
                     value="<?= set_value('jurusan', $mahasiswa['jurusan'] ?? '') ?>" />
                 <div class="invalid-feedback"><?= $validation->getError('jurusan') ?></div>
             </div>

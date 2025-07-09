@@ -34,7 +34,7 @@
                         <td><?= $dsn['no_hp'] ?></td>
                         <td><?= $dsn['alamat'] ?></td>
                         <td>
-                            <button class="btn btn-primary" type="button" id="dosen-<?= $dsn['id'] ?>" data-id="<?= $dsn['id'] ?>" onclick="refreshJadwal(<?= $dsn['id'] ?>,'<?= url_to('admin.dosen.jadwal', $dsn['id']) ?>')">
+                            <button class="btn btn-primary" type="button" id="dosen-<?= $dsn['id'] ?>" data-id="<?= $dsn['id'] ?>" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="refreshJadwal(<?= $dsn['id'] ?>,'<?= url_to('admin.dosen.jadwal', $dsn['id']) ?>')">
                                 Lihat
                             </button>
                         </td>
@@ -57,41 +57,58 @@
         </table>
     </div>
 
-    <div id="display-jadwal" class="table-responsive mt-5 d-none">
-        <div id="jadwal-dosen" class="fs-5 text-dark text-center">
-            Jadwal
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="display-jadwal" class="table-responsive mt-5 d-none">
+                        <div id="jadwal-dosen" class="fs-5 text-dark text-center text-uppercase fw-bold">
+                            Jadwal
+                        </div>
+                        <table width="100%" class="table table-striped table-bordered text-center" id="jadwal-datatable">
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Hari</th>
+                                    <th>Mata Kuliah</th>
+                                    <th>Ruangan</th>
+                                    <th>Jam Masuk</th>
+                                    <th>Jam Pulang</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (!empty($jadwal)) : ?>
+                                    <?php $no = 1;
+                                    foreach ($jadwal as $row) : ?>
+                                        <tr>
+                                            <td><?= $no++ ?></td>
+                                            <td><?= $row['hari'] ?></td>
+                                            <td><?= $row['nama_matkul'] ?></td>
+                                            <td><?= $row['ruangan'] ?></td>
+                                            <td><?= $row['jam_masuk'] ?></td>
+                                            <td><?= $row['jam_pulang'] ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else : ?>
+                                    <tr>
+                                        <td colspan="6" class="text-center">Jadwal tidak ditemukan</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
         </div>
-        <table class="table table-striped table-bordered text-center" id="jadwal-datatable">
-            <thead class="table-primary">
-                <tr>
-                    <th>No</th>
-                    <th>Hari</th>
-                    <th>Mata Kuliah</th>
-                    <th>Ruangan</th>
-                    <th>Jam Masuk</th>
-                    <th>Jam Pulang</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (!empty($jadwal)) : ?>
-                    <?php $no = 1;
-                    foreach ($jadwal as $row) : ?>
-                        <tr>
-                            <td><?= $no++ ?></td>
-                            <td><?= $row['hari'] ?></td>
-                            <td><?= $row['nama_matkul'] ?></td>
-                            <td><?= $row['ruangan'] ?></td>
-                            <td><?= $row['jam_masuk'] ?></td>
-                            <td><?= $row['jam_pulang'] ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php else : ?>
-                    <tr>
-                        <td colspan="6" class="text-center">Jadwal tidak ditemukan</td>
-                    </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
     </div>
 </div>
 
