@@ -114,10 +114,10 @@ use App\Database\Migrations\Jabatan;
                         <span class="text">Master Data</span>
                     </a>
                     <ul id="master-data" class="collapse dropdown-nav">
-                        <li><a href="<?= base_url('admin/matkul') ?>">Data Matkul</a></li>
-                        <li><a href="<?= base_url('admin/kelas') ?>">Data Kelas</a></li>
                         <li><a href="<?= base_url('admin/prodi') ?>">Data Prodi</a></li>
+                        <li><a href="<?= base_url('admin/matkul') ?>">Data Matkul</a></li>
                         <li><a href="<?= base_url('admin/lokasi_presensi') ?>">Lokasi Presensi</a></li>
+                        <li><a href="<?= base_url('admin/kelas') ?>">Data Kelas</a></li>
                     </ul>
                 </li>
 
