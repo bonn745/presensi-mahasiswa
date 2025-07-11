@@ -21,13 +21,10 @@ class Ketidakhadiran extends Migration
                 'unsigned'       => true,
             ],
             'keterangan' => [
-                'type' => 'VARCHAR',
-                'constraint' => '255',
+                'type' => 'ENUM',
+                'constraint' => ['Izin', 'Sakit'],
             ],
-            'tanggal_mulai' => [
-                'type' => 'DATE',
-            ],
-            'tanggal_selesai' => [
+            'tanggal' => [
                 'type' => 'DATE',
             ],
             'deskripsi' => [
@@ -42,7 +39,10 @@ class Ketidakhadiran extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => '20',
             ],
-
+            'id_matkul' => [
+                'type' => 'INT',
+                'constraint' => '11',
+            ],
 
         ]);
         $this->forge->addKey('id', true);

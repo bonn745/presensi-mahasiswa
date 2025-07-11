@@ -13,8 +13,8 @@ class KetidakhadiranModel extends Model
     protected $allowedFields    = [
         'id_mahasiswa',
         'keterangan',
-        'tanggal_mulai',
-        'tanggal_selesai',
+        'tanggal',
+        'id_matkul',
         'deskripsi',
         'file',
         'status_pengajuan'

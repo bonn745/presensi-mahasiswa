@@ -16,35 +16,30 @@ Carbon::setLocale('id');
     </div>
 
     <div class="table-responsive">
-        <table class="table table-striped table-bordered text-center" id="datatables">
+        <table class="table table-striped table-bordered text-center"  <?php if ($ketidakhadiran) : ?> id="datatables" <?php endif; ?>>
             <thead class="table-primary">
                 <tr>
                     <th style="width: 5%;">No</th>
-                    <th style="width: 20%;">Periode</th>
-                    <th style="width: 10%;">Durasi</th>
+                    <th style="width: 20%;">Tanggal</th>
+                    <th style="width: 20%;">Mata Kuliah</th>
                     <th style="width: 10%;">Keterangan</th>
                     <th style="width: 20%;">Deskripsi</th>
                     <th style="width: 15%;">File</th>
                     <th style="width: 10%;">Status</th>
-                    <th style="width: 10%;">Aksi</th>
                 </tr>
             </thead>
-
-            <?php if ($ketidakhadiran) : ?>
-                <tbody>
+            <tbody>
+                <?php if ($ketidakhadiran) : ?>
                     <?php $no = 1;
                     foreach ($ketidakhadiran as $row) :
-                        $tanggal_mulai = Carbon::parse($row['tanggal_mulai']);
-                        $tanggal_selesai = Carbon::parse($row['tanggal_selesai']);
-                        $durasi = $tanggal_mulai->diffInDays($tanggal_selesai) + 1; // +1 karena termasuk hari pertama
+                        $tanggal = Carbon::parse($row['tanggal']);
                     ?>
                         <tr>
                             <td><?= $no++ ?></td>
                             <td>
-                                <?= $tanggal_mulai->translatedFormat('d F Y') ?> -
-                                <?= $tanggal_selesai->translatedFormat('d F Y') ?>
+                                <?= $tanggal->translatedFormat('l, d F Y') ?>
                             </td>
-                            <td><?= $durasi ?> hari</td>
+                            <td><?= ucfirst($row['matkul']) ?></td>
                             <td><?= ucfirst($row['keterangan']) ?></td>
                             <td><?= $row['deskripsi'] ?></td>
                             <td>
@@ -74,30 +69,15 @@ Carbon::setLocale('id');
                                     <span class="badge bg-secondary"><?= $row['status_pengajuan'] ?></span>
                                 <?php endif; ?>
                             </td>
-
-                            <td class="text-center">
-                                <?php if ($row['status_pengajuan'] === 'Pending') : ?>
-                                    <div class="d-flex justify-content-center">
-                                        <a href="<?= base_url('mahasiswa/ketidakhadiran/edit/' . $row['id']) ?>"
-                                            class="badge bg-warning text-dark text-decoration-none"
-                                            title="Edit Pengajuan">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </a>
-                                    </div>
-                                <?php else : ?>
-                                    <span class="badge bg-secondary"><i class="fas fa-lock"></i> Tidak tersedia</span>
-                                <?php endif; ?>
-                            </td>
                         </tr>
                     <?php endforeach; ?>
-                </tbody>
-            <?php else : ?>
-                <tbody>
+                <?php else : ?>
                     <tr>
-                        <td colspan="7">Data Masih Kosong</td>
+                        <td></td>
+                        <td colspan="6">Data Masih Kosong</td>
                     </tr>
-                </tbody>
-            <?php endif; ?>
+                <?php endif; ?>
+            </tbody>
         </table>
     </div>
 </div>

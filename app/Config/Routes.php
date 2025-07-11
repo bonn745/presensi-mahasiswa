@@ -85,8 +85,9 @@ $routes->post('mahasiswa/presensi_keluar_aksi/(:segment)', 'Mahasiswa\Home::pres
 
 $routes->get('mahasiswa/rekap_presensi', 'Mahasiswa\RekapPresensi::index', ['filter' => 'mahasiswaFilter']);
 
-$routes->get('mahasiswa/ketidakhadiran', 'Mahasiswa\Ketidakhadiran::index', ['filter' => 'mahasiswaFilter']);
+$routes->get('mahasiswa/ketidakhadiran', 'Mahasiswa\Ketidakhadiran::index', ['filter' => 'mahasiswaFilter', 'as' => 'mahasiswa.ketidakhadiran.index']);
 $routes->get('mahasiswa/ketidakhadiran/create', 'Mahasiswa\Ketidakhadiran::create', ['filter' => 'mahasiswaFilter']);
+$routes->post('mahasiswa/ketidakhadiran/matkul', 'Mahasiswa\Ketidakhadiran::getMatkul', ['filter' => 'mahasiswaFilter']);
 $routes->post('mahasiswa/ketidakhadiran/store', 'Mahasiswa\Ketidakhadiran::store', ['filter' => 'mahasiswaFilter']);
 $routes->get('mahasiswa/ketidakhadiran/edit/(:segment)', 'Mahasiswa\Ketidakhadiran::edit/$1', ['filter' => 'mahasiswaFilter']);
 $routes->post('mahasiswa/ketidakhadiran/update/(:segment)', 'Mahasiswa\Ketidakhadiran::update/$1', ['filter' => 'mahasiswaFilter']);
