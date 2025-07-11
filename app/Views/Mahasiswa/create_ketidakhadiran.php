@@ -21,19 +21,23 @@
                 <div class="col-md-6">
                     <div class="input-style-1">
                         <label for="tanggal_mulai">Tanggal Mulai</label>
-                        <input type="date" class="form-control<?= ($validation->hasError('tanggal_mulai')) ? ' is-invalid' : '' ?>"
-                            name="tanggal_mulai" value="<?= set_value('tanggal_mulai', $mahasiswa['tanggal_mulai'] ?? '') ?>" />
+                        <input id="tanggal_mulai" type="date" class="form-control<?= ($validation->hasError('tanggal_mulai')) ? ' is-invalid' : '' ?>"
+                            name="tanggal_mulai" value="<?= set_value('tanggal_mulai', $mahasiswa['tanggal_mulai'] ?? '') ?>"/>
                         <div class="invalid-feedback"><?= $validation->getError('tanggal_mulai') ?></div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="input-style-1">
-                        <label for="tanggal_selesai">Tanggal Selesai</label>
-                        <input type="date" class="form-control<?= ($validation->hasError('tanggal_selesai')) ? ' is-invalid' : '' ?>"
+                        <label for="tanggal_selesai">Tanggal Selesai (optional)</label>
+                        <input id="tanggal_selesai" type="date" class="form-control<?= ($validation->hasError('tanggal_selesai')) ? ' is-invalid' : '' ?>"
                             name="tanggal_selesai" value="<?= set_value('tanggal_selesai', $mahasiswa['tanggal_selesai'] ?? '') ?>" />
                         <div class="invalid-feedback"><?= $validation->getError('tanggal_selesai') ?></div>
                     </div>
                 </div>
+            </div>
+
+            <div id="data-mata-kuliah" class="d-none">
+
             </div>
 
             <div class="input-style-1">
@@ -45,7 +49,7 @@
 
             <div class="input-style-1">
                 <label for="file">File</label>
-                <input type="file" class="form-control<?= ($validation->hasError('file')) ? ' is-invalid' : '' ?>"
+                <input type="file" accept="application/pdf, image/png, image/gif, image/jpeg" class="form-control<?= ($validation->hasError('file')) ? ' is-invalid' : '' ?>"
                     name="file" value="<?= set_value('file', $mahasiswa['file'] ?? '') ?>" />
                 <div class="invalid-feedback"><?= $validation->getError('file') ?></div>
             </div>
@@ -54,4 +58,19 @@
         </form>
     </div>
 </div>
+<?= $this->endSection() ?>
+<?= $this->section('scripts') ?>
+<script src="<?= base_url('assets/js/mhs.js') ?>"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script type="application/javascript">
+    <?php if (session()->getFlashdata('error')) : ?>
+        Swal.fire({
+            icon: "error",
+            title: "Import Gagal!",
+            text: "<?= session()->getFlashdata('error') ?>",
+            showConfirmButton: false,
+            timer: 2000
+        });
+    <?php endif; ?>
+</script>
 <?= $this->endSection() ?>
