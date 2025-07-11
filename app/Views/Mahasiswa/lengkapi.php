@@ -129,7 +129,7 @@ use App\Database\Migrations\Jabatan;
                         <div class="input-style-1">
                             <label for="prodi">Program Studi</label>
                             <select id="prodi" name="prodi" class="form-control<?= isset(session()->getFlashdata('errors')['prodi']) ? ' is-invalid' : '' ?>">
-                                <option value="" disabled <?= isset(session()->getFlashdata('data')['prodi']) ? '' : 'selected' ?>>-- Pilih Semester --</option>
+                                <option value="" disabled <?= isset(session()->getFlashdata('data')['prodi']) ? '' : 'selected' ?>>-- Pilih Program Studi --</option>
                                 <?php foreach($prodi as $prd): ?>
                                     <option value="<?= $prd['id'] ?>" <?= (isset(session()->getFlashdata('data')['prodi']) ? session()->getFlashdata('data')['prodi'] : $mahasiswa['prodi']) == $prd['id'] ? 'selected' : '' ?>><?= $prd['nama'] ?></option>
                                 <?php endforeach; ?>
