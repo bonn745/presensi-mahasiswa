@@ -5,31 +5,34 @@
     <div class="card-body">
         <form class="row g-3 mb-3">
             <div class="col-md-4">
-                <input type="date" class="form-control" name="filter_tanggal">
+                <div class="input-style-1">
+                    <select id="matkul" class="form-control" name="matkul">
+                        <option value="" disabled selected>-- Pilih Mata Kuliah--</option>
+                        <?php foreach ($data_matkul as $mtkl) : ?>
+                            <option value="<?= $mtkl['id'] ?>"><?= $mtkl['matkul'] ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
             </div>
             <div class="col-md-auto">
                 <button type="submit" class="btn btn-primary">Tampilkan</button>
             </div>
             <div class="col-md-auto">
-                <button type="submit" name="excel" class="btn btn-success">Export Excel</button>
+                <button type="submit" name="excel" class="btn btn-success">Export PDF</button>
             </div>
         </form>
 
+        <?php if(!empty($nama_matkul)) : ?>
         <p><strong>Menampilkan data:</strong>
-            <?php if ($tanggal) : ?>
-                <!-- Gunakan Carbon untuk memformat tanggal -->
-                <?= \Carbon\Carbon::parse($tanggal)->locale('id')->isoFormat('D MMMM YYYY') ?>
-            <?php else : ?>
-                <?= \Carbon\Carbon::now()->locale('id')->isoFormat('D MMMM YYYY') ?>
-            <?php endif; ?>
+        <?= $nama_matkul ?>
         </p>
+        <?php endif; ?>
 
         <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover text-center align-middle">
                 <thead class="table-primary">
                     <tr>
                         <th>No</th>
-                        <th>Nama Mahasiswa</th>
                         <th>Mata Kuliah</th>
                         <th>Tanggal</th>
                         <th>Jam Masuk</th>
@@ -44,6 +47,8 @@
                         <?php $no = 1; ?>
                         <?php foreach ($rekap_presensi as $rekap) : ?>
                             <?php
+                            $hari_presensi = Carbon\Carbon::createFromFormat('Y-m-d',$rekap['tanggal'])->locale('id')->translatedFormat('l');
+                            $hari_kelas = $rekap['kelas_hari'] ?? '';
                             $timestamp_jam_masuk = strtotime($rekap['jam_masuk']);
                             $timestamp_jam_keluar = strtotime($rekap['jam_keluar']);
                             $selisih = $timestamp_jam_keluar - $timestamp_jam_masuk;
@@ -62,7 +67,7 @@
                             $menit_cepat_pulang = 0;
                             $selisih_cepat_pulang = 0;
 
-                            if ($rekap['jam_keluar'] != '00:00:00' && $rekap['tanggal_keluar'] != null) {
+                            if ($rekap['jam_keluar'] != '00:00:00') {
                                 $jam_keluar_real = strtotime($rekap['jam_keluar']);
                                 $jam_pulang_kampus = strtotime($rekap['jam_pulang_kampus']);
 
@@ -72,14 +77,15 @@
                                     $menit_cepat_pulang = floor(($selisih_cepat_pulang % 3600) / 60);
                                 }
                             }
+
+                            if($hari_kelas == $hari_presensi) :
                             ?>
                             <tr>
                                 <td><?= $no++ ?></td>
-                                <td><?= $rekap['nama'] ?></td>
                                 <td><?= $rekap['nama_matkul'] ?></td>
-                                <td><?= \Carbon\Carbon::parse($rekap['tanggal_masuk'])->locale('id')->isoFormat('D MMMM YYYY') ?></td>
-                                <td><?= $rekap['jam_masuk'] ?></td>
-                                <td><?= $rekap['jam_keluar'] ?></td>
+                                <td><?= \Carbon\Carbon::parse($rekap['tanggal'])->locale('id')->translatedFormat('l, j F Y') ?></td>
+                                <td><?= date('H:i',strtotime($rekap['jam_masuk']    )) ?></td>
+                                <td><?= date('H:i', strtotime($rekap['jam_keluar'])) ?></td>
                                 <td>
                                     <?php if ($rekap['jam_keluar'] == '00:00:00') : ?>
                                         0 Jam 0 Menit
@@ -97,7 +103,7 @@
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <?php if ($rekap['jam_keluar'] == '00:00:00' || $rekap['tanggal_keluar'] == null) : ?>
+                                    <?php if ($rekap['jam_keluar'] == '00:00:00') : ?>
                                         <span class="badge bg-warning">Menunggu Presensi Keluar</span>
                                     <?php elseif ($selisih_cepat_pulang > 0) : ?>
                                         <span class="badge bg-warning">
@@ -108,7 +114,7 @@
                                     <?php endif; ?>
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
+                        <?php endif; endforeach; ?>
                     <?php else : ?>
                         <tr>
                             <td colspan="9" class="text-muted">Data Tidak Tersedia</td>

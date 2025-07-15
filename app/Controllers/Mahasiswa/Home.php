@@ -10,6 +10,7 @@ use App\Models\PresensiModel;
 use App\Models\KelasModel;
 use App\Models\MatkulMahasiswa;
 use App\Models\MatkulModel;
+use Carbon\Carbon;
 
 class Home extends BaseController
 {
@@ -19,17 +20,23 @@ class Home extends BaseController
         $matkulModel = new MatkulModel();
         $mahasiswaModel = new MahasiswaModel();
         $id_mhs = session()->get('id_mahasiswa');
-        $matkul = $matkul_mhs->where('mhs_id',$id_mhs)->findAll();
+        $matkul = $matkul_mhs->where('mhs_id', $id_mhs)->findAll();
         $mhs = $mahasiswaModel->find($id_mhs);
 
         $data = [
             'title' => 'Pilih Mata Kuliah',
-            'matkul' => $matkulModel->where('prodi_id',$mhs['prodi'])->findAll(),
+            'matkul' => $matkulModel->where('prodi_id', $mhs['prodi'])->findAll(),
             'info' => 'Anda belum memilih Mata Kuliah, silakan <strong>Pilih</strong> dan <strong>Tambahkan</strong> Mata Kuliah untuk melanjutkan.',
             'validation' => \Config\Services::validation(),
         ];
 
-        if(empty($matkul)) return view('Mahasiswa/pilih_matkul', $data);
+        if (empty($matkul)) return view('Mahasiswa/pilih_matkul', $data);
+
+        $matkulIds = [];
+
+        foreach ($matkul as $mtkl) {
+            $matkulIds[] = $mtkl['matkul_id'];
+        }
 
         date_default_timezone_set('Asia/Jakarta'); // Pastikan zona waktu sesuai
 
@@ -52,18 +59,27 @@ class Home extends BaseController
         $kelas_list = $kelas_model->select('
             kelas.*, 
             matkul.matkul as nama_matkul,
-            matkul.dosen_pengampu
+            matkul.dosen_pengampu,
+            dosen.nama_dosen,
+            lokasi_presensi.nama_ruangan,
+            lokasi_presensi.tipe_lokasi,
+            lokasi_presensi.alamat_lokasi,
         ')
             ->join('matkul', 'matkul.id = kelas.id_matkul')
+            ->join('dosen', 'dosen.id = matkul.dosen_pengampu')
+            ->join('lokasi_presensi', 'lokasi_presensi.id = kelas.ruangan')
+            ->whereIn('id_matkul', $matkulIds)
             ->orderBy('kelas.jam_masuk', 'ASC')
             ->findAll();
 
         // Ambil presensi masuk hari ini dengan data lokasi lengkap
         $ambil_presensi_masuk = $presensi_model
-            ->select('presensi.*, lokasi_presensi.nama_ruangan, lokasi_presensi.latitude, lokasi_presensi.longitude, lokasi_presensi.radius')
-            ->join('lokasi_presensi', 'lokasi_presensi.id = presensi.id_lokasi_presensi')
+            ->select('presensi.*, lokasi_presensi.nama_ruangan, lokasi_presensi.latitude, lokasi_presensi.longitude, lokasi_presensi.radius, kelas.jenis_kelas')
+            ->join('lokasi_presensi', 'lokasi_presensi.id = presensi.id_lokasi_presensi', 'left')
+            ->join('kelas', 'kelas.id_matkul = presensi.id_matkul')
             ->where('presensi.id_mahasiswa', $id_mahasiswa)
             ->where('presensi.tanggal', date('Y-m-d'))
+            ->where('kelas.hari', Carbon::createFromFormat('Y-m-d',date('Y-m-d'))->locale('id')->translatedFormat('l'))
             ->orderBy('presensi.jam_masuk', 'DESC')
             ->first();
 
@@ -160,10 +176,16 @@ class Home extends BaseController
 
     public function presensi_masuk()
     {
-        $id_lokasi_presensi = $this->request->getPost('id_lokasi_presensi');
         $id_matkul = $this->request->getPost('id_matkul');
+        $jenis_kelas = $this->request->getPost('jenis_kelas');
 
-        if (!$id_lokasi_presensi) {
+        if ($jenis_kelas == 'Luring') {
+            $id_lokasi_presensi = $this->request->getPost('id_lokasi_presensi');
+        } else {
+            $id_lokasi_presensi = '0000';
+        }
+
+        if (empty($id_lokasi_presensi)) {
             session()->setFlashdata('gagal', 'Silakan pilih lokasi presensi.');
             return redirect()->to(base_url('mahasiswa/home'));
         }
@@ -173,32 +195,34 @@ class Home extends BaseController
             return redirect()->to(base_url('mahasiswa/home'));
         }
 
-        // Ambil data lokasi presensi yang dipilih
-        $lokasi_presensi_model = new LokasiPresensiModel();
-        $lokasi_presensi = $lokasi_presensi_model->find($id_lokasi_presensi);
-        if (!$lokasi_presensi) {
-            session()->setFlashdata('gagal', 'Lokasi presensi tidak ditemukan.');
-            return redirect()->to(base_url('mahasiswa/home'));
-        }
+        if ($jenis_kelas == 'Luring') {
+            // Ambil data lokasi presensi yang dipilih
+            $lokasi_presensi_model = new LokasiPresensiModel();
+            $lokasi_presensi = $lokasi_presensi_model->find($id_lokasi_presensi);
+            if (!$lokasi_presensi) {
+                session()->setFlashdata('gagal', 'Lokasi presensi tidak ditemukan.');
+                return redirect()->to(base_url('mahasiswa/home'));
+            }
 
-        $latitude_mahasiswa = (float) $this->request->getPost('latitude_mahasiswa');
-        $longitude_mahasiswa = (float) $this->request->getPost('longitude_mahasiswa');
-        $latitude_kampus = (float) $lokasi_presensi['latitude'];
-        $longitude_kampus = (float) $lokasi_presensi['longitude'];
-        $radius = (int) $lokasi_presensi['radius'];
+            $latitude_mahasiswa = (float) $this->request->getPost('latitude_mahasiswa');
+            $longitude_mahasiswa = (float) $this->request->getPost('longitude_mahasiswa');
+            $latitude_kampus = (float) $lokasi_presensi['latitude'];
+            $longitude_kampus = (float) $lokasi_presensi['longitude'];
+            $radius = (int) $lokasi_presensi['radius'];
 
-        // Cek apakah variabel berisi nilai
-        if (!$latitude_mahasiswa || !$longitude_mahasiswa || !$latitude_kampus || !$longitude_kampus || !$radius) {
-            session()->setFlashdata('gagal', 'Data lokasi tidak lengkap.');
-            return redirect()->to(base_url('mahasiswa/home'));
-        }
+            // Cek apakah variabel berisi nilai
+            if (!$latitude_mahasiswa || !$longitude_mahasiswa || !$latitude_kampus || !$longitude_kampus || !$radius) {
+                session()->setFlashdata('gagal', 'Data lokasi tidak lengkap.');
+                return redirect()->to(base_url('mahasiswa/home'));
+            }
 
-        // Hitung jarak
-        $jarak_meter = $this->hitungJarak($latitude_mahasiswa, $longitude_mahasiswa, $latitude_kampus, $longitude_kampus);
+            // Hitung jarak
+            $jarak_meter = $this->hitungJarak($latitude_mahasiswa, $longitude_mahasiswa, $latitude_kampus, $longitude_kampus);
 
-        if ($jarak_meter > $radius) {
-            session()->setFlashdata('gagal', 'Presensi Gagal, Lokasi Anda Berada di luar Radius Kampus.');
-            return redirect()->to(base_url('mahasiswa/home'));
+            if ($jarak_meter > $radius) {
+                session()->setFlashdata('gagal', 'Presensi Gagal, Lokasi Anda Berada di luar Radius Kampus.');
+                return redirect()->to(base_url('mahasiswa/home'));
+            }
         }
 
         $data = [
@@ -217,15 +241,27 @@ class Home extends BaseController
         $request = service('request');
 
         $id_mahasiswa = $request->getPost('id_mahasiswa');
-        $tanggal_masuk = $request->getPost('tanggal_masuk');
+        $tanggal_masuk = date('Y-m-d');
+
         $jam_masuk = $request->getPost('jam_masuk');
         $id_lokasi_presensi = $request->getPost('id_lokasi_presensi');
         $id_matkul = $request->getPost('id_matkul');
 
+        $pertemuanKe = 0;
+        $presensiModel = new PresensiModel();
+
+        $presensi = $presensiModel->where('id_matkul', $id_matkul)->orderBy('pertemuan_ke', 'DESC')->first();
+
+        if (!empty($presensi) && $presensi['tanggal'] == date('Y-m-d')) {
+            $pertemuanKe = $presensi->pertemuan_ke;
+        } else {
+            $pertemuanKe = $pertemuanKe + 1;
+        }
+
         // Debug log
         log_message('debug', 'Data presensi: ' . json_encode([
             'id_mahasiswa' => $id_mahasiswa,
-            'tanggal_masuk' => $tanggal_masuk,
+            'tanggal' => $tanggal_masuk,
             'jam_masuk' => $jam_masuk,
             'id_lokasi_presensi' => $id_lokasi_presensi,
             'id_matkul' => $id_matkul
@@ -263,11 +299,13 @@ class Home extends BaseController
             $presensiModel = new PresensiModel();
             $data = [
                 'id_mahasiswa'    => $id_mahasiswa,
-                'tanggal_masuk' => $tanggal_masuk,
+                'tanggal' => $tanggal_masuk,
                 'jam_masuk'     => $jam_masuk,
+                'jam_keluar'     => '00:00:00',
                 'foto_masuk'    => $namaFile,
                 'id_lokasi_presensi' => $id_lokasi_presensi,
-                'id_matkul' => $id_matkul
+                'id_matkul' => $id_matkul,
+                'pertemuan_ke' => $pertemuanKe
             ];
 
             // Debug log
@@ -287,10 +325,16 @@ class Home extends BaseController
 
     public function presensi_keluar($id)
     {
-        $id_lokasi_presensi = $this->request->getPost('id_lokasi_presensi');
         $id_matkul = $this->request->getPost('id_matkul');
+        $jenis_kelas = $this->request->getPost('jenis_kelas');
 
-        if (!$id_lokasi_presensi) {
+        if ($jenis_kelas == 'Luring') {
+            $id_lokasi_presensi = $this->request->getPost('id_lokasi_presensi');
+        } else {
+            $id_lokasi_presensi = '0000';
+        }
+
+        if (empty($id_lokasi_presensi)) {
             session()->setFlashdata('gagal', 'Silakan pilih lokasi presensi.');
             return redirect()->to(base_url('mahasiswa/home'));
         }
@@ -300,32 +344,34 @@ class Home extends BaseController
             return redirect()->to(base_url('mahasiswa/home'));
         }
 
-        // Ambil data lokasi presensi yang dipilih
-        $lokasi_presensi_model = new LokasiPresensiModel();
-        $lokasi_presensi = $lokasi_presensi_model->find($id_lokasi_presensi);
-        if (!$lokasi_presensi) {
-            session()->setFlashdata('gagal', 'Lokasi presensi tidak ditemukan.');
-            return redirect()->to(base_url('mahasiswa/home'));
-        }
+        if ($jenis_kelas == 'Luring') {
+            // Ambil data lokasi presensi yang dipilih
+            $lokasi_presensi_model = new LokasiPresensiModel();
+            $lokasi_presensi = $lokasi_presensi_model->find($id_lokasi_presensi);
+            if (!$lokasi_presensi) {
+                session()->setFlashdata('gagal', 'Lokasi presensi tidak ditemukan.');
+                return redirect()->to(base_url('mahasiswa/home'));
+            }
 
-        $latitude_mahasiswa = (float) $this->request->getPost('latitude_mahasiswa');
-        $longitude_mahasiswa = (float) $this->request->getPost('longitude_mahasiswa');
-        $latitude_kampus = (float) $lokasi_presensi['latitude'];
-        $longitude_kampus = (float) $lokasi_presensi['longitude'];
-        $radius = (int) $lokasi_presensi['radius'];
+            $latitude_mahasiswa = (float) $this->request->getPost('latitude_mahasiswa');
+            $longitude_mahasiswa = (float) $this->request->getPost('longitude_mahasiswa');
+            $latitude_kampus = (float) $lokasi_presensi['latitude'];
+            $longitude_kampus = (float) $lokasi_presensi['longitude'];
+            $radius = (int) $lokasi_presensi['radius'];
 
-        // Cek apakah variabel berisi nilai
-        if (!$latitude_mahasiswa || !$longitude_mahasiswa || !$latitude_kampus || !$longitude_kampus || !$radius) {
-            session()->setFlashdata('gagal', 'Data lokasi tidak lengkap.');
-            return redirect()->to(base_url('mahasiswa/home'));
-        }
+            // Cek apakah variabel berisi nilai
+            if (!$latitude_mahasiswa || !$longitude_mahasiswa || !$latitude_kampus || !$longitude_kampus || !$radius) {
+                session()->setFlashdata('gagal', 'Data lokasi tidak lengkap.');
+                return redirect()->to(base_url('mahasiswa/home'));
+            }
 
-        // Hitung jarak
-        $jarak_meter = $this->hitungJarak($latitude_mahasiswa, $longitude_mahasiswa, $latitude_kampus, $longitude_kampus);
+            // Hitung jarak
+            $jarak_meter = $this->hitungJarak($latitude_mahasiswa, $longitude_mahasiswa, $latitude_kampus, $longitude_kampus);
 
-        if ($jarak_meter > $radius) {
-            session()->setFlashdata('gagal', 'Presensi gagal, lokasi Anda berada di luar radius kantor.');
-            return redirect()->to(base_url('mahasiswa/home'));
+            if ($jarak_meter > $radius) {
+                session()->setFlashdata('gagal', 'Presensi gagal, lokasi Anda berada di luar radius kantor.');
+                return redirect()->to(base_url('mahasiswa/home'));
+            }
         }
 
         $data = [

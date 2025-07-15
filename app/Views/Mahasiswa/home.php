@@ -321,20 +321,22 @@
                                                 <div class="d-flex align-items-center">
                                                     <i class="fas fa-book text-primary me-2"></i>
                                                     <div>
-                                                        <strong><?= esc($kelas['nama_matkul']) ?></strong>
+                                                        <strong><?= esc($kelas['nama_matkul']." (".$kelas['jenis_kelas'].")") ?></strong>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <i class="fas fa-user-tie text-info me-2"></i>
-                                                    <?= esc($kelas['dosen_pengampu']) ?>
+                                                    <?= esc($kelas['nama_dosen']) ?>
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center">
                                                     <i class="fas fa-door-open text-success me-2"></i>
-                                                    <?= esc($kelas['ruangan']) ?>
+                                                    <?= esc($kelas['nama_ruangan']) ?><br>
+                                                    <?= esc($kelas['tipe_lokasi']) ?><br>
+                                                    <?= esc($kelas['alamat_lokasi']) ?>
                                                 </div>
                                             </td>
                                             <td>
@@ -436,7 +438,7 @@
                                                     ?>
                                                     <tr>
                                                         <td><?= $kelas_info ? esc($kelas_info['nama_matkul']) : 'Tidak diketahui' ?></td>
-                                                        <td><?= $kelas_info ? esc($kelas_info['ruangan']) : 'Tidak diketahui' ?></td>
+                                                        <td><?= $kelas_info ? esc($kelas_info['nama_ruangan'] . ' ' . $kelas_info['tipe_lokasi'] . ' ' . $kelas_info['alamat_lokasi']) : 'Tidak diketahui' ?></td>
                                                         <td>
                                                             <?php if ($presensi['jam_keluar'] == '00:00:00'): ?>
                                                                 <span class="badge bg-warning">
@@ -516,6 +518,8 @@
                                 $current_time = strtotime(date('H:i:s'));
                                 $available_locations = [];
                                 $ada_kelas_hari_ini = false;
+                                $jenis_kelas = 'Luring';
+                                $id_matkul = 0;
 
                                 foreach ($kelas_list as $kelas) {
                                     if ($kelas['hari'] === $hari_ini) {
@@ -526,13 +530,20 @@
                                         // Cek apakah kelas sedang berlangsung
                                         $kelas_berlangsung = ($current_time >= $jam_masuk && $current_time <= $jam_pulang);
 
+                                        if ($kelas_berlangsung) {
+                                            $jenis_kelas = $kelas['jenis_kelas'];
+                                            if($jenis_kelas == 'Daring') {
+                                                $id_matkul = $kelas['id_matkul'];
+                                            }
+                                        }
+
                                         // Cek apakah sudah presensi untuk mata kuliah ini
                                         $sudah_presensi = in_array($kelas['id_matkul'], $matkul_sudah_presensi);
 
                                         // Cari lokasi yang sesuai dengan ruangan kelas
                                         foreach ($lokasi_presensi_list as $lok) {
                                             // Bandingkan nama ruangan dari lokasi dengan ruangan kelas
-                                            if ($lok['nama_ruangan'] === $kelas['ruangan']) {
+                                            if ($lok['id'] === $kelas['ruangan']) {
                                                 $available_locations[] = [
                                                     'id' => $lok['id'],
                                                     'nama_ruangan' => $lok['nama_ruangan'],
@@ -552,24 +563,27 @@
                                 }
 
                                 if ($ada_kelas_hari_ini) : ?>
-                                    <select name="id_lokasi_presensi" class="form-select" required id="pilih_lokasi">
-                                        <option value="">Pilih Lokasi Presensi</option>
-                                        <?php foreach ($available_locations as $loc) : ?>
-                                            <?php if ($loc['sedang_berlangsung'] && !$loc['sudah_presensi']) : ?>
-                                                <option value="<?= $loc['id'] ?>"
-                                                    data-latitude="<?= $loc['latitude'] ?>"
-                                                    data-longitude="<?= $loc['longitude'] ?>"
-                                                    data-radius="<?= $loc['radius'] ?>"
-                                                    data-id-matkul="<?= $loc['id_matkul'] ?>"
-                                                    class="text-success fw-bold">
-                                                    <?= esc($loc['nama_ruangan']) ?> -
-                                                    <?= esc($loc['matkul']) ?>
-                                                    (<?= $loc['jam'] ?>)
-                                                    [Sedang Berlangsung]
-                                                </option>
-                                            <?php endif; ?>
-                                        <?php endforeach; ?>
-                                    </select>
+                                    <?php if ($jenis_kelas == 'Luring') : ?>
+
+                                        <select name="id_lokasi_presensi" class="form-select" required id="pilih_lokasi">
+                                            <option value="" selected disabled>Pilih Lokasi Presensi</option>
+                                            <?php foreach ($available_locations as $loc) : ?>
+                                                <?php if ($loc['sedang_berlangsung'] && !$loc['sudah_presensi']) : ?>
+                                                    <option value="<?= $loc['id'] ?>"
+                                                        data-latitude="<?= $loc['latitude'] ?>"
+                                                        data-longitude="<?= $loc['longitude'] ?>"
+                                                        data-radius="<?= $loc['radius'] ?>"
+                                                        data-id-matkul="<?= $loc['id_matkul'] ?>"
+                                                        class="text-success fw-bold">
+                                                        <?= esc($loc['nama_ruangan']) ?> -
+                                                        <?= esc($loc['matkul']) ?>
+                                                        (<?= $loc['jam'] ?>)
+                                                        [Sedang Berlangsung]
+                                                    </option>
+                                                <?php endif; ?>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    <?php endif; ?>
                                     <?php if (empty($available_locations)): ?>
                                         <div class="alert alert-warning mt-2">
                                             <div class="d-flex align-items-center">
@@ -620,9 +634,10 @@
                                 <input type="hidden" name="tanggal_masuk" value="<?= date('Y-m-d') ?>">
                                 <input type="hidden" name="jam_masuk" value="<?= date('H:i:s') ?>">
                                 <input type="hidden" name="id_mahasiswa" value="<?= session()->get('id_mahasiswa') ?>">
-                                <input type="hidden" name="id_matkul" id="id_matkul">
+                                <input type="hidden" name="id_matkul" id="id_matkul" value="<?= $id_matkul != 0 ? $id_matkul : '' ?>">
+                                <input type="hidden" name="jenis_kelas" id="jenis_kelas" value="<?= $jenis_kelas ?? ''?>">
 
-                                <button type="submit" class="btn btn-primary w-100" id="btn_presensi" disabled>
+                                <button type="submit" class="btn btn-primary w-100" id="btn_presensi" <?= $id_matkul != 0 ? '' : 'disabled' ?>>
                                     <i class="fas fa-sign-in-alt me-2"></i> Masuk
                                 </button>
                             <?php endif; ?>
@@ -700,7 +715,7 @@
                             <hr>
                             <p class="mb-0">
                                 <i class="fas fa-building"></i> Lokasi:
-                                <strong><?= $ambil_presensi_masuk['nama_ruangan'] ?></strong>
+                                <strong><?= $ambil_presensi_masuk['nama_ruangan'] ?? '-' ?></strong>
                             </p>
                         </div>
 
@@ -727,8 +742,9 @@
                             <input type="hidden" name="gps_accuracy" id="gps_accuracy_keluar">
                             <input type="hidden" name="tanggal_keluar" value="<?= date('Y-m-d') ?>">
                             <input type="hidden" name="jam_keluar" value="<?= date('H:i:s') ?>">
+                            <input type="hidden" name="jenis_kelas" value="<?= $ambil_presensi_masuk['jenis_kelas'] ?>">
 
-                            <button type="submit" class="btn btn-danger w-100" id="btn_presensi_keluar" disabled>
+                            <button type="submit" class="btn btn-danger w-100" id="btn_presensi_keluar" <?= empty($ambil_presensi_masuk['nama_ruangan']) ? '' : 'disabled' ?> >
                                 <i class="fas fa-sign-out-alt me-2"></i> Keluar
                             </button>
                         </form>

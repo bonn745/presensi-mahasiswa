@@ -15,10 +15,8 @@
 
     #my_camera,
     #my_result {
-        border: 2px solid #ddd;
-        border-radius: 10px;
-        padding: 10px;
-        margin-bottom: 10px;
+        width: 640px;
+        height: 480px;
     }
 
     #ambil-foto {
@@ -26,7 +24,7 @@
     }
 </style>
 
-<div class="container">
+<div class="container justify-content-start">
     <input type="hidden" id="id_mahasiswa" name="id_mahasiswa" value="<?= isset($id_mahasiswa) ? $id_mahasiswa : '' ?>">
     <input type="hidden" id="tanggal_masuk" name="tanggal_masuk" value="<?= date('Y-m-d') ?>">
     <input type="hidden" id="jam_masuk" name="jam_masuk" value="<?= date('H:i:s') ?>">
@@ -35,13 +33,13 @@
 
     <div id="my_camera"></div>
     <div style="display: none;" id="my_result"></div>
-    <button class="btn btn-primary" id="ambil-foto">Ambil Foto</button>
+    <button class="btn btn-primary mt-5" id="ambil-foto">Ambil Foto</button>
 
     <!-- Debug info -->
-    <div class="mt-3">
+    <!-- <div class="mt-3">
         <small class="text-muted">Debug Info:</small>
         <pre id="debug-info" class="small"></pre>
-    </div>
+    </div> -->
 </div>
 
 <script>
@@ -54,7 +52,7 @@
             id_lokasi_presensi: document.getElementById('id_lokasi_presensi').value,
             id_matkul: document.getElementById('id_matkul').value
         };
-        document.getElementById('debug-info').textContent = JSON.stringify(debugInfo, null, 2);
+        // document.getElementById('debug-info').textContent = JSON.stringify(debugInfo, null, 2);
     }
 
     // Ambil tanggal & waktu lokal dari browser
@@ -71,8 +69,6 @@
         showDebugInfo();
 
         Webcam.set({
-            width: 320,
-            height: 240,
             image_format: 'jpeg',
             jpeg_quality: 90
         });

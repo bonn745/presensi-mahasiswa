@@ -5,8 +5,8 @@ namespace App\Controllers\Dosen;
 use App\Controllers\BaseController;
 use App\Models\MahasiswaModel;
 use App\Models\PresensiModel;
-use App\Models\KehadiranModel;
-use CodeIgniter\HTTP\ResponseInterface;
+use App\Models\KetidakhadiranModel;
+use App\Models\MatkulModel;
 
 class Home extends BaseController
 {
@@ -28,7 +28,7 @@ class Home extends BaseController
         $db = \Config\Database::connect();
         $builder = $db->table('presensi');
         $mahasiswa_hadir = $builder->select('id_mahasiswa')
-            ->where('tanggal_masuk', $tanggal)
+            ->where('tanggal', $tanggal)
             ->distinct()
             ->get()
             ->getResultArray();
@@ -55,5 +55,66 @@ class Home extends BaseController
         ];
 
         return view('dosen/home', $data);
+    }
+
+    public function rekap_presensi()
+    {
+        $data = [
+            'title' => 'Rekap Presensi'
+        ];
+        return view('dosen/rekap_presensi', $data);
+    }
+
+    public function ketidakhadiran()
+    {
+        $matkulModel = new MatkulModel();
+
+        $matkulIds = $matkulModel->select('id')->where('dosen_pengampu', session()->get('id_dosen'))->findAll();
+
+        $ids = [];
+
+        foreach ($matkulIds as $matkul) {
+            $ids[] = $matkul['id'];
+        }
+
+        $ketidakhadiranModel = new KetidakhadiranModel();
+
+        $ketidakhadiran = $ketidakhadiranModel->select('
+                                        ketidakhadiran.id,
+                                        id_mahasiswa,
+                                        keterangan,
+                                        tanggal,
+                                        deskripsi,
+                                        file,
+                                        status_pengajuan,
+                                        id_matkul,
+                                        mahasiswa.nama,
+                                        matkul.matkul
+            ')
+            ->whereIn('id_matkul', $ids)
+            ->join('matkul', 'matkul.id = ketidakhadiran.id_matkul')
+            ->join('mahasiswa', 'mahasiswa.id = ketidakhadiran.id_mahasiswa')
+            ->orderBy('id','DESC')
+            ->findAll();
+
+
+        $data = [
+            'title' => 'Ketidakhadiran',
+            'ketidakhadiran' => $ketidakhadiran
+        ];
+
+        return view('dosen/ketidakhadiran', $data);
+    }
+
+    public function terimaKetidakhadiran($id) {
+        $ketidakhadiranModel = new KetidakhadiranModel();
+        $ketidakhadiranModel->update($id,['status_pengajuan' => 'Accept']);
+        return redirect()->back();
+    }
+
+    public function tolakKetidakhadiran($id) {
+        $ketidakhadiranModel = new KetidakhadiranModel();
+        $ketidakhadiranModel->update($id,['status_pengajuan' => 'Reject']);
+        return redirect()->back();
     }
 }

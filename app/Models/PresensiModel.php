@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use CodeIgniter\Model;
 
 class PresensiModel extends Model
@@ -9,15 +10,15 @@ class PresensiModel extends Model
     protected $table            = 'presensi';
     protected $allowedFields    = [
         'id_mahasiswa',
-        'tanggal_masuk',
+        'tanggal',
         'jam_masuk',
         'foto_masuk',
         'id_lokasi_presensi',
-        'tanggal_keluar',
         'jam_keluar',
         'foto_keluar',
         'id_lokasi_presensi_keluar',
-        'id_matkul'
+        'id_matkul',
+        'pertemuan_ke'
     ];
 
     public function rekap_harian()
@@ -34,8 +35,8 @@ class PresensiModel extends Model
         $builder->join('mahasiswa', 'mahasiswa.id = presensi.id_mahasiswa');
         $builder->join('kelas', 'kelas.id_matkul = presensi.id_matkul');
         $builder->join('matkul', 'matkul.id = presensi.id_matkul');
-        $builder->where('tanggal_masuk', date('Y-m-d'));
-        $builder->orderBy('presensi.tanggal_masuk', 'DESC');
+        $builder->where('tanggal', date('Y-m-d'));
+        $builder->orderBy('presensi.tanggal', 'DESC');
         return $builder->get()->getResultArray();
     }
 
@@ -53,9 +54,9 @@ class PresensiModel extends Model
         $builder->join('mahasiswa', 'mahasiswa.id = presensi.id_mahasiswa');
         $builder->join('kelas', 'kelas.id_matkul = presensi.id_matkul');
         $builder->join('matkul', 'matkul.id = presensi.id_matkul');
-        $builder->where('tanggal_masuk', $filter_tanggal);
+        $builder->where('tanggal', $filter_tanggal);
         if(!is_null($filter_matkul)) $builder->where('matkul.id', $filter_matkul);
-        $builder->orderBy('presensi.tanggal_masuk', 'DESC');
+        $builder->orderBy('presensi.tanggal', 'DESC');
         return $builder->get()->getResultArray();
     }
 
@@ -73,9 +74,9 @@ class PresensiModel extends Model
         $builder->join('mahasiswa', 'mahasiswa.id = presensi.id_mahasiswa');
         $builder->join('kelas', 'kelas.id_matkul = presensi.id_matkul');
         $builder->join('matkul', 'matkul.id = presensi.id_matkul');
-        $builder->where('MONTH(tanggal_masuk)', date('m'));
-        $builder->where('YEAR(tanggal_masuk)', date('Y'));
-        $builder->orderBy('presensi.tanggal_masuk', 'DESC');
+        $builder->where('MONTH(tanggal)', date('m'));
+        $builder->where('YEAR(tanggal)', date('Y'));
+        $builder->orderBy('presensi.tanggal', 'DESC');
         return $builder->get()->getResultArray();
     }
 
@@ -93,33 +94,33 @@ class PresensiModel extends Model
         $builder->join('mahasiswa', 'mahasiswa.id = presensi.id_mahasiswa');
         $builder->join('kelas', 'kelas.id_matkul = presensi.id_matkul');
         $builder->join('matkul', 'matkul.id = presensi.id_matkul');
-        $builder->where('MONTH(tanggal_masuk)', $filter_bulan);
-        $builder->where('YEAR(tanggal_masuk)', $filter_tahun);
-        $builder->orderBy('presensi.tanggal_masuk', 'DESC');
+        $builder->where('MONTH(tanggal)', $filter_bulan);
+        $builder->where('YEAR(tanggal)', $filter_tahun);
+        $builder->orderBy('presensi.tanggal', 'DESC');
         return $builder->get()->getResultArray();
     }
 
     public function rekap_presensi_mahasiswa()
     {
-        return $this->select('presensi.*, mahasiswa.nama, kelas.jam_masuk as jam_masuk_kampus, kelas.jam_pulang as jam_pulang_kampus, matkul.matkul as nama_matkul')
+        return $this->select('presensi.*, mahasiswa.nama, kelas.jam_masuk as jam_masuk_kampus, kelas.jam_pulang as jam_pulang_kampus, matkul.matkul as nama_matkul, kelas.hari as kelas_hari')
             ->join('mahasiswa', 'mahasiswa.id = presensi.id_mahasiswa')
             ->join('kelas', 'kelas.id_matkul = presensi.id_matkul')
             ->join('matkul', 'matkul.id = presensi.id_matkul')
             ->where('presensi.id_mahasiswa', session()->get('id_mahasiswa'))
-            ->where('DATE(presensi.tanggal_masuk)', date('Y-m-d'))
-            ->orderBy('presensi.tanggal_masuk', 'DESC')
+            ->where('kelas.hari', Carbon::createFromFormat('Y-m-d',date('Y-m-d'))->locale('id')->translatedFormat('l'))
+            ->orderBy('presensi.tanggal', 'DESC')
             ->findAll();
     }
 
-    public function rekap_presensi_mahasiswa_filter($tanggal)
+    public function rekap_presensi_mahasiswa_filter($matkul)
     {
-        return $this->select('presensi.*, mahasiswa.nama, kelas.jam_masuk as jam_masuk_kampus, kelas.jam_pulang as jam_pulang_kampus, matkul.matkul as nama_matkul')
+        return $this->select('presensi.*, mahasiswa.nama, kelas.jam_masuk as jam_masuk_kampus, kelas.jam_pulang as jam_pulang_kampus, matkul.matkul as nama_matkul, kelas.hari as kelas_hari')
             ->join('mahasiswa', 'mahasiswa.id = presensi.id_mahasiswa')
             ->join('kelas', 'kelas.id_matkul = presensi.id_matkul')
             ->join('matkul', 'matkul.id = presensi.id_matkul')
             ->where('presensi.id_mahasiswa', session()->get('id_mahasiswa'))
-            ->where('DATE(presensi.tanggal_masuk)', $tanggal)
-            ->orderBy('presensi.tanggal_masuk', 'DESC')
+            ->where('matkul.id', $matkul)
+            ->orderBy('presensi.tanggal', 'DESC')
             ->findAll();
     }
 }

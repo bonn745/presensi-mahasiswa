@@ -3,6 +3,8 @@
 namespace App\Controllers\Mahasiswa;
 
 use App\Controllers\BaseController;
+use App\Models\MahasiswaModel;
+use App\Models\MatkulMahasiswa;
 use App\Models\PresensiModel;
 use App\Models\MatkulModel;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -15,13 +17,28 @@ class RekapPresensi extends BaseController
 {
     public function index()
     {
-        $presensiModel = new PresensiModel();
-        $filter_tanggal = $this->request->getVar('filter_tanggal');
+        $matkul_mhs = new MatkulMahasiswa();
+        $matkulModel = new MatkulModel();
+        $id_mhs = session()->get('id_mahasiswa');
+        $matkul = $matkul_mhs->where('mhs_id', $id_mhs)->findAll();
+        $ids = [];
 
-        if ($filter_tanggal) {
+        foreach($matkul as $mtkl) {
+            $ids[] = $mtkl['matkul_id'];
+        }
+
+        $dataMatkul = $matkulModel->whereIn('id', $ids)->findAll();
+
+        $presensiModel = new PresensiModel();
+        $filter_matkul = $this->request->getVar('matkul');
+
+        if (!empty($filter_matkul)) {
+
+            $matkulModel = new MatkulModel();
+            $namaMatkul = $matkulModel->find($filter_matkul)['matkul'];
 
             if (isset($_GET['excel'])) {
-                $rekap_presensi = $presensiModel->rekap_presensi_mahasiswa_filter($filter_tanggal);
+                $rekap_presensi = $presensiModel->rekap_presensi_mahasiswa_filter($filter_matkul);
                 $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
                 $activeWorksheet = $spreadsheet->getActiveSheet();
 
@@ -33,13 +50,12 @@ class RekapPresensi extends BaseController
                 // Set title and header
                 $activeWorksheet->setCellValue('A1', 'REKAP PRESENSI HARIAN');
                 $activeWorksheet->setCellValue('A3', 'TANGGAL');
-                $activeWorksheet->setCellValue('C3', $filter_tanggal);
+                $activeWorksheet->setCellValue('C3', $filter_matkul);
                 $activeWorksheet->setCellValue('A4', 'NO');
                 $activeWorksheet->setCellValue('B4', 'Nama Mahasiswa');
                 $activeWorksheet->setCellValue('C4', 'Mata Kuliah');
                 $activeWorksheet->setCellValue('D4', 'Tanggal Masuk');
                 $activeWorksheet->setCellValue('E4', 'Jam Masuk');
-                $activeWorksheet->setCellValue('F4', 'Tanggal Keluar');
                 $activeWorksheet->setCellValue('G4', 'Jam Keluar');
                 $activeWorksheet->setCellValue('H4', 'Total Jam Kerja');
                 $activeWorksheet->setCellValue('I4', 'Total Terlambat');
@@ -64,7 +80,7 @@ class RekapPresensi extends BaseController
                     $menit_terlambat = 0;
                     $selisih_terlambat = 0;
 
-                    if ($rekap['jam_keluar'] != '00:00:00' && $rekap['tanggal_keluar'] != null) {
+                    if ($rekap['jam_keluar'] != '00:00:00') {
                         $jam_masuk_real = strtotime($rekap['jam_masuk']);
                         $jam_masuk_kampus = isset($rekap['jam_masuk_kampus']) ? strtotime($rekap['jam_masuk_kampus']) : $jam_masuk_real;
 
@@ -80,7 +96,7 @@ class RekapPresensi extends BaseController
                     $menit_cepat_pulang = 0;
                     $selisih_cepat_pulang = 0;
 
-                    if ($rekap['jam_keluar'] != '00:00:00' && $rekap['tanggal_keluar'] != null) {
+                    if ($rekap['jam_keluar'] != '00:00:00') {
                         $jam_keluar_real = strtotime($rekap['jam_keluar']);
                         $jam_pulang_kampus = strtotime($rekap['jam_pulang_kampus']);
 
@@ -94,9 +110,8 @@ class RekapPresensi extends BaseController
                     $activeWorksheet->setCellValue('A' . $rows, $no++);
                     $activeWorksheet->setCellValue('B' . $rows, $rekap['nama']);
                     $activeWorksheet->setCellValue('C' . $rows, $rekap['nama_matkul']);
-                    $activeWorksheet->setCellValue('D' . $rows, $rekap['tanggal_masuk']);
+                    $activeWorksheet->setCellValue('D' . $rows, $rekap['tanggal']);
                     $activeWorksheet->setCellValue('E' . $rows, $rekap['jam_masuk']);
-                    $activeWorksheet->setCellValue('F' . $rows, $rekap['tanggal_keluar']);
                     $activeWorksheet->setCellValue('G' . $rows, $rekap['jam_keluar']);
                     $activeWorksheet->setCellValue('H' . $rows, $jam . ' jam ' . $menit . ' menit');
                     $activeWorksheet->setCellValue('I' . $rows, $selisih_terlambat > 0 ? $jam_terlambat . ' jam ' . $menit_terlambat . ' menit' : '-');
@@ -135,7 +150,7 @@ class RekapPresensi extends BaseController
                 $writer->save('php://output');
                 exit;
             } else {
-                $rekap_presensi = $presensiModel->rekap_presensi_mahasiswa_filter($filter_tanggal);
+                $rekap_presensi = $presensiModel->rekap_presensi_mahasiswa_filter($filter_matkul);
             }
         } else {
             $rekap_presensi = $presensiModel->rekap_presensi_mahasiswa();
@@ -143,8 +158,10 @@ class RekapPresensi extends BaseController
 
         $data = [
             'title' => 'Rekap Presensi',
-            'tanggal' => $filter_tanggal,
-            'rekap_presensi' => $rekap_presensi
+            'matkul' => $filter_matkul,
+            'nama_matkul' => $namaMatkul ?? '',
+            'rekap_presensi' => $rekap_presensi,
+            'data_matkul' => $dataMatkul,
         ];
 
         return view('mahasiswa/rekap_presensi', $data);
