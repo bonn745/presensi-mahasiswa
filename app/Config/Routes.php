@@ -74,6 +74,10 @@ $routes->get('admin/kelas/delete/(:segment)', 'Admin\Kelas::delete/$1', ['filter
 
 
 $routes->get('dosen/home', 'Dosen\Home::index', ['filter' => 'dosenFilter']);
+$routes->get('dosen/rekap-presensi', 'Dosen\Home::rekap_presensi', ['filter' => 'dosenFilter', 'as' => 'dosen.rekapPresensi']);
+$routes->get('dosen/ketidakhadiran', 'Dosen\Home::ketidakhadiran', ['filter' => 'dosenFilter', 'as' => 'dosen.ketidakhadiran']);
+$routes->get('dosen/ketidakhadiran/terima/(:segment)', 'Dosen\Home::terimaKetidakhadiran/$1', ['filter' => 'dosenFilter', 'as' => 'dosen.terimaKetidakhadiran']);
+$routes->get('dosen/ketidakhadiran/tolak/(:segment)', 'Dosen\Home::tolakKetidakhadiran/$1', ['filter' => 'dosenFilter', 'as' => 'dosen.tolakKetidakhadiran']);
 
 
 $routes->get('mahasiswa/home', 'Mahasiswa\Home::index', ['filter' => 'mahasiswaFilter', 'as' => 'mahasiswa.home']);
@@ -93,8 +97,8 @@ $routes->get('mahasiswa/ketidakhadiran/edit/(:segment)', 'Mahasiswa\Ketidakhadir
 $routes->post('mahasiswa/ketidakhadiran/update/(:segment)', 'Mahasiswa\Ketidakhadiran::update/$1', ['filter' => 'mahasiswaFilter']);
 $routes->get('mahasiswa/ketidakhadiran/delete/(:segment)', 'Mahasiswa\Ketidakhadiran::delete/$1', ['filter' => 'mahasiswaFilter']);
 $routes->get('mahasiswa/ketidakhadiran/detail/(:segment)', 'Mahasiswa\Ketidakhadiran::detail/$1', ['filter' => 'mahasiswaFilter']);
-$routes->get('mahasiswa/lengkapi/data/(:segment)', 'Mahasiswa\Data::index/$1', ['filter' => 'mahasiswaFilter','as' => 'mahasiswa.lengkapi.data']);
-$routes->post('mahasiswa/lengkapi/store', 'Mahasiswa\Data::store', ['filter' => 'mahasiswaFilter','as' => 'mahasiswa.lengkapi.store']);
-$routes->post('mahasiswa/matkul/store', 'Mahasiswa\MataKuliahController::store', ['filter' => 'mahasiswaFilter','as' => 'mahasiswa.matkul.store']);
-$routes->get('mahasiswa/matkul/create', 'Mahasiswa\MataKuliahController::create', ['filter' => 'mahasiswaFilter','as' => 'mahasiswa.matkul.create']);
-$routes->get('mahasiswa/matkul', 'Mahasiswa\MataKuliahController::index', ['filter' => 'mahasiswaFilter','as' => 'mahasiswa.matkul']);
+$routes->get('mahasiswa/lengkapi/data/(:segment)', 'Mahasiswa\Data::index/$1', ['filter' => 'mahasiswaFilter', 'as' => 'mahasiswa.lengkapi.data']);
+$routes->post('mahasiswa/lengkapi/store', 'Mahasiswa\Data::store', ['filter' => 'mahasiswaFilter', 'as' => 'mahasiswa.lengkapi.store']);
+$routes->post('mahasiswa/matkul/store', 'Mahasiswa\MataKuliahController::store', ['filter' => 'mahasiswaFilter', 'as' => 'mahasiswa.matkul.store']);
+$routes->get('mahasiswa/matkul/create', 'Mahasiswa\MataKuliahController::create', ['filter' => 'mahasiswaFilter', 'as' => 'mahasiswa.matkul.create']);
+$routes->get('mahasiswa/matkul', 'Mahasiswa\MataKuliahController::index', ['filter' => 'mahasiswaFilter', 'as' => 'mahasiswa.matkul']);

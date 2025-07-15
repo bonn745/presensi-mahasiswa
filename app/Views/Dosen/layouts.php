@@ -65,60 +65,9 @@
                     </a>
                 </li>
 
-                <!-- Data Admin -->
-                <li class="nav-item mb-2">
-                    <a href="<?= base_url('admin/data_dosen') ?>">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M3 7l1 -2h16l1 2" />
-                            <path d="M4 7v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-11" />
-                            <path d="M12 12l0 .01" />
-                        </svg>
-                        <span class="text">Data Dosen</span>
-                    </a>
-                </li>
-
-
-                <!-- Data Pegawai -->
-                <li class="nav-item mb-2">
-                    <a href="<?= base_url('admin/data_mahasiswa') ?>">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" />
-                            <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                            <path d="M21 21v-2a4 4 0 0 0 -3 -3.85" />
-                        </svg>
-                        <span class="text">Data Mahasiswa</span>
-                    </a>
-                </li>
-
-                <!-- Master Data -->
-                <li class="nav-item nav-item-has-children mb-2">
-                    <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#master-data"
-                        aria-controls="master-data" aria-expanded="false" aria-label="Toggle navigation">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                            <path d="M12 6m-8 0a8 3 0 1 0 16 0a8 3 0 1 0 -16 0" />
-                            <path d="M4 6v6a8 3 0 0 0 16 0v-6" />
-                            <path d="M4 12v6a8 3 0 0 0 16 0v-6" />
-                        </svg>
-                        <span class="text">Master Data</span>
-                    </a>
-                    <ul id="master-data" class="collapse dropdown-nav">
-                        <li><a href="<?= base_url('admin/matkul') ?>">Data Matkul</a></li>
-                        <li><a href="<?= base_url('admin/kelas') ?>">Data Kelas</a></li>
-                        <li><a href="<?= base_url('admin/lokasi_presensi') ?>">Lokasi Presensi</a></li>
-                    </ul>
-                </li>
-
                 <!-- Rekap Presensi -->
-                <li class="nav-item nav-item-has-children mb-2">
-                    <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_1"
-                        aria-controls="ddmenu_1" aria-expanded="false" aria-label="Toggle navigation">
+                <li class="nav-item mb-2">
+                    <a href="<?= url_to('dosen.rekapPresensi') ?>">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -131,50 +80,11 @@
                         </svg>
                         <span class="text">Rekap Presensi</span>
                     </a>
-                    <ul id="ddmenu_1" class="collapse dropdown-nav">
-                        <li><a href="<?= base_url('admin/rekap_harian') ?>">Rekap Harian</a></li>
-                        <li><a href="<?= base_url('admin/rekap_bulanan') ?>">Rekap Bulanan</a></li>
-                    </ul>
                 </li>
-
-                <!-- Cicilan Uang Kuliah -->
-                <li class="nav-item nav-item-has-children mb-2">
-                    <a href="#0" class="collapsed" data-bs-toggle="collapse" data-bs-target="#ddmenu_cicilan"
-                        aria-controls="ddmenu_cicilan" aria-expanded="false" aria-label="Toggle navigation">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 1v22M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2H5a2 2 0 0 1 -2 -2V8a2 2 0 0 1 2 -2z" />
-                        </svg>
-                        <span class="text">Cicilan Uang Kuliah</span>
-                    </a>
-                    <ul id="ddmenu_cicilan" class="collapse dropdown-nav">
-                        <li>
-                            <a href="<?= base_url('admin/cicilan/tahap1') ?>">
-                                <i class="bi bi-1-circle me-2"></i>Tahap 1
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<?= base_url('admin/cicilan/tahap2') ?>">
-                                <i class="bi bi-2-circle me-2"></i>Tahap 2
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<?= base_url('admin/cicilan/tahap3') ?>">
-                                <i class="bi bi-3-circle me-2"></i>Tahap 3
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<?= base_url('admin/cicilan/lunas') ?>">
-                                <i class="bi bi-cash-stack me-2"></i>Pembayaran Lunas
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
 
                 <!-- Kehadiran -->
                 <li class="nav-item mb-2">
-                    <a href="<?= base_url('admin/ketidakhadiran') ?>">
+                    <a href="<?= url_to('dosen.ketidakhadiran') ?>">
                         <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
