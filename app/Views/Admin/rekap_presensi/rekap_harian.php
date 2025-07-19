@@ -74,7 +74,7 @@
                             $menit_cepat_pulang = 0;
                             $selisih_cepat_pulang = 0;
 
-                            if ($rekap['jam_keluar'] != '00:00:00' && $rekap['tanggal_keluar'] != null) {
+                            if ($rekap['jam_keluar'] != '00:00:00') {
                                 $jam_keluar_real = strtotime($rekap['jam_keluar']);
                                 $jam_pulang_kampus = strtotime($rekap['jam_pulang_kampus']);
 
@@ -89,7 +89,7 @@
                                 <td><?= $no++ ?></td>
                                 <td><?= $rekap['nama'] ?></td>
                                 <td><?= $rekap['nama_matkul'] ?></td>
-                                <td><?= \Carbon\Carbon::parse($rekap['tanggal_masuk'])->locale('id')->isoFormat('D MMMM YYYY') ?></td>
+                                <td><?= \Carbon\Carbon::parse($rekap['tanggal'])->locale('id')->isoFormat('D MMMM YYYY') ?></td>
                                 <td><?= date('H:i',strtotime($rekap['jam_masuk'])) ?></td>
                                 <td><?= date('H:i', strtotime($rekap['jam_keluar'])) ?></td>
                                 <td>
@@ -109,7 +109,7 @@
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <?php if ($rekap['jam_keluar'] == '00:00:00' || $rekap['tanggal_keluar'] == null) : ?>
+                                    <?php if ($rekap['jam_keluar'] == '00:00:00') : ?>
                                         <span class="badge bg-warning">Menunggu Presensi Keluar</span>
                                     <?php elseif ($selisih_cepat_pulang > 0) : ?>
                                         <span class="badge bg-warning">

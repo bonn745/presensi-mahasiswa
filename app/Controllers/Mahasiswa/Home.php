@@ -247,16 +247,7 @@ class Home extends BaseController
         $id_lokasi_presensi = $request->getPost('id_lokasi_presensi');
         $id_matkul = $request->getPost('id_matkul');
 
-        $pertemuanKe = 0;
         $presensiModel = new PresensiModel();
-
-        $presensi = $presensiModel->where('id_matkul', $id_matkul)->orderBy('pertemuan_ke', 'DESC')->first();
-
-        if (!empty($presensi) && $presensi['tanggal'] == date('Y-m-d')) {
-            $pertemuanKe = $presensi->pertemuan_ke;
-        } else {
-            $pertemuanKe = $pertemuanKe + 1;
-        }
 
         // Debug log
         log_message('debug', 'Data presensi: ' . json_encode([
@@ -305,7 +296,6 @@ class Home extends BaseController
                 'foto_masuk'    => $namaFile,
                 'id_lokasi_presensi' => $id_lokasi_presensi,
                 'id_matkul' => $id_matkul,
-                'pertemuan_ke' => $pertemuanKe
             ];
 
             // Debug log

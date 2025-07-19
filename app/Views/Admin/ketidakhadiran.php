@@ -17,6 +17,7 @@ Carbon::setLocale('id');
                     <th>Nim</th>
                     <th>Nama</th>
                     <th>Keterangan</th>
+                    <th>Mata Kuliah</th>
                     <th>Periode</th>
                     <th>Deskripsi</th>
                     <th>File</th>
@@ -30,12 +31,12 @@ Carbon::setLocale('id');
                     foreach ($ketidakhadiran as $row) : ?>
                         <tr>
                             <td><?= $no++ ?></td>
-                            <td><?= esc($row['nim']); ?></td>
+                            <td><?= esc($row['npm']); ?></td>
                             <td><?= esc($row['nama']); ?></td>
                             <td><?= ucfirst($row['keterangan']) ?></td>
+                            <td><?= ucfirst($row['mata_kuliah']) ?></td>
                             <td>
-                                <?= Carbon::parse($row['tanggal_mulai'])->translatedFormat('d F Y') ?> -
-                                <?= Carbon::parse($row['tanggal_selesai'])->translatedFormat('d F Y') ?>
+                                <?= Carbon::parse($row['tanggal'])->translatedFormat('d F Y') ?>
                             </td>
                             <td><?= $row['deskripsi'] ?></td>
                             <td class="text-center">

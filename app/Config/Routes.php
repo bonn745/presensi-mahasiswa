@@ -16,6 +16,12 @@ $routes->post('login', 'Login::login_action');
 
 $routes->get('admin/home', 'Admin\Home::index', ['filter' => 'adminFilter']);
 
+$routes->get('admin/uang-kuliah/data', 'Admin\UangKuliah::data', ['filter' => 'adminFilter','as' => 'admin.uangkuliah.data']);
+$routes->get('admin/uang-kuliah/jadwal', 'Admin\UangKuliah::jadwal', ['filter' => 'adminFilter','as' => 'admin.uangkuliah.jadwal']);
+$routes->get('admin/uang-kuliah/create', 'Admin\UangKuliah::create', ['filter' => 'adminFilter','as' => 'admin.uangkuliah.create']);
+$routes->post('admin/uang-kuliah/store', 'Admin\UangKuliah::store', ['filter' => 'adminFilter','as' => 'admin.uangkuliah.store']);
+$routes->post('admin/uang-kuliah/import', 'Admin\UangKuliah::import', ['filter' => 'adminFilter','as' => 'admin.uangkuliah.import']);
+
 $routes->get('admin/matkul', 'Admin\Matkul::index', ['filter' => 'adminFilter']);
 $routes->get('admin/matkul/create', 'Admin\Matkul::create', ['filter' => 'adminFilter']);
 $routes->post('admin/matkul/store', 'Admin\Matkul::store', ['filter' => 'adminFilter']);

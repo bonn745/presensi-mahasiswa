@@ -23,8 +23,9 @@ class KetidakhadiranModel extends Model
     public function getKetidakhadiranWithMahasiswa()
     {
         return $this->db->table('ketidakhadiran')
-            ->select('ketidakhadiran.*, mahasiswa.nim, mahasiswa.nama')
+            ->select('ketidakhadiran.*, mahasiswa.npm, mahasiswa.nama, matkul.matkul as mata_kuliah')
             ->join('mahasiswa', 'mahasiswa.id = ketidakhadiran.id_mahasiswa')
+            ->join('matkul', 'matkul.id = ketidakhadiran.id_matkul')
             ->get()
             ->getResultArray();
     }
@@ -32,7 +33,7 @@ class KetidakhadiranModel extends Model
     public function getApprovedKetidakhadiranByDate($tanggal)
     {
         return $this->db->table('ketidakhadiran')
-            ->select('ketidakhadiran.*, mahasiswa.nim, mahasiswa.nama')
+            ->select('ketidakhadiran.*, mahasiswa.npm, mahasiswa.nama')
             ->join('mahasiswa', 'mahasiswa.id = ketidakhadiran.id_mahasiswa')
             ->where('ketidakhadiran.tanggal', $tanggal)
             ->where('ketidakhadiran.status_pengajuan', 'Approved')

@@ -17,6 +17,8 @@ class Home extends BaseController
         $mahasiswa_model = new MahasiswaModel();
         $presensi_model = new PresensiModel();
 
+        $data_matakuliah = $this->getMataKuliah();
+
 
         // Ambil tanggal dari input (GET) atau gunakan hari ini sebagai default
         $tanggal = $this->request->getGet('tanggal');
@@ -51,7 +53,7 @@ class Home extends BaseController
             'tanggal_filter' => $tanggal,
             'total_mahasiswa' => $total_mahasiswa,
             'total_hadir' => $total_hadir,
-
+            'data_matakuliah' => $data_matakuliah,
         ];
 
         return view('dosen/home', $data);
@@ -94,7 +96,7 @@ class Home extends BaseController
             ->whereIn('id_matkul', $ids)
             ->join('matkul', 'matkul.id = ketidakhadiran.id_matkul')
             ->join('mahasiswa', 'mahasiswa.id = ketidakhadiran.id_mahasiswa')
-            ->orderBy('id','DESC')
+            ->orderBy('id', 'DESC')
             ->findAll();
 
 
@@ -106,15 +108,26 @@ class Home extends BaseController
         return view('dosen/ketidakhadiran', $data);
     }
 
-    public function terimaKetidakhadiran($id) {
+    public function terimaKetidakhadiran($id)
+    {
         $ketidakhadiranModel = new KetidakhadiranModel();
-        $ketidakhadiranModel->update($id,['status_pengajuan' => 'Accept']);
+        $ketidakhadiranModel->update($id, ['status_pengajuan' => 'Accept']);
         return redirect()->back();
     }
 
-    public function tolakKetidakhadiran($id) {
+    public function tolakKetidakhadiran($id)
+    {
         $ketidakhadiranModel = new KetidakhadiranModel();
-        $ketidakhadiranModel->update($id,['status_pengajuan' => 'Reject']);
+        $ketidakhadiranModel->update($id, ['status_pengajuan' => 'Reject']);
         return redirect()->back();
+    }
+
+    private function getMataKuliah()
+    {
+        $matkulModel = new MatkulModel();
+        return $matkulModel->select('matkul.matkul, kelas.hari, kelas.jam_masuk, kelas.jam_pulang')
+            ->where('dosen_pengampu', session('id_dosen'))
+            ->join('kelas','kelas.id_matkul = matkul.id')
+            ->findAll();
     }
 }

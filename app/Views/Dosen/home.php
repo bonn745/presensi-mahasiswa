@@ -57,27 +57,57 @@
             </div>
         </div>
     </div>
+</div>
 
-    <!-- CSS untuk animasi statistik -->
-    <style>
-        .card {
-            transition: transform 0.2s ease-in-out;
-        }
+<div class="table-responsive mt-5">
+    <table class="table table-striped table-bordered text-center" id="datatables">
+        <thead class="table-primary">
+            <tr>
+                <th rowspan="2" style="width:1%; white-space:nowrap;">No</th>
+                <th rowspan="2">Mata Kuliah</th>
+                <th colspan="3" style="text-align: center;">Jadwal</th>
+            </tr>
+            <tr>
+                <th style="text-align: center;">Hari</th>
+                <th style="text-align: center;">Masuk</th>
+                <th style="text-align: center;">Keluar</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php $no = 1;
+            foreach ($data_matakuliah as $dm) : ?>
+                <tr>
+                    <td><?= $no++ ?></td>
+                    <td align="left"><?= $dm['matkul'] ?></td>
+                    <td><?= $dm['hari'] ?></td>
+                    <td><?= date('H:i',strtotime($dm['jam_masuk'])) ?></td>
+                    <td><?= date('H:i',strtotime($dm['jam_pulang'])) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
 
-        .card:hover {
-            transform: translateY(-5px);
-        }
+<!-- CSS untuk animasi statistik -->
+<style>
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
 
-        .rounded-circle {
-            width: 48px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .card:hover {
+        transform: translateY(-5px);
+    }
 
-        .badge {
-            padding: 0.5em 0.75em;
-        }
-    </style>
-    <?= $this->endSection() ?>
+    .rounded-circle {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .badge {
+        padding: 0.5em 0.75em;
+    }
+</style>
+<?= $this->endSection() ?>
