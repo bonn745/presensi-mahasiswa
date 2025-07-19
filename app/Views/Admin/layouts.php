@@ -155,13 +155,13 @@ use App\Database\Migrations\Jabatan;
                     </a>
                     <ul id="ddmenu_cicilan" class="collapse dropdown-nav">
                         <li>
-                            <a href="<?= base_url('admin/cicilan/tahap1') ?>">
-                                <i class="bi bi-1-circle me-2"></i>Cicilan Bertahap
+                            <a href="<?= url_to('admin.uangkuliah.data') ?>">
+                                <i class="bi bi-cash-stack me-2"></i>Data Pembayaran
                             </a>
                         </li>
                         <li>
-                            <a href="<?= base_url('admin/cicilan/lunas') ?>">
-                                <i class="bi bi-cash-stack me-2"></i>Data Pembayaran
+                            <a href="<?= url_to('admin.uangkuliah.jadwal') ?>">
+                                <i class="bi bi-cash-stack me-2"></i>Jadwal Pembayaran
                             </a>
                         </li>
                     </ul>
