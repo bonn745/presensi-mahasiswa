@@ -11,9 +11,18 @@ use App\Models\KelasModel;
 use App\Models\MatkulMahasiswa;
 use App\Models\MatkulModel;
 use Carbon\Carbon;
+use Exception;
 
 class Home extends BaseController
 {
+    protected $validation;
+
+    public function __construct()
+    {
+        helper(['url', 'form']);
+        $this->validation = \Config\Services::validation();
+    }
+
     public function index()
     {
         $matkul_mhs = new MatkulMahasiswa();
@@ -79,7 +88,7 @@ class Home extends BaseController
             ->join('kelas', 'kelas.id_matkul = presensi.id_matkul')
             ->where('presensi.id_mahasiswa', $id_mahasiswa)
             ->where('presensi.tanggal', date('Y-m-d'))
-            ->where('kelas.hari', Carbon::createFromFormat('Y-m-d',date('Y-m-d'))->locale('id')->translatedFormat('l'))
+            ->where('kelas.hari', Carbon::createFromFormat('Y-m-d', date('Y-m-d'))->locale('id')->translatedFormat('l'))
             ->orderBy('presensi.jam_masuk', 'DESC')
             ->first();
 
@@ -272,18 +281,26 @@ class Home extends BaseController
         //     'lokasi_presensi' => $id_lokasi_presensi
         // ]);
 
-        // Simpan Foto di Folder
-        if ($file = $request->getFile('foto_masuk')) {
-            if ($file->isValid() && !$file->hasMoved()) {
-                $namaFile = 'absensi_' . $id_mahasiswa . '_' . time() . '.jpg';
-                $file->move(ROOTPATH . 'public/uploads/absensi', $namaFile);
-                $fotoPath = 'uploads/absensi/' . $namaFile;
-            } else {
-                return $this->response->setJSON(['success' => false, 'message' => 'Foto tidak valid!']);
-            }
-        } else {
-            return $this->response->setJSON(['success' => false, 'message' => 'Foto tidak ditemukan!']);
+        $image_data = $this->request->getPost('foto_masuk');
+
+        $image_path = $this->save_attendance_image($image_data, $id_mahasiswa);
+        
+        if (!$image_path) {
+            return response()->setJSON(['success' => false, 'message' => 'Gagal menyimpan foto!']);
         }
+
+        // Simpan Foto di Folder
+        // if ($file = $request->getFile('foto_masuk')) {
+        //     if ($file->isValid() && !$file->hasMoved()) {
+        //         $namaFile = 'absensi_' . $id_mahasiswa . '_' . time() . '.jpg';
+        //         $file->move(ROOTPATH . 'public/uploads/absensi', $namaFile);
+        //         $fotoPath = 'uploads/absensi/' . $namaFile;
+        //     } else {
+        //         return $this->response->setJSON(['success' => false, 'message' => 'Foto tidak valid!']);
+        //     }
+        // } else {
+        //     return $this->response->setJSON(['success' => false, 'message' => 'Foto tidak ditemukan!']);
+        // }
 
         try {
             // Simpan Data ke Database
@@ -293,7 +310,7 @@ class Home extends BaseController
                 'tanggal' => $tanggal_masuk,
                 'jam_masuk'     => $jam_masuk,
                 'jam_keluar'     => '00:00:00',
-                'foto_masuk'    => $namaFile,
+                'foto_masuk'    => $image_path,
                 'id_lokasi_presensi' => $id_lokasi_presensi,
                 'id_matkul' => $id_matkul,
             ];
@@ -429,6 +446,41 @@ class Home extends BaseController
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat menyimpan presensi: ' . $e->getMessage()
             ]);
+        }
+    }
+
+    // Simpan gambar dari base64
+    private function save_attendance_image($base64_data, $user_id)
+    {
+        try {
+            // Remove data:image/jpeg;base64, prefix
+            $image_data = str_replace('data:image/jpeg;base64,', '', $base64_data);
+            $image_data = str_replace(' ', '+', $image_data);
+            $image_binary = base64_decode($image_data);
+
+            if ($image_binary === false) {
+                return false;
+            }
+
+            // Create directory jika belum ada
+            $upload_path = './uploads/presensi/' . date('Y/m/');
+            if (!is_dir($upload_path)) {
+                mkdir($upload_path, 0755, true);
+            }
+
+            // Generate nama file unique
+            $filename = 'face_' . $user_id . '_' . date('Ymd_His') . '_' . uniqid() . '.jpg';
+            $file_path = $upload_path . $filename;
+
+            // Simpan file
+            if (file_put_contents($file_path, $image_binary)) {
+                return $file_path;
+            }
+
+            return false;
+        } catch (Exception $e) {
+            log_message('error', 'Gagal menyimpan foto kehadiran: ' . $e->getMessage());
+            return false;
         }
     }
 }

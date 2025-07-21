@@ -181,6 +181,7 @@
 </style>
 
 <div class="container justify-content-start">
+    <?= csrf_field() ?>
     <input type="hidden" id="id_mahasiswa" name="id_mahasiswa" value="<?= isset($id_mahasiswa) ? $id_mahasiswa : '' ?>">
     <input type="hidden" id="tanggal_masuk" name="tanggal_masuk" value="<?= date('Y-m-d') ?>">
     <input type="hidden" id="jam_masuk" name="jam_masuk" value="<?= date('H:i:s') ?>">
@@ -218,7 +219,7 @@
             </div>
 
             <div class="smile-indicator" id="smileIndicator">😐</div>
-            <button class="btn btn-primary mt-5" id="captureBtn">Ambil Foto</button>
+            <!-- <button class="btn btn-primary mt-5" id="captureBtn" onclick="captureAndSend()">Ambil Foto</button> -->
         </div>
     </div>
 
@@ -230,84 +231,18 @@
 </div>
 
 <script>
-    // Fungsi untuk menampilkan debug info
-    function showDebugInfo() {
-        const debugInfo = {
-            id_mahasiswa: document.getElementById('id_mahasiswa').value,
-            tanggal_masuk: document.getElementById('tanggal_masuk').value,
-            jam_masuk: document.getElementById('jam_masuk').value,
-            id_lokasi_presensi: document.getElementById('id_lokasi_presensi').value,
-            id_matkul: document.getElementById('id_matkul').value
-        };
-        // document.getElementById('debug-info').textContent = JSON.stringify(debugInfo, null, 2);
-    }
-
     // Ambil tanggal & waktu lokal dari browser
     function updateWaktu() {
         let now = new Date();
         document.getElementById('tanggal_masuk').value = now.toISOString().split('T')[0]; // Format YYYY-MM-DD
         document.getElementById('jam_masuk').value = now.toTimeString().split(' ')[0]; // Format HH:MM:SS
-        showDebugInfo(); // Update debug info setelah update waktu
+        // showDebugInfo(); // Update debug info setelah update waktu
     }
 
     // Pastikan data waktu diperbarui saat halaman dimuat
     document.addEventListener("DOMContentLoaded", function() {
         updateWaktu();
-        showDebugInfo();
-
-        // Webcam.set({
-        //     image_format: 'jpeg',
-        //     jpeg_quality: 90
-        // });
-
-        // Webcam.attach('#my_camera');
         startDetection();
-    });
-
-    // Event Listener saat tombol ditekan
-    document.getElementById('captureBtn').addEventListener('click', function() {
-        Webcam.snap(function(data_uri) {
-            document.getElementById('my_result').innerHTML = '<img src="' + data_uri + '"/>';
-
-            // Convert to blob
-            fetch(data_uri)
-                .then(res => res.blob())
-                .then(blob => {
-                    const formData = new FormData();
-                    formData.append('foto_masuk', blob, 'webcam.jpg');
-                    formData.append('id_mahasiswa', document.getElementById('id_mahasiswa').value);
-                    formData.append('tanggal_masuk', document.getElementById('tanggal_masuk').value);
-                    formData.append('jam_masuk', document.getElementById('jam_masuk').value);
-                    formData.append('id_lokasi_presensi', document.getElementById('id_lokasi_presensi').value);
-                    formData.append('id_matkul', document.getElementById('id_matkul').value);
-
-                    // Debug log sebelum kirim
-                    console.log('Data yang akan dikirim:', {
-                        id_mahasiswa: document.getElementById('id_mahasiswa').value,
-                        tanggal_masuk: document.getElementById('tanggal_masuk').value,
-                        jam_masuk: document.getElementById('jam_masuk').value,
-                        id_lokasi_presensi: document.getElementById('id_lokasi_presensi').value,
-                        id_matkul: document.getElementById('id_matkul').value
-                    });
-
-                    fetch('<?= base_url('mahasiswa/presensi_masuk_aksi') ?>', {
-                            method: 'POST',
-                            body: formData
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                window.location.href = '<?= base_url('mahasiswa/home') ?>';
-                            } else {
-                                alert('Gagal menyimpan presensi: ' + (data.message || 'Terjadi kesalahan'));
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert('Terjadi kesalahan saat mengirim data');
-                        });
-                });
-        });
     });
 </script>
 <script src="<?= base_url('assets/dist/face-api.min.js') ?>"></script>
@@ -317,6 +252,7 @@
     let isSmiling = false;
     let smileConfidence = 0;
     let faceDetected = false;
+    let isSending = false;
 
     // Inisialisasi komponen
     async function initializeComponents() {
@@ -466,10 +402,10 @@
 
         if (faceDetected && isSmiling) {
             updateStatus('success', `Tersenyum terdeteksi! (${Math.round(happiness * 100)}%) - Siap untuk capture!`);
-            document.getElementById('captureBtn').disabled = false;
+            if (!isSending) captureAndSend()
         } else if (faceDetected) {
             updateStatus('detecting', `Wajah terdeteksi. Silakan tersenyum untuk liveness detection (${Math.round(happiness * 100)}%)`);
-            document.getElementById('captureBtn').disabled = true;
+            // document.getElementById('captureBtn').disabled = true;
         }
     }
 
@@ -516,12 +452,16 @@
 
     // Capture foto dan kirim ke backend
     async function captureAndSend() {
+        isSending = true;
+
         if (!faceDetected || !isSmiling) {
             alert('Pastikan wajah terdeteksi dan Anda tersenyum sebelum capture!');
             return;
         }
 
         updateStatus('loading', 'Mengambil foto...');
+
+
 
         // Capture foto dari video
         const captureCanvas = document.createElement('canvas');
@@ -537,7 +477,20 @@
         try {
             const response = await sendToBackend(imageData);
             handleBackendResponse(response);
+            setTimeout(() => {
+                isSending = false;
+            }, 3000);
         } catch (error) {
+            setTimeout(() => {
+                isSending = false;
+            }, 3000);
+            Swal.fire({
+                icon: "error",
+                title: "Presensi gagal!",
+                text: error,
+                showConfirmButton: false,
+                timer: 2000
+            });
             console.error('Error sending to backend:', error);
             updateStatus('error', 'Gagal mengirim data ke server. Coba lagi.');
         }
@@ -547,20 +500,26 @@
     async function sendToBackend(imageData) {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: '<?php echo base_url("presensi/process_face_attendance"); ?>', // Sesuaikan dengan route CI Anda
+                url: '<?= base_url("mahasiswa/presensi_masuk_aksi"); ?>',
                 type: 'POST',
                 data: {
-                    image: imageData,
-                    user_id: '<?= session()->get("id_mahasiswa"); ?>', // Ambil dari session
+                    foto_masuk: imageData,
+                    id_mahasiswa: document.getElementById('id_mahasiswa').value,
+                    tanggal_masuk: document.getElementById('tanggal_masuk').value,
+                    jam_masuk: document.getElementById('jam_masuk').value,
+                    id_lokasi_presensi: document.getElementById('id_lokasi_presensi').value,
+                    id_matkul: document.getElementById('id_matkul').value,
                     timestamp: new Date().toISOString(),
                     face_confidence: Math.round(smileConfidence * 100),
-                    csrf_token: '' // CSRF protection
+                    csrf_token: document.getElementsByName('csrf_test_name').value
                 },
                 dataType: 'json',
                 success: function(response) {
+                    console.log(response);
                     resolve(response);
                 },
                 error: function(xhr, status, error) {
+                    console.log(error);
                     reject(error);
                 }
             });
@@ -573,11 +532,26 @@
             updateStatus('success', '✅ Presensi berhasil dicatat!');
             updateProgressBar(100);
 
+            Swal.fire({
+                icon: "success",
+                title: "Presensi berhasil!",
+                text: response.message,
+                showConfirmButton: false,
+                timer: 2000
+            });
+
             // Redirect atau refresh setelah berhasil
             setTimeout(() => {
-                window.location.href = '<?php echo base_url("dashboard"); ?>'; // Redirect ke dashboard
+                window.location.href = '<?= base_url("mahasiswa/home"); ?>';
             }, 2000);
         } else {
+            Swal.fire({
+                icon: "error",
+                title: "Presensi gagal!",
+                text: response.message,
+                showConfirmButton: false,
+                timer: 2000
+            });
             updateStatus('error', '❌ ' + (response.message || 'Presensi gagal. Coba lagi.'));
         }
     }
