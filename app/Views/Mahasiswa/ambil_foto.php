@@ -2,16 +2,6 @@
 
 <?= $this->section('styles') ?>
 <style>
-    /* body {
-        font-family: Arial, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        margin: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    } */
-
     .container {
         background: white;
         padding: 30px;
@@ -156,29 +146,10 @@
     }
 </style>
 <?= $this->endSection() ?>
+
 <?= $this->section('content') ?>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.26/webcam.min.js"></script>
-
-<style>
-    .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-    }
-
-    #my_camera,
-    #my_result {
-        width: 640px;
-        height: 480px;
-    }
-
-    #captureBtn {
-        margin-top: 10px;
-    }
-</style>
 
 <div class="container justify-content-start">
     <?= csrf_field() ?>
@@ -187,10 +158,6 @@
     <input type="hidden" id="jam_masuk" name="jam_masuk" value="<?= date('H:i:s') ?>">
     <input type="hidden" id="id_lokasi_presensi" name="id_lokasi_presensi" value="<?= isset($id_lokasi_presensi) ? $id_lokasi_presensi : '' ?>">
     <input type="hidden" id="id_matkul" name="id_matkul" value="<?= isset($id_matkul) ? $id_matkul : '' ?>">
-
-    <!-- <div id="my_camera">
-    <canvas id="overlay"></canvas>
-    </div> -->
 
     <div class="row col-md-12">
         <div class="col-md-6">
@@ -219,15 +186,8 @@
             </div>
 
             <div class="smile-indicator" id="smileIndicator">😐</div>
-            <!-- <button class="btn btn-primary mt-5" id="captureBtn" onclick="captureAndSend()">Ambil Foto</button> -->
         </div>
     </div>
-
-    <!-- Debug info -->
-    <!-- <div class="mt-3">
-        <small class="text-muted">Debug Info:</small>
-        <pre id="debug-info" class="small"></pre>
-    </div> -->
 </div>
 
 <script>
@@ -236,7 +196,6 @@
         let now = new Date();
         document.getElementById('tanggal_masuk').value = now.toISOString().split('T')[0]; // Format YYYY-MM-DD
         document.getElementById('jam_masuk').value = now.toTimeString().split(' ')[0]; // Format HH:MM:SS
-        // showDebugInfo(); // Update debug info setelah update waktu
     }
 
     // Pastikan data waktu diperbarui saat halaman dimuat
@@ -515,11 +474,9 @@
                 },
                 dataType: 'json',
                 success: function(response) {
-                    console.log(response);
                     resolve(response);
                 },
                 error: function(xhr, status, error) {
-                    console.log(error);
                     reject(error);
                 }
             });

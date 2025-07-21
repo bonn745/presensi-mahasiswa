@@ -235,7 +235,7 @@ class Home extends BaseController
         }
 
         $data = [
-            'title' => "Ambil Foto Selfie",
+            'title' => "Presensi Masuk",
             'id_mahasiswa' => $this->request->getPost('id_mahasiswa'),
             'tanggal_masuk' => $this->request->getPost('tanggal_masuk'),
             'jam_masuk' => $this->request->getPost('jam_masuk'),
@@ -275,32 +275,28 @@ class Home extends BaseController
             ]);
         }
 
-        // Update lokasi presensi mahasiswa
-        $mahasiswaModel = new MahasiswaModel();
-        // $mahasiswaModel->update($id_mahasiswa, [
-        //     'lokasi_presensi' => $id_lokasi_presensi
-        // ]);
-
         $image_data = $this->request->getPost('foto_masuk');
 
-        $image_path = $this->save_attendance_image($image_data, $id_mahasiswa);
-        
+        $faceRecognitionController = new FaceRecognitionController();
+
+        $image_path = $faceRecognitionController->save_attendance_image($image_data, $id_mahasiswa);
+
         if (!$image_path) {
             return response()->setJSON(['success' => false, 'message' => 'Gagal menyimpan foto!']);
         }
 
-        // Simpan Foto di Folder
-        // if ($file = $request->getFile('foto_masuk')) {
-        //     if ($file->isValid() && !$file->hasMoved()) {
-        //         $namaFile = 'absensi_' . $id_mahasiswa . '_' . time() . '.jpg';
-        //         $file->move(ROOTPATH . 'public/uploads/absensi', $namaFile);
-        //         $fotoPath = 'uploads/absensi/' . $namaFile;
-        //     } else {
-        //         return $this->response->setJSON(['success' => false, 'message' => 'Foto tidak valid!']);
-        //     }
-        // } else {
-        //     return $this->response->setJSON(['success' => false, 'message' => 'Foto tidak ditemukan!']);
-        // }
+        if ($faceRecognitionController->check_face_registration_status()) {
+            $verification_result = $faceRecognitionController->call_face_recognition_service('verify', $id_mahasiswa, $image_data, $image_path);
+            log_message('info', json_encode($verification_result));
+            if (!$verification_result->success) {
+                return response()->setJSON(['success' => false, 'message' => $verification_result->message]);
+            }
+        } else {
+            $registrationResult = $faceRecognitionController->call_face_recognition_service('register', $id_mahasiswa, $image_data, $image_path);
+            if (!$registrationResult->success) {
+                return response()->setJSON(['success' => false, 'message' => $registrationResult->message]);
+            }
+        }
 
         try {
             // Simpan Data ke Database
@@ -382,7 +378,7 @@ class Home extends BaseController
         }
 
         $data = [
-            'title' => "Ambil Foto Selfie",
+            'title' => "Presensi Keluar",
             'id_presensi' => $id,
             'tanggal_keluar' => $this->request->getPost('tanggal_keluar'),
             'jam_keluar' => $this->request->getPost('jam_keluar'),
@@ -411,17 +407,36 @@ class Home extends BaseController
         ]));
 
         // Simpan Foto di Folder
-        if ($file = $request->getFile('foto_keluar')) {
-            if ($file->isValid() && !$file->hasMoved()) {
-                $namaFile = 'absensi_' . $id . '_' . time() . '.jpg';
-                $file->move(ROOTPATH . 'public/uploads/absensi', $namaFile);
-                $fotoPath = 'uploads/absensi/' . $namaFile;
-            } else {
-                return $this->response->setJSON(['success' => false, 'message' => 'Foto tidak valid!']);
-            }
-        } else {
-            return $this->response->setJSON(['success' => false, 'message' => 'Foto tidak ditemukan!']);
+        // if ($file = $request->getFile('foto_keluar')) {
+        //     if ($file->isValid() && !$file->hasMoved()) {
+        //         $namaFile = 'absensi_' . $id . '_' . time() . '.jpg';
+        //         $file->move(ROOTPATH . 'public/uploads/absensi', $namaFile);
+        //         $fotoPath = 'uploads/absensi/' . $namaFile;
+        //     } else {
+        //         return $this->response->setJSON(['success' => false, 'message' => 'Foto tidak valid!']);
+        //     }
+        // } else {
+        //     return $this->response->setJSON(['success' => false, 'message' => 'Foto tidak ditemukan!']);
+        // }
+
+        $id_mahasiswa = session()->get('id_mahasiswa');
+
+        $image_data = $this->request->getPost('foto_keluar');
+
+        $faceRecognitionController = new FaceRecognitionController();
+
+        $image_path = $faceRecognitionController->save_attendance_image($image_data, $id_mahasiswa);
+
+        if (!$image_path) {
+            return response()->setJSON(['success' => false, 'message' => 'Gagal menyimpan foto!']);
         }
+
+        $verification_result = $faceRecognitionController->call_face_recognition_service('verify', $id_mahasiswa, $image_data, $image_path);
+        log_message('info', json_encode($verification_result));
+        if (!$verification_result->success) {
+            return response()->setJSON(['success' => false, 'message' => $verification_result->message]);
+        }
+
 
         try {
             // Simpan Data ke Database
@@ -429,7 +444,7 @@ class Home extends BaseController
             $data = [
                 'tanggal_keluar' => $tanggal_keluar,
                 'jam_keluar'     => $jam_keluar,
-                'foto_keluar'    => $namaFile,
+                'foto_keluar'    => $image_path,
                 'id_lokasi_presensi_keluar' => $id_lokasi_presensi,
                 'id_matkul' => $id_matkul
             ];
@@ -446,41 +461,6 @@ class Home extends BaseController
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat menyimpan presensi: ' . $e->getMessage()
             ]);
-        }
-    }
-
-    // Simpan gambar dari base64
-    private function save_attendance_image($base64_data, $user_id)
-    {
-        try {
-            // Remove data:image/jpeg;base64, prefix
-            $image_data = str_replace('data:image/jpeg;base64,', '', $base64_data);
-            $image_data = str_replace(' ', '+', $image_data);
-            $image_binary = base64_decode($image_data);
-
-            if ($image_binary === false) {
-                return false;
-            }
-
-            // Create directory jika belum ada
-            $upload_path = './uploads/presensi/' . date('Y/m/');
-            if (!is_dir($upload_path)) {
-                mkdir($upload_path, 0755, true);
-            }
-
-            // Generate nama file unique
-            $filename = 'face_' . $user_id . '_' . date('Ymd_His') . '_' . uniqid() . '.jpg';
-            $file_path = $upload_path . $filename;
-
-            // Simpan file
-            if (file_put_contents($file_path, $image_binary)) {
-                return $file_path;
-            }
-
-            return false;
-        } catch (Exception $e) {
-            log_message('error', 'Gagal menyimpan foto kehadiran: ' . $e->getMessage());
-            return false;
         }
     }
 }
