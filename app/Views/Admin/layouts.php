@@ -154,6 +154,11 @@ use App\Database\Migrations\Jabatan;
                         <span class="text">Cicilan Uang Kuliah</span>
                     </a>
                     <ul id="ddmenu_cicilan" class="collapse dropdown-nav">
+                    <li>
+                            <a href="<?= url_to('admin.uangkuliah.jadwal') ?>">
+                                <i class="bi bi-cash-stack me-2"></i>Cicilan Bertahap
+                            </a>
+                        </li>
                         <li>
                             <a href="<?= url_to('admin.uangkuliah.data') ?>">
                                 <i class="bi bi-cash-stack me-2"></i>Data Pembayaran
