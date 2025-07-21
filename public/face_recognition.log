@@ -1,0 +1,15 @@
+2025-07-21 18:38:41,931 - ERROR - Error getting user face encodings: 1146 (42S02): Table 'presensi-mahasiswa.user_face_encodings' doesn't exist
+2025-07-21 18:40:05,758 - ERROR - Error getting user face encodings: 1054 (42S22): Unknown column 'user_id' in 'where clause'
+2025-07-21 18:41:41,132 - ERROR - Error saving face encoding: 1054 (42S22): Unknown column 'user_id' in 'field list'
+2025-07-21 18:43:32,460 - ERROR - Error saving face encoding: 1048 (23000): Column 'foto_path' cannot be null
+2025-07-21 18:45:53,974 - ERROR - Error logging verification: Python type numpy.bool cannot be converted
+2025-07-21 18:46:38,742 - ERROR - Error logging verification: Python type numpy.bool cannot be converted
+2025-07-21 18:48:32,375 - ERROR - Error logging verification: Python type numpy.bool cannot be converted
+2025-07-21 18:49:57,729 - ERROR - Error logging verification: Python type numpy.bool cannot be converted
+2025-07-21 18:50:25,884 - ERROR - Error logging verification: Python type numpy.bool cannot be converted
+2025-07-21 18:51:13,839 - ERROR - Error logging verification: Python type numpy.bool cannot be converted
+2025-07-21 18:52:23,136 - ERROR - Error logging verification: Python type numpy.bool cannot be converted
+2025-07-21 18:53:30,023 - ERROR - Error logging verification: Python type numpy.bool cannot be converted
+2025-07-21 18:55:19,697 - ERROR - Error logging verification: Python type numpy.bool cannot be converted
+2025-07-21 18:55:50,346 - ERROR - Error logging verification: Python type numpy.bool cannot be converted
+2025-07-21 19:02:15,264 - ERROR - Error logging verification: Python type numpy.bool cannot be converted
