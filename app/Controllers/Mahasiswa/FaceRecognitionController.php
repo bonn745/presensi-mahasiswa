@@ -3,26 +3,47 @@
 namespace App\Controllers\Mahasiswa;
 
 use App\Controllers\BaseController;
-use App\Database\Migrations\UserFaceEncoding;
 use App\Models\MahasiswaFaceEncoding;
-use CodeIgniter\HTTP\ResponseInterface;
 use Exception;
 
 class FaceRecognitionController extends BaseController
 {
 
     // Call Python face recognition service
-    public function call_face_recognition_service($action, $id_mahasiswa, $base64_image, $image_path = null)
+    public function call_face_recognition_service($action, $id_mahasiswa, $image_path)
     {
         try {
+
+            $tempDir = WRITEPATH . 'python/';
+            if (!is_dir($tempDir)) {
+                mkdir($tempDir, 0777, true);
+            }
+
+            $pos = strpos($image_path, '.');
+
+            if ($pos !== false) {
+                $image_path = substr_replace($image_path, '', $pos, 1);
+            }
+
+            $pos = strpos($image_path, '/');
+
+            if ($pos !== false) {
+                $image_path = substr_replace($image_path, '', $pos, 1);
+            }
+
+            $image_path = $image_path;
+
+            $tempFile = tempnam($tempDir, 'input_') . '.jpg';
+
+            file_put_contents($tempFile, file_get_contents(FCPATH . $image_path));
+
             // Path ke Python script
-            $python_script = FCPATH.'../../face-detect/face-detect.py';
+            $python_script = FCPATH . '../../face-detect/face-detect.py';
 
             // Prepare command
-            $command = "/opt/homebrew/bin/python3.9 $python_script $action $id_mahasiswa " . escapeshellarg($base64_image);
-            if ($image_path) {
-                $command .= " " . escapeshellarg($image_path);
-            }
+            $command = "/opt/homebrew/bin/python3.9 $python_script $action $id_mahasiswa 1 " . $tempFile;
+
+            log_message('info','Command: '.$command);
 
             // Execute command
             $output = shell_exec($command . ' 2>&1');
@@ -37,7 +58,8 @@ class FaceRecognitionController extends BaseController
             $result = json_decode($trimmedOutput);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
-                return ['success' => false, 'message' => 'Error parsing response dari face recognition service'];
+                log_message('error', $output);
+                return ['success' => false, 'message' => 'Gagal mengenali wajah. Pastikan Wajah berada di tengah dan tidak terlihat lebih dari satu wajah.'];
             }
 
             return $result;

@@ -286,15 +286,15 @@ class Home extends BaseController
         }
 
         if ($faceRecognitionController->check_face_registration_status()) {
-            $verification_result = $faceRecognitionController->call_face_recognition_service('verify', $id_mahasiswa, $image_data, $image_path);
+            $verification_result = $faceRecognitionController->call_face_recognition_service('verify', $id_mahasiswa, $image_path);
             log_message('info', json_encode($verification_result));
-            if (!$verification_result->success) {
-                return response()->setJSON(['success' => false, 'message' => $verification_result->message]);
+            if (is_array($verification_result) ? !$verification_result['success'] : !$verification_result->success) {
+                return response()->setJSON(['success' => false, 'message' => is_array($verification_result) ? $verification_result['message'] : $verification_result->message]);
             }
         } else {
-            $registrationResult = $faceRecognitionController->call_face_recognition_service('register', $id_mahasiswa, $image_data, $image_path);
-            if (!$registrationResult->success) {
-                return response()->setJSON(['success' => false, 'message' => $registrationResult->message]);
+            $registrationResult = $faceRecognitionController->call_face_recognition_service('register', $id_mahasiswa, $image_path);
+            if (is_array($registrationResult) ? !$registrationResult['success'] : !$registrationResult->success) {
+                return response()->setJSON(['success' => false, 'message' => is_array($registrationResult) ? $registrationResult['success'] : $registrationResult->success]);
             }
         }
 
@@ -303,7 +303,7 @@ class Home extends BaseController
             $presensiModel = new PresensiModel();
             $data = [
                 'id_mahasiswa'    => $id_mahasiswa,
-                'tanggal' => $tanggal_masuk,
+                'tanggal' => Carbon::createFromFormat('Y-m-d', date('Y-m-d'), 'Asia/Jakarta')->format('Y-m-d'),
                 'jam_masuk'     => $jam_masuk,
                 'jam_keluar'     => '00:00:00',
                 'foto_masuk'    => $image_path,
@@ -406,19 +406,6 @@ class Home extends BaseController
             'id_matkul' => $id_matkul
         ]));
 
-        // Simpan Foto di Folder
-        // if ($file = $request->getFile('foto_keluar')) {
-        //     if ($file->isValid() && !$file->hasMoved()) {
-        //         $namaFile = 'absensi_' . $id . '_' . time() . '.jpg';
-        //         $file->move(ROOTPATH . 'public/uploads/absensi', $namaFile);
-        //         $fotoPath = 'uploads/absensi/' . $namaFile;
-        //     } else {
-        //         return $this->response->setJSON(['success' => false, 'message' => 'Foto tidak valid!']);
-        //     }
-        // } else {
-        //     return $this->response->setJSON(['success' => false, 'message' => 'Foto tidak ditemukan!']);
-        // }
-
         $id_mahasiswa = session()->get('id_mahasiswa');
 
         $image_data = $this->request->getPost('foto_keluar');
@@ -431,10 +418,11 @@ class Home extends BaseController
             return response()->setJSON(['success' => false, 'message' => 'Gagal menyimpan foto!']);
         }
 
-        $verification_result = $faceRecognitionController->call_face_recognition_service('verify', $id_mahasiswa, $image_data, $image_path);
-        log_message('info', json_encode($verification_result));
-        if (!$verification_result->success) {
-            return response()->setJSON(['success' => false, 'message' => $verification_result->message]);
+        $verification_result = $faceRecognitionController->call_face_recognition_service('verify', $id_mahasiswa, $image_path);
+        log_message('info', "Result: " . json_encode($verification_result));
+
+        if (is_array($verification_result) ? !$verification_result['success'] : !$verification_result->success) {
+            return response()->setJSON(['success' => false, 'message' => is_array($verification_result) ? $verification_result['message'] : $verification_result->message]);
         }
 
 
