@@ -15,23 +15,52 @@ class JadwalPembayaran extends Migration
                 'unsigned'       => true,
                 'auto_increment' => true,
             ],
-            'nama_jadwal' => [
-                'type'       => 'VARCHAR',
-                'constraint' => '50',
-            ],
-            'tanggal_pembayaran' => [
+            'tanggal_pembayaran_tahap_1' => [
                 'type' => 'DATE',
             ],
-            'tanggal_notifikasi' => [
+            'tanggal_pembayaran_tahap_2' => [
                 'type' => 'DATE',
             ],
-            'jam_notifikasi' => [
+            'tanggal_pembayaran_tahap_3' => [
+                'type' => 'DATE',
+            ],
+            'tanggal_notifikasi_tahap_1' => [
+                'type' => 'DATE',
+            ],
+            'tanggal_notifikasi_tahap_2' => [
+                'type' => 'DATE',
+            ],
+            'tanggal_notifikasi_tahap_3' => [
+                'type' => 'DATE',
+            ],
+            'jam_notifikasi_tahap_1' => [
                 'type' => 'TIME',
             ],
-            'status_notifikasi' => [
+            'jam_notifikasi_tahap_2' => [
+                'type' => 'TIME',
+            ],
+            'jam_notifikasi_tahap_3' => [
+                'type' => 'TIME',
+            ],
+            'status_notifikasi_tahap_1' => [
                 'type' => 'ENUM',
                 'constraint' => ['Pending', 'Dikirim'],
                 'default' => 'Pending',
+            ],
+            'status_notifikasi_tahap_2' => [
+                'type' => 'ENUM',
+                'constraint' => ['Pending', 'Dikirim'],
+                'default' => 'Pending',
+            ],
+            'status_notifikasi_tahap_3' => [
+                'type' => 'ENUM',
+                'constraint' => ['Pending', 'Dikirim'],
+                'default' => 'Pending',
+            ],
+            'status_jadwal' => [
+                'type' => 'ENUM',
+                'constraint' => ['Aktif', 'Nonaktif'],
+                'default' => 'Aktif',
             ],
         ]);
 
