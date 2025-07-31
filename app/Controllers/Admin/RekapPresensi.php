@@ -44,6 +44,8 @@ class RekapPresensi extends BaseController
                 $spreadsheet->getActiveSheet()->mergeCells('C3:E3');
                 if (!is_null($filter_matkul)) {
                     $spreadsheet->getActiveSheet()->mergeCells('A4:B4');
+                    $spreadsheet->getActiveSheet()->mergeCells('A5:B5');
+                    $spreadsheet->getActiveSheet()->mergeCells('A6:B6');
                     $spreadsheet->getActiveSheet()->mergeCells('C4:E4');
                 }
                 // Set title and headers
@@ -51,18 +53,28 @@ class RekapPresensi extends BaseController
                 $rows = 5;
                 $activeWorksheet->setCellValue('A1', 'REKAP PRESENSI HARIAN');
                 $activeWorksheet->setCellValue('A3', 'TANGGAL');
-                $activeWorksheet->setCellValue('C3', Carbon::createFromFormat('Y-m-d',$filter_tanggal)->locale('id')->translatedFormat('j F Y'));
+                $activeWorksheet->setCellValue('C3', Carbon::createFromFormat('Y-m-d', $filter_tanggal)->locale('id')->translatedFormat('j F Y'));
                 if (!is_null($filter_matkul)) {
                     $matkul = new MatkulModel();
-                    $matkul_result = $matkul->select('matkul.id, matkul.matkul, dosen.nama_dosen')
+                    $matkul_result = $matkul->select('matkul.id, matkul.matkul, dosen.nama_dosen, prodi.nama as nama_prodi')
                         ->join('dosen', 'dosen.id = matkul.dosen_pengampu')
+                        ->join('prodi', 'prodi.id = matkul.prodi_id')
                         ->find($filter_matkul);
                     $nama_matkul = $matkul_result['matkul'] . ' - ' . $matkul_result['nama_dosen'];
                     $activeWorksheet->setCellValue('A' . $headNo, 'Mata Kuliah');
-                    $activeWorksheet->setCellValue('C' . $headNo, $nama_matkul);
+                    $activeWorksheet->setCellValue('C' . $headNo, $matkul_result['matkul']);
+                    $headNo++;
+                    $rows++;
+                    $activeWorksheet->setCellValue('A' . $headNo, 'Nama Dosen');
+                    $activeWorksheet->setCellValue('C' . $headNo, $matkul_result['nama_dosen']);
+                    $headNo++;
+                    $rows++;
+                    $activeWorksheet->setCellValue('A' . $headNo, 'Program Studi');
+                    $activeWorksheet->setCellValue('C' . $headNo, $matkul_result['nama_prodi']);
                     $headNo++;
                     $rows++;
                 }
+
                 $activeWorksheet->setCellValue('A' . $headNo, 'NO');
                 $activeWorksheet->setCellValue('B' . $headNo, 'Nama Mahasiswa');
                 $activeWorksheet->setCellValue('C' . $headNo, 'Tanggal Masuk');
@@ -116,10 +128,10 @@ class RekapPresensi extends BaseController
 
                     $activeWorksheet->setCellValue('A' . $rows, $no++);
                     $activeWorksheet->setCellValue('B' . $rows, $rekap['nama']);
-                    $activeWorksheet->setCellValue('C' . $rows, Carbon::createFromFormat('Y-m-d',$rekap['tanggal'])->locale('id')->translatedFormat('j F Y'));
-                    $activeWorksheet->setCellValue('D' . $rows, Carbon::createFromFormat('H:i:s',$rekap['jam_masuk'])->format('H:i'));
-                    $activeWorksheet->setCellValue('E' . $rows, Carbon::createFromFormat('Y-m-d',$rekap['tanggal'])->locale('id')->translatedFormat('j F Y'));
-                    $activeWorksheet->setCellValue('F' . $rows, Carbon::createFromFormat('H:i:s',$rekap['jam_keluar'])->format('H:i'));
+                    $activeWorksheet->setCellValue('C' . $rows, Carbon::createFromFormat('Y-m-d', $rekap['tanggal'])->locale('id')->translatedFormat('j F Y'));
+                    $activeWorksheet->setCellValue('D' . $rows, Carbon::createFromFormat('H:i:s', $rekap['jam_masuk'])->format('H:i'));
+                    $activeWorksheet->setCellValue('E' . $rows, Carbon::createFromFormat('Y-m-d', $rekap['tanggal'])->locale('id')->translatedFormat('j F Y'));
+                    $activeWorksheet->setCellValue('F' . $rows, Carbon::createFromFormat('H:i:s', $rekap['jam_keluar'])->format('H:i'));
                     $activeWorksheet->setCellValue('G' . $rows, sprintf('%02d jam %02d menit', $jam, $menit));
                     $activeWorksheet->setCellValue('H' . $rows, $keterlambatan > 0 ? sprintf('%02d jam %02d menit', $jam_terlambat, $menit_terlambat) : '-');
                     $activeWorksheet->setCellValue('I' . $rows, $pulang_cepat > 0 ? sprintf('%02d jam %02d menit', $jam_cepat_pulang, $menit_cepat_pulang) : '-');
@@ -142,7 +154,7 @@ class RekapPresensi extends BaseController
                     ],
                 ];
                 $activeWorksheet->getStyle('A' . $headNo . ':I' . $headNo)->applyFromArray($styleArray);
-                $activeWorksheet->getStyle('A' . $rows-1 . ':I' . $rows-1)->applyFromArray($styleArray);
+                $activeWorksheet->getStyle('A' . $rows - 1 . ':I' . $rows - 1)->applyFromArray($styleArray);
 
                 // Output Excel file
                 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

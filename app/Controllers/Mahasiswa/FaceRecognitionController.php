@@ -41,8 +41,8 @@ class FaceRecognitionController extends BaseController
             $python_script = FCPATH . '../../face-detect/face-detect.py';
 
             // Prepare command
-            // $command = "/opt/homebrew/bin/python3.9 $python_script $action $id_mahasiswa 1 " . $tempFile;
-            $command = "python $python_script $action $id_mahasiswa 1 " . $tempFile;
+            $command = "/opt/homebrew/bin/python3.9 $python_script $action $id_mahasiswa 1 " . $tempFile;
+            // $command = "python $python_script $action $id_mahasiswa 1 " . $tempFile;
 
             log_message('info','Command: '.$command);
 

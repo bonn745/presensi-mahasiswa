@@ -140,6 +140,7 @@ use App\Database\Migrations\Jabatan;
                     <ul id="ddmenu_1" class="collapse dropdown-nav">
                         <li><a href="<?= base_url('admin/rekap_harian') ?>">Rekap Harian</a></li>
                         <li><a href="<?= base_url('admin/rekap_bulanan') ?>">Rekap Bulanan</a></li>
+                        <li><a href="<?= url_to('admin.notifikasi.index') ?>">Notifikasi</a></li>
                     </ul>
                 </li>
 
@@ -154,11 +155,6 @@ use App\Database\Migrations\Jabatan;
                         <span class="text">Cicilan Uang Kuliah</span>
                     </a>
                     <ul id="ddmenu_cicilan" class="collapse dropdown-nav">
-                    <li>
-                            <a href="<?= url_to('admin.uangkuliah.jadwal') ?>">
-                                <i class="bi bi-cash-stack me-2"></i>Cicilan Bertahap
-                            </a>
-                        </li>
                         <li>
                             <a href="<?= url_to('admin.uangkuliah.data') ?>">
                                 <i class="bi bi-cash-stack me-2"></i>Data Pembayaran

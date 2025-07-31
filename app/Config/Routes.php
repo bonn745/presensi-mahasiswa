@@ -19,8 +19,14 @@ $routes->get('admin/home', 'Admin\Home::index', ['filter' => 'adminFilter']);
 $routes->get('admin/uang-kuliah/data', 'Admin\UangKuliah::data', ['filter' => 'adminFilter','as' => 'admin.uangkuliah.data']);
 $routes->get('admin/uang-kuliah/jadwal', 'Admin\UangKuliah::jadwal', ['filter' => 'adminFilter','as' => 'admin.uangkuliah.jadwal']);
 $routes->get('admin/uang-kuliah/create', 'Admin\UangKuliah::create', ['filter' => 'adminFilter','as' => 'admin.uangkuliah.create']);
+$routes->get('admin/uang-kuliah/create-jadwal', 'Admin\UangKuliah::createJadwal', ['filter' => 'adminFilter','as' => 'admin.uangkuliah.createjadwal']);
 $routes->post('admin/uang-kuliah/store', 'Admin\UangKuliah::store', ['filter' => 'adminFilter','as' => 'admin.uangkuliah.store']);
+$routes->post('admin/uang-kuliah/store-jadwal', 'Admin\UangKuliah::storeJadwal', ['filter' => 'adminFilter','as' => 'admin.uangkuliah.storeJadwal']);
 $routes->post('admin/uang-kuliah/import', 'Admin\UangKuliah::import', ['filter' => 'adminFilter','as' => 'admin.uangkuliah.import']);
+
+$routes->get('admin/notifikasi', 'Admin\LogNotifikasiController::index', ['filter' => 'adminFilter','as' => 'admin.notifikasi.index']);
+$routes->post('admin/notifikasi/kirim-notifikasi-pembayaran', 'Admin\NotifikasiController::kirimNotifikasiPembayaran', ['filter' => 'adminFilter','as' => 'admin.notifikasi.kirimNotifikasiPembayaran']);
+$routes->post('admin/notifikasi/kirim-notifikasi-rekap-presensi', 'Admin\NotifikasiController::kirimNotifikasiRekapPresensi', ['filter' => 'adminFilter','as' => 'admin.notifikasi.kirimNotifikasiRekapPresensi']);
 
 $routes->get('admin/matkul', 'Admin\Matkul::index', ['filter' => 'adminFilter']);
 $routes->get('admin/matkul/create', 'Admin\Matkul::create', ['filter' => 'adminFilter']);
