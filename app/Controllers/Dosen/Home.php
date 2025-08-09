@@ -59,14 +59,6 @@ class Home extends BaseController
         return view('dosen/home', $data);
     }
 
-    public function rekap_presensi()
-    {
-        $data = [
-            'title' => 'Rekap Presensi'
-        ];
-        return view('dosen/rekap_presensi', $data);
-    }
-
     public function ketidakhadiran()
     {
         $matkulModel = new MatkulModel();
