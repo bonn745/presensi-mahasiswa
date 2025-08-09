@@ -86,7 +86,9 @@ $routes->get('admin/kelas/delete/(:segment)', 'Admin\Kelas::delete/$1', ['filter
 
 
 $routes->get('dosen/home', 'Dosen\Home::index', ['filter' => 'dosenFilter']);
-$routes->get('dosen/rekap-presensi', 'Dosen\Home::rekap_presensi', ['filter' => 'dosenFilter', 'as' => 'dosen.rekapPresensi']);
+$routes->get('dosen/rekap-presensi', 'Dosen\RekapPresensi::index', ['filter' => 'dosenFilter', 'as' => 'dosen.rekapPresensi']);
+$routes->post('dosen/rekap-presensi/cek-pertemuan', 'Dosen\RekapPresensi::cekPertemuan', ['filter' => 'dosenFilter', 'as' => 'dosen.cekPertemuan']);
+$routes->get('dosen/rekap-presensi/unduh', 'Dosen\RekapPresensi::unduh', ['filter' => 'dosenFilter', 'as' => 'dosen.unduh']);
 $routes->get('dosen/ketidakhadiran', 'Dosen\Home::ketidakhadiran', ['filter' => 'dosenFilter', 'as' => 'dosen.ketidakhadiran']);
 $routes->get('dosen/ketidakhadiran/terima/(:segment)', 'Dosen\Home::terimaKetidakhadiran/$1', ['filter' => 'dosenFilter', 'as' => 'dosen.terimaKetidakhadiran']);
 $routes->get('dosen/ketidakhadiran/tolak/(:segment)', 'Dosen\Home::tolakKetidakhadiran/$1', ['filter' => 'dosenFilter', 'as' => 'dosen.tolakKetidakhadiran']);

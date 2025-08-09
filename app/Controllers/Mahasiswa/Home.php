@@ -249,7 +249,7 @@ class Home extends BaseController
     {
         $request = service('request');
 
-        $id_mahasiswa = $request->getPost('id_mahasiswa');
+        $id_mahasiswa = session()->get('id_mahasiswa');
         $tanggal_masuk = date('Y-m-d');
 
         $jam_masuk = $request->getPost('jam_masuk');
