@@ -3,31 +3,47 @@
 namespace App\Controllers\Mahasiswa;
 
 use App\Controllers\BaseController;
+use App\Models\DosenModel;
+use App\Models\KetidakhadiranModel;
 use App\Models\MahasiswaModel;
 use App\Models\MatkulMahasiswa;
 use App\Models\PresensiModel;
 use App\Models\MatkulModel;
+use App\Models\ProdiModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class RekapPresensi extends BaseController
 {
+    private $presensiModel;
+    private $dosenModel;
+    private $matkulModel;
+    private $prodiModel;
+    private $mahasiswaModel;
+    private $ketidakhadiranModel;
+
+    function __construct()
+    {
+        $this->presensiModel = new PresensiModel();
+        $this->dosenModel = new DosenModel();
+        $this->matkulModel = new MatkulModel();
+        $this->prodiModel = new ProdiModel();
+        $this->mahasiswaModel = new MahasiswaModel();
+        $this->ketidakhadiranModel = new KetidakhadiranModel();
+    }
+
     public function index()
     {
         $matkul_mhs = new MatkulMahasiswa();
         $matkulModel = new MatkulModel();
         $id_mhs = session()->get('id_mahasiswa');
         $matkul = $matkul_mhs->where('mhs_id', $id_mhs)->findAll();
-        $ids = [];
 
-        foreach($matkul as $mtkl) {
-            $ids[] = $mtkl['matkul_id'];
-        }
-
-        $dataMatkul = $matkulModel->whereIn('id', $ids)->findAll();
+        $dataMatkul = $matkulModel->whereIn('id', array_column($matkul, 'id'))->findAll();
 
         $presensiModel = new PresensiModel();
         $filter_matkul = $this->request->getVar('matkul');
@@ -165,5 +181,339 @@ class RekapPresensi extends BaseController
         ];
 
         return view('mahasiswa/rekap_presensi', $data);
+    }
+
+    public function cekPertemuan()
+    {
+        $id_matkul = $this->request->getPost('id_matkul');
+        $data = $this->presensiModel->select('tanggal')->where('id_matkul', $id_matkul)->groupBy('tanggal')->orderBy('tanggal', 'ASC')->findAll();
+
+        if (empty($data)) {
+            return response()->setJSON(array(
+                'message' => 'Belum ada data perkuliahan.'
+            ))->setStatusCode(404);
+        }
+
+        $return = null;
+
+        foreach ($data as $key => $value) {
+            $return[] = array(
+                'key' => "Pertemuan ke-" . $key + 1,
+                'value' => $value['tanggal']
+            );
+        }
+
+        sleep(1);
+
+        return response()->setJSON(array(
+            'message' => 'Berhasil',
+            'data' => $return
+        ))->setStatusCode(200);
+    }
+
+    public function exportPdf()
+    {
+
+        $id = $this->request->getGet('matkul');
+        $idMahasiswa = session()->get('id_mahasiswa');
+        $dataMahasiswa = $this->mahasiswaModel->where('id', $idMahasiswa)->first();
+        $semester = $dataMahasiswa['semester'];
+        $idDosen = $this->matkulModel->select('dosen_pengampu')->where('id', $id)->first()['dosen_pengampu'];
+        $namaDosen = $this->dosenModel->select('nama_dosen')->find($idDosen)['nama_dosen'];
+        $pertemuan = $this->request->getGet('pertemuan');
+        $pertemuanText = $this->request->getGet('text');
+        $namaMatkul = $this->matkulModel->select('matkul.matkul')->find($id)['matkul'];
+        $namaProdi = $this->prodiModel->select('nama')->where('matkul.id', $id)->join('matkul', 'matkul.prodi_id = prodi.id')->first()['nama'];
+        $totalPertemuan = 14;
+
+        if (!isset($pertemuanText)) {
+            $kehadiran = null;
+
+            $dataTanggal = $this->presensiModel->select('tanggal')->where('id_matkul', $id)->groupBy('tanggal')->orderBy('tanggal', 'ASC')->findAll();
+
+            $tanggal = [];
+
+            foreach ($dataTanggal as $key => $value) {
+                $tanggal[] = array(
+                    'index' => 'P' . $key + 1,
+                    'pertemuan' => "Pertemuan ke-" . $key + 1,
+                    'tanggal' => $value['tanggal']
+                );
+            }
+
+            $presensi = null;
+
+            for ($i = count($tanggal) + 1; $i <= $totalPertemuan; $i++) {
+                $tanggal[] = array(
+                    'index' => 'P' . $i,
+                    'pertemuan' => "Pertemuan ke-" . $i,
+                    'tanggal' => null
+                );
+            }
+
+            $kehadiran = [];
+            foreach ($tanggal as $t) {
+                if (!empty($t['tanggal'])) {
+                    $result = $this->presensiModel->select('jam_masuk, jam_keluar')
+                        ->where('id_mahasiswa', $dataMahasiswa['id'])
+                        ->where('id_matkul', $id)
+                        ->where('tanggal', $t['tanggal'])
+                        ->first();
+
+                    $izin = $this->ketidakhadiranModel->where('id_mahasiswa', $dataMahasiswa['id'])
+                        ->where('id_matkul', $id)
+                        ->where('status_pengajuan', 'Accept')
+                        ->where('tanggal', $t['tanggal'])
+                        ->first();
+
+                    $kehadiran[] = array(
+                        'index' => $t['index'],
+                        'tanggal' => Carbon::createFromFormat('Y-m-d', $t['tanggal'], 'Asia/Jakarta')->locale('id')->translatedFormat('l, j F Y'),
+                        'pertemuan' => $t['pertemuan'],
+                        'jam_masuk' => $result['jam_masuk'] ?? '-',
+                        'jam_keluar' => $result['jam_keluar'] ?? '-',
+                        'izin' => isset($izin) ? true : false,
+                        'keterangan' => isset($izin) ? $izin['keterangan'] : null
+                    );
+                } else {
+                    $kehadiran[] = array(
+                        'index' => $t['index'],
+                        'tanggal' => '-',
+                        'pertemuan' => $t['pertemuan'],
+                        'jam_masuk' => '-',
+                        'jam_keluar' => '-',
+                        'izin' => false,
+                        'keterangan' => null
+                    );
+                }
+            }
+
+            $presensi = array(
+                'id_mahasiswa' => $dataMahasiswa['id'],
+                'npm_mahasiswa' => $dataMahasiswa['npm'],
+                'nama_mahasiswa' => $dataMahasiswa['nama'],
+                'semester' => $semester,
+                'kehadiran' => $kehadiran
+            );
+
+            $data = array(
+                'program_studi' => $namaProdi,
+                'nama_dosen' => $namaDosen,
+                'mata_kuliah' => $namaMatkul,
+                'presensi' => $presensi,
+                'pertemuan_is_empty' => true,
+            );
+
+            $html = view('mahasiswa/rekap_pdf', $data);
+
+            $options = new Options();
+            $options->set('isRemoteEnabled', true);
+            $options->set('isHtml5ParserEnabled', true);
+
+            $dompdf = new Dompdf($options);
+
+            // Load HTML ke Dompdf
+            $dompdf->loadHtml($html);
+
+            // (Optional) Setup ukuran kertas dan orientasi
+            $dompdf->setPaper('A4', 'landscape');
+
+            // Render HTML ke PDF
+            $dompdf->render();
+
+            // Output PDF
+            return $dompdf->stream('document.pdf', ['Attachment' => false]);
+        } else {
+            $kehadiran = null;
+
+            $dataTanggal = $this->presensiModel->select('tanggal')->where('id_matkul', $id)->groupBy('tanggal')->orderBy('tanggal', 'ASC')->findAll();
+
+            $presensi = [];
+
+            $kehadiran = [];
+            $result = $this->presensiModel->select('jam_masuk, jam_keluar')
+                ->where('id_mahasiswa', $dataMahasiswa['id'])
+                ->where('id_matkul', $id)
+                ->where('tanggal', $pertemuan)
+                ->first();
+
+            $izin = $this->ketidakhadiranModel->where('id_mahasiswa', $dataMahasiswa['id'])
+                ->where('id_matkul', $id)
+                ->where('status_pengajuan', 'Accept')
+                ->where('tanggal', $pertemuan)
+                ->first();
+
+            $kehadiran[] = array(
+                'tanggal' => Carbon::createFromFormat('Y-m-d', $pertemuan, 'Asia/Jakarta')->locale('id')->translatedFormat('l, j F Y'),
+                'pertemuan' => $pertemuanText,
+                'jam_masuk' => $result['jam_masuk'] ?? '-',
+                'jam_keluar' => $result['jam_keluar'] ?? '-',
+                'izin' => isset($izin) ? true : false,
+                'keterangan' => isset($izin) ? $izin['keterangan'] : null
+            );
+
+            $presensi[] = array(
+                'id_mahasiswa' => $dataMahasiswa['id'],
+                'npm_mahasiswa' => $dataMahasiswa['npm'],
+                'nama_mahasiswa' => $dataMahasiswa['nama'],
+                'jam_masuk' => $kehadiran[0]['jam_masuk'],
+                'jam_keluar' => $kehadiran[0]['jam_keluar'] != '00:00:00' ? $kehadiran[0]['jam_keluar'] : '-',
+                'izin' => $kehadiran[0]['izin'],
+                'keterangan' => $kehadiran[0]['keterangan'],
+            );
+
+            $data = array(
+                'program_studi' => $namaProdi,
+                'nama_dosen' => $namaDosen,
+                'mata_kuliah' => $namaMatkul,
+                'pertemuan_is_empty' => false,
+                'pertemuan_text' => $pertemuanText,
+                'tanggal' => Carbon::createFromFormat('Y-m-d', $pertemuan, 'Asia/Jakarta')->locale('id')->translatedFormat('l, j F Y'),
+                'presensi' => $presensi,
+            );
+
+            $html = view('mahasiswa/rekap_pdf', $data);
+
+            $options = new Options();
+            $options->set('isRemoteEnabled', true);
+            $options->set('isHtml5ParserEnabled', true);
+
+            $dompdf = new Dompdf($options);
+
+            // Load HTML ke Dompdf
+            $dompdf->loadHtml($html);
+
+            // (Optional) Setup ukuran kertas dan orientasi
+            $dompdf->setPaper('A4', 'landscape');
+
+            // Render HTML ke PDF
+            $dompdf->render();
+
+            // Output PDF
+            return $dompdf->stream('document.pdf', ['Attachment' => false]);
+        }
+    }
+
+    public function tableData()
+    {
+        sleep(1);
+        $id = $this->request->getGet('matkul');
+        $idMahasiswa = session()->get('id_mahasiswa');
+        $dataMahasiswa = $this->mahasiswaModel->where('id', $idMahasiswa)->first();
+        $semester = $dataMahasiswa['semester'];
+        $idDosen = $this->matkulModel->select('dosen_pengampu')->where('id', $id)->first()['dosen_pengampu'];
+        $namaDosen = $this->dosenModel->select('nama_dosen')->find($idDosen)['nama_dosen'];
+        $pertemuan = $this->request->getGet('pertemuan');
+        $pertemuanText = $this->request->getGet('text');
+        $namaMatkul = $this->matkulModel->select('matkul.matkul')->find($id)['matkul'];
+        $namaProdi = $this->prodiModel->select('nama')->where('matkul.id', $id)->join('matkul', 'matkul.prodi_id = prodi.id')->first()['nama'];
+        $totalPertemuan = 14;
+
+        if (!isset($pertemuanText)) {
+            $kehadiran = null;
+
+            $dataTanggal = $this->presensiModel->select('tanggal')->where('id_matkul', $id)->groupBy('tanggal')->orderBy('tanggal', 'ASC')->findAll();
+
+            $tanggal = [];
+
+            foreach ($dataTanggal as $key => $value) {
+                $tanggal[] = array(
+                    'index' => 'P' . $key + 1,
+                    'pertemuan' => "Pertemuan ke-" . $key + 1,
+                    'tanggal' => $value['tanggal']
+                );
+            }
+
+            for ($i = count($tanggal) + 1; $i <= $totalPertemuan; $i++) {
+                $tanggal[] = array(
+                    'index' => 'P' . $i,
+                    'pertemuan' => "Pertemuan ke-" . $i,
+                    'tanggal' => null
+                );
+            }
+
+            $kehadiran = [];
+            foreach ($tanggal as $t) {
+                if (!empty($t['tanggal'])) {
+                    $result = $this->presensiModel->select('jam_masuk, jam_keluar')
+                        ->where('id_mahasiswa', $dataMahasiswa['id'])
+                        ->where('id_matkul', $id)
+                        ->where('tanggal', $t['tanggal'])
+                        ->first();
+
+                    $izin = $this->ketidakhadiranModel->where('id_mahasiswa', $dataMahasiswa['id'])
+                        ->where('id_matkul', $id)
+                        ->where('status_pengajuan', 'Accept')
+                        ->where('tanggal', $t['tanggal'])
+                        ->first();
+
+                    $kehadiran[] = array(
+                        'index' => $t['index'],
+                        'tanggal' => Carbon::createFromFormat('Y-m-d', $t['tanggal'], 'Asia/Jakarta')->locale('id')->translatedFormat('l, j F Y'),
+                        'pertemuan' => $t['pertemuan'],
+                        'jam_masuk' => $result['jam_masuk'] ?? '-',
+                        'jam_keluar' => $result['jam_keluar'] ?? '-',
+                        'izin' => isset($izin) ? true : false,
+                        'keterangan' => isset($izin) ? $izin['keterangan'] : ''
+                    );
+                } else {
+                    $kehadiran[] = array(
+                        'index' => $t['index'],
+                        'tanggal' => '-',
+                        'pertemuan' => $t['pertemuan'],
+                        'jam_masuk' => '-',
+                        'jam_keluar' => '-',
+                        'izin' => false,
+                        'keterangan' => ''
+                    );
+                }
+            }
+
+            $data = array(
+                'mata_kuliah' => $namaMatkul,
+                'set' => $namaMatkul,
+                'presensi' => $kehadiran,
+            );
+
+            return response()->setJSON($data);
+        } else {
+            $kehadiran = null;
+
+            $dataTanggal = $this->presensiModel->select('tanggal')->where('id_matkul', $id)->groupBy('tanggal')->orderBy('tanggal', 'ASC')->findAll();
+
+            $kehadiran = [];
+            $result = $this->presensiModel->select('jam_masuk, jam_keluar')
+                ->where('id_mahasiswa', $dataMahasiswa['id'])
+                ->where('id_matkul', $id)
+                ->where('tanggal', $pertemuan)
+                ->first();
+
+            $izin = $this->ketidakhadiranModel->where('id_mahasiswa', $dataMahasiswa['id'])
+                ->where('id_matkul', $id)
+                ->where('status_pengajuan', 'Accept')
+                ->where('tanggal', $pertemuan)
+                ->first();
+
+            $kehadiran[] = array(
+                'tanggal' => Carbon::createFromFormat('Y-m-d', $pertemuan, 'Asia/Jakarta')->locale('id')->translatedFormat('l, j F Y'),
+                'pertemuan' => $pertemuanText,
+                'jam_masuk' => $result['jam_masuk'] ?? '-',
+                'jam_keluar' => $result['jam_keluar'] ?? '-',
+                'izin' => isset($izin) ? true : false,
+                'keterangan' => isset($izin) ? $izin['keterangan'] : ''
+            );
+
+            $data = array(
+                'program_studi' => $namaProdi,
+                'nama_dosen' => $namaDosen,
+                'mata_kuliah' => $namaMatkul,
+                'pertemuan_is_empty' => false,
+                'pertemuan_text' => $pertemuanText,
+                'tanggal' => Carbon::createFromFormat('Y-m-d', $pertemuan, 'Asia/Jakarta')->locale('id')->translatedFormat('l, j F Y'),
+                'presensi' => $kehadiran,
+            );
+
+            return response()->setJSON($data);
+        }
     }
 }
