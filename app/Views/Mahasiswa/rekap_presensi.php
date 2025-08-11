@@ -6,7 +6,7 @@
         <form class="row g-3 mb-3">
             <div class="col-md-4">
                 <div class="input-style-1">
-                    <select id="matkul" class="form-control" name="matkul">
+                    <select id="matkul" class="form-control" name="matkul" onchange="cekPertemuan()">
                         <option value="" disabled selected>-- Pilih Mata Kuliah--</option>
                         <?php foreach ($data_matkul as $mtkl) : ?>
                             <option value="<?= $mtkl['id'] ?>"><?= $mtkl['matkul'] ?></option>
@@ -14,18 +14,26 @@
                     </select>
                 </div>
             </div>
-            <div class="col-md-auto">
-                <button type="submit" class="btn btn-primary">Tampilkan</button>
+            <div class="col-md-4 d-none" id="loading-indicator">
+                <i class="fa fa-spinner fa-spin align-bottom"></i>
             </div>
-            <div class="col-md-auto">
-                <button type="submit" name="excel" class="btn btn-success">Export PDF</button>
+            <div class="col-md-4 d-none" id="select-pertemuan">
+                <select class="form-select" name="pertemuan" id="pertemuan" onchange="updatePertemuan()">
+                </select>
             </div>
+            <div class="col-md-auto" id="tampilkan-btn">
+                <button type="button" class="btn btn-primary" onclick="updateTable()" id="btn-tampilkan">Tampilkan</button>
+            </div>
+            <div class="col-md-auto d-none" id="unduh-rekap">
+                <a type="button" href="#" target="_blank" class="btn btn-primary" id="unduh-ref"><i class="fa fa-download"></i> Unduh PDF</a>
+            </div>
+            <input type="hidden" name="table-data" id="table-data" value="">
         </form>
-
-        <?php if(!empty($nama_matkul)) : ?>
-        <p><strong>Menampilkan data:</strong>
-        <?= $nama_matkul ?>
-        </p>
+        <hr>
+        <?php if (!empty($nama_matkul)) : ?>
+            <p><strong>Menampilkan data:</strong>
+                <?= $nama_matkul ?>
+            </p>
         <?php endif; ?>
 
         <div class="table-responsive">
@@ -33,97 +41,115 @@
                 <thead class="table-primary">
                     <tr>
                         <th>No</th>
-                        <th>Mata Kuliah</th>
                         <th>Tanggal</th>
+                        <th>Pertemuan</th>
                         <th>Jam Masuk</th>
                         <th>Jam Keluar</th>
-                        <th>Total Jam Kuliah</th>
-                        <th>Total Keterlambatan</th>
-                        <th>Total Cepat Pulang</th>
+                        <th>Keterangan</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <?php if ($rekap_presensi) : ?>
-                        <?php $no = 1; ?>
-                        <?php foreach ($rekap_presensi as $rekap) : ?>
-                            <?php
-                            $hari_presensi = Carbon\Carbon::createFromFormat('Y-m-d',$rekap['tanggal'])->locale('id')->translatedFormat('l');
-                            $hari_kelas = $rekap['kelas_hari'] ?? '';
-                            $timestamp_jam_masuk = strtotime($rekap['jam_masuk']);
-                            $timestamp_jam_keluar = strtotime($rekap['jam_keluar']);
-                            $selisih = $timestamp_jam_keluar - $timestamp_jam_masuk;
-                            $jam = floor($selisih / 3600);
-                            $menit = floor(($selisih % 3600) / 60);
-
-                            // Hitung keterlambatan
-                            $jam_masuk_real = strtotime($rekap['jam_masuk']);
-                            $jam_masuk_kampus = isset($rekap['jam_masuk_kampus']) ? strtotime($rekap['jam_masuk_kampus']) : $jam_masuk_real;
-                            $selisih_terlambat = $jam_masuk_real - $jam_masuk_kampus;
-                            $jam_terlambat = floor($selisih_terlambat / 3600);
-                            $menit_terlambat = floor(($selisih_terlambat % 3600) / 60);
-
-                            // Hitung pulang cepat hanya jika ada presensi keluar
-                            $jam_cepat_pulang = 0;
-                            $menit_cepat_pulang = 0;
-                            $selisih_cepat_pulang = 0;
-
-                            if ($rekap['jam_keluar'] != '00:00:00') {
-                                $jam_keluar_real = strtotime($rekap['jam_keluar']);
-                                $jam_pulang_kampus = strtotime($rekap['jam_pulang_kampus']);
-
-                                if ($jam_keluar_real < $jam_pulang_kampus) {
-                                    $selisih_cepat_pulang = $jam_pulang_kampus - $jam_keluar_real;
-                                    $jam_cepat_pulang = floor($selisih_cepat_pulang / 3600);
-                                    $menit_cepat_pulang = floor(($selisih_cepat_pulang % 3600) / 60);
-                                }
-                            }
-
-                            if($hari_kelas == $hari_presensi) :
-                            ?>
-                            <tr>
-                                <td><?= $no++ ?></td>
-                                <td><?= $rekap['nama_matkul'] ?></td>
-                                <td><?= \Carbon\Carbon::parse($rekap['tanggal'])->locale('id')->translatedFormat('l, j F Y') ?></td>
-                                <td><?= date('H:i',strtotime($rekap['jam_masuk']    )) ?></td>
-                                <td><?= date('H:i', strtotime($rekap['jam_keluar'])) ?></td>
-                                <td>
-                                    <?php if ($rekap['jam_keluar'] == '00:00:00') : ?>
-                                        0 Jam 0 Menit
-                                    <?php else : ?>
-                                        <?= $jam . ' Jam ' . $menit . ' Menit' ?>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <?php if ($jam_terlambat < 0 || $menit_terlambat < 0) : ?>
-                                        <span class="badge bg-success">On Time</span>
-                                    <?php else : ?>
-                                        <span class="badge bg-danger">
-                                            <?= $jam_terlambat . ' Jam ' . $menit_terlambat . ' Menit' ?>
-                                        </span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <?php if ($rekap['jam_keluar'] == '00:00:00') : ?>
-                                        <span class="badge bg-warning">Menunggu Presensi Keluar</span>
-                                    <?php elseif ($selisih_cepat_pulang > 0) : ?>
-                                        <span class="badge bg-warning">
-                                            <?= $jam_cepat_pulang . ' Jam ' . $menit_cepat_pulang . ' Menit' ?>
-                                        </span>
-                                    <?php else : ?>
-                                        <span class="badge bg-success">Tepat Waktu</span>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        <?php endif; endforeach; ?>
-                    <?php else : ?>
-                        <tr>
-                            <td colspan="9" class="text-muted">Data Tidak Tersedia</td>
-                        </tr>
-                    <?php endif; ?>
+                <tbody id="body-data">
+                    <tr>
+                        <td colspan="6">Silakan pilih Mata Kuliah dan Klik "Tampilkan"</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script type="application/javascript">
+    function cekPertemuan() {
+        $('#loading-indicator').removeClass('d-none');
+        $('#select-pertemuan').addClass('d-none');
+        $('#unduh-rekap').addClass('d-none');
+        $('#tampilkan-btn').addClass('d-none');
+        var id = $('#matkul').val();
+        var pertemuan = $('#pertemuan').val() == null ? '' : $('#pertemuan').val();
+        var csrf = $('input[name="csrf_test_name"]').val();
+        $.ajax({
+            url: '<?= url_to("mahasiswa.cekPertemuan") ?>',
+            type: 'POST',
+            data: {
+                csrf_test_name: csrf,
+                id_matkul: id
+            },
+            success: function(message, status, jqXHR) {
+                $('#loading-indicator').addClass('d-none');
+                var data = message.data;
+                var option = '<option selected disabled>- Pilih Pertemuan -</option>';
+                data.forEach(function(value, index) {
+                    option += '<option value="' + value.value + '">' + value.key + '</option>';
+                });
+                $('#pertemuan').html(option);
+                $('#select-pertemuan').removeClass('d-none');
+                $('#unduh-rekap').removeClass('d-none');
+                $('#unduh-ref').attr('href', '<?= url_to("mahasiswa.unduh") ?>?matkul=' + id + '&pertemuan=' + pertemuan);
+                $('#table-data').val('<?= url_to("mahasiswa.tableData") ?>?matkul=' + id + '&pertemuan=' + pertemuan);
+                $('#tampilkan-btn').removeClass('d-none');
+
+            },
+            error: function(error) {
+                $('#loading-indicator').addClass('d-none');
+                $('#tampilkan-btn').removeClass('d-none');
+            }
+        });
+    }
+
+    function updatePertemuan() {
+        var id = $('#matkul').val();
+        var tanggal = $('#pertemuan').val();
+        var text = $("#pertemuan option:selected").text();
+        $('#unduh-ref').attr('href', '<?= url_to("mahasiswa.unduh") ?>?matkul=' + id + '&pertemuan=' + tanggal + '&text=' + text);
+        $('#table-data').val('<?= url_to("mahasiswa.tableData") ?>?matkul=' + id + '&pertemuan=' + tanggal + '&text=' + text);
+    }
+
+    function updateTable() {
+        $('#btn-tampilkan').html('<i class="fa fa-spinner fa-spin"></i>');
+        $('#btn-tampilkan').attr('disabled', true);
+        var url = $('#table-data').val();
+        var csrf = $('input[name="csrf_test_name"]').val();
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {
+                csrf_test_name: csrf,
+            },
+            success: function(message, status, jqXHR) {
+                $('#btn-tampilkan').html('Tampilkan');
+                $('#btn-tampilkan').removeAttr('disabled');
+                var data = '';
+                var index = 1;
+                message.presensi.forEach(function(val){
+                    data += '<tr>' +
+                    '<td>'+ index +
+                    '</td>'+
+                    '<td>'+ val.tanggal +
+                    '</td>'+
+                    '<td>'+ val.pertemuan +
+                    '</td>'+
+                    '<td>'+ val.jam_masuk +
+                    '</td>'+
+                    '<td>'+ val.jam_keluar +
+                    '</td>'+
+                    '<td>'+ val.keterangan +
+                    '</td>'+
+                    '</tr>';
+
+                    index++;
+                });
+
+                $('#body-data').html(data);
+            },
+            error: function(error) {
+                $('#btn-tampilkan').html('Tampilkan');
+                $('#btn-tampilkan').removeAttr('disabled');
+                $('#body-data').html('<tr><td style="color:red" colspan="6" align="center">Silakan pilih Mata Kuliah.</td></tr>');
+            }
+        });
+    }
+</script>
 <?= $this->endSection() ?>
