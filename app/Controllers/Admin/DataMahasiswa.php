@@ -8,6 +8,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\MahasiswaModel;
 use App\Models\UserMahasiswa;
 use App\Models\LokasiPresensiModel;
+use App\Models\ProdiModel;
 use App\Models\UserModel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
@@ -18,7 +19,7 @@ class DataMahasiswa extends BaseController
         $mahasiswaModel = new MahasiswaModel();
         $data = [
             'title' => 'Data mahasiswa',
-            'mahasiswa' => $mahasiswaModel->findAll()
+            'mahasiswa' => $mahasiswaModel->select('mahasiswa.id, npm, mahasiswa.nama as nama_mahasiswa, jenis_kelamin, semester, prodi.nama as nama_prodi, foto, nama_ortu, nohp_ortu')->join('prodi', 'prodi.id = mahasiswa.prodi')->findAll()
         ];
         return view('admin/data_mahasiswa/data_mahasiswa', $data);
     }
@@ -41,9 +42,12 @@ class DataMahasiswa extends BaseController
 
     public function create()
     {
+        $prodiModel = new ProdiModel();
+        $prodi = $prodiModel->findAll();
         $data = [
             'title' => 'Tambah Mahasiswa',
-            'validation' => \Config\Services::validation()
+            'validation' => \Config\Services::validation(),
+            'prodi' => $prodi,
         ];
         return view('admin/data_mahasiswa/create', $data);
     }
@@ -62,10 +66,10 @@ class DataMahasiswa extends BaseController
     public function store()
     {
         $rules = [
-            'nim' => [
+            'npm' => [
                 'rules' => 'required',
                 'errors' => [
-                    'required' => "NIM Wajib Diisi"
+                    'required' => "NPM Wajib Diisi"
                 ],
             ],
             'nama' => [
@@ -101,10 +105,10 @@ class DataMahasiswa extends BaseController
                     'required' => "Semester Wajib Diisi"
                 ],
             ],
-            'jurusan' => [
+            'prodi' => [
                 'rules' => 'required',
                 'errors' => [
-                    'required' => "Jurusan Wajib Diisi"
+                    'required' => "Program studi wajib diisi"
                 ],
             ],
             'foto' => [
@@ -155,15 +159,17 @@ class DataMahasiswa extends BaseController
         ];
 
         if (!$this->validate($rules)) {
+            $prodiModel = new ProdiModel();
+            $prodi = $prodiModel->findAll();
             $data = [
                 'title' => 'Tambah Mahasiswa',
-                'validation' => \Config\Services::validation()
+                'validation' => \Config\Services::validation(),
+                'prodi' => $prodi,
             ];
             return view('admin/data_mahasiswa/create', $data);
         }
 
         $mahasiswaModel = new MahasiswaModel();
-        // $nimBaru = $this->generateNIM();
 
         $foto = $this->request->getFile('foto');
         if ($foto->getError() == 4) {
@@ -174,13 +180,13 @@ class DataMahasiswa extends BaseController
         }
 
         $mahasiswaModel->insert([
-            'nim' => $this->request->getPost('nim'),
+            'npm' => $this->request->getPost('npm'),
             'nama' => $this->request->getPost('nama'),
             'jenis_kelamin' => $this->request->getPost('jenis_kelamin'),
             'alamat' => $this->request->getPost('alamat'),
             'no_handphone' => $this->request->getPost('no_handphone'),
             'semester' => $this->request->getPost('semester'),
-            'jurusan' => $this->request->getPost('jurusan'),
+            'prodi' => $this->request->getPost('prodi'),
             'foto' => $nama_foto,
             'nama_ortu' => $this->request->getPost('nama_ortu'),
             'jk_ortu' => $this->request->getPost('jenis_kelamin_ortu'),

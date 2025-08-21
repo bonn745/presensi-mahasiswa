@@ -35,10 +35,10 @@
                     <tr>
                         <td><?= $no++ ?></td>
                         <td><?= $mhs['npm'] ?></td>
-                        <td><?= $mhs['nama'] ?></td>
+                        <td><?= $mhs['nama_mahasiswa'] ?></td>
                         <td><?= $mhs['jenis_kelamin'] ?></td>
                         <td><?= $mhs['semester'] ?></td>
-                        <td><?= $mhs['prodi'] ?></td>
+                        <td><?= $mhs['nama_prodi'] ?></td>
                         <td>
                             <?php if (!empty($mhs['foto'])) : ?>
                                 <img src="<?= base_url('profile/' . $mhs['foto']) ?>"

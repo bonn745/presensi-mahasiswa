@@ -10,11 +10,11 @@
 
             <!-- NIM -->
             <div class="input-style-1">
-                <label for="nim">NIM</label>
-                <input type="text" class="form-control<?= ($validation->hasError('nim')) ? ' is-invalid' : '' ?>"
-                    name="nim" id="nim" placeholder="Nomor Induk Mahasiswa"
-                    value="<?= set_value('nim', $mahasiswa['nim'] ?? '') ?>" />
-                <div class="invalid-feedback"><?= $validation->getError('nim') ?></div>
+                <label for="npm">NIM</label>
+                <input type="text" class="form-control<?= ($validation->hasError('npm')) ? ' is-invalid' : '' ?>"
+                    name="npm" id="npm" placeholder="Nomor Pokok Mahasiswa"
+                    value="<?= set_value('npm', $mahasiswa['npm'] ?? '') ?>" />
+                <div class="invalid-feedback"><?= $validation->getError('npm') ?></div>
             </div>
 
             <!-- Nama -->
@@ -66,13 +66,15 @@
                 <div class="invalid-feedback"><?= $validation->getError('semester') ?></div>
             </div>
 
-            <!-- Jurusan -->
             <div class="input-style-1">
-                <label for="jurusan">Program Studi</label>
-                <input id="jurusan" type="text" class="form-control<?= ($validation->hasError('jurusan')) ? ' is-invalid' : '' ?>"
-                    name="jurusan" placeholder="Program Studi"
-                    value="<?= set_value('jurusan', $mahasiswa['jurusan'] ?? '') ?>" />
-                <div class="invalid-feedback"><?= $validation->getError('jurusan') ?></div>
+                <label for="prodi">Program Studi</label>
+                <select id="prodi" name="prodi" class="form-control<?= ($validation->hasError('prodi')) ? ' is-invalid' : '' ?>">
+                    <option value="" disabled selected>-- Pilih Program Studi --</option>
+                    <?php foreach ($prodi as $prd): ?>
+                        <option value="<?= $prd["id"] ?>" <?= set_value('prodi', $mahasiswa['prodi'] ?? '') == $i ? 'selected' : '' ?>><?= $prd["nama"] ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <div class="invalid-feedback"><?= $validation->getError('prodi') ?></div>
             </div>
 
             <!-- Foto -->
