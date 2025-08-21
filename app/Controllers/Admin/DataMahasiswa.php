@@ -210,11 +210,14 @@ class DataMahasiswa extends BaseController
     {
         $lokasi_presensi = new LokasiPresensiMOdel();
         $mahasiswaModel = new MahasiswaModel();
+        $prodiModel = new ProdiModel();
+        $prodi = $prodiModel->findAll();
         $data = [
             'title' => 'Edit mahasiswa',
             'mahasiswa' => $mahasiswaModel->editmahasiswa($id),
             'lokasi_presensi' => $lokasi_presensi->findAll(),
-            'validation' => \Config\Services::validation()
+            'validation' => \Config\Services::validation(),
+            'prodi' => $prodi,
         ];
 
         return view('admin/data_mahasiswa/edit', $data);
@@ -223,10 +226,10 @@ class DataMahasiswa extends BaseController
     public function update($id)
     {
         $rules = [
-            'nim' => [
+            'npm' => [
                 'rules' => 'required',
                 'errors' => [
-                    'required' => "NIM Wajib Diisi"
+                    'required' => "NPM Wajib Diisi"
                 ],
             ],
             'nama' => [
@@ -262,23 +265,10 @@ class DataMahasiswa extends BaseController
                     'required' => "Semester Wajib Diisi"
                 ],
             ],
-            'jurusan' => [
+            'prodi' => [
                 'rules' => 'required',
                 'errors' => [
-                    'required' => "Jurusan Wajib Diisi"
-                ],
-            ],
-            'username' => [
-                'rules' => 'required|is_unique[users.username,id_mahasiswa,' . $id . ']',
-                'errors' => [
-                    'required' => "Username Wajib Diisi",
-                    'is_unique' => "Username sudah digunakan"
-                ],
-            ],
-            'password' => [
-                'rules' => 'permit_empty|min_length[6]',
-                'errors' => [
-                    'min_length' => "Password minimal 6 karakter"
+                    'required' => "Program studi Wajib Diisi"
                 ],
             ],
             'nama_ortu' => [
@@ -346,7 +336,7 @@ class DataMahasiswa extends BaseController
                 'alamat' => $this->request->getPost('alamat'),
                 'no_handphone' => $this->request->getPost('no_handphone'),
                 'semester' => $this->request->getPost('semester'),
-                'jurusan' => $this->request->getPost('jurusan'),
+                'prodi' => $this->request->getPost('prodi'),
                 'foto' => $nama_foto,
                 'nama_ortu' => $this->request->getPost('nama_ortu'),
                 'jk_ortu' => $this->request->getPost('jenis_kelamin_ortu'),
