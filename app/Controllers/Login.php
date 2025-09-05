@@ -59,6 +59,7 @@ class Login extends BaseController
                     }
                     $session_data = [
                         'username' => $cekusername['username'],
+                        'nama_mahasiswa' => $dataMahasiswa['nama'],
                         'logged_in' => true,
                         'role_id' => $cekusername['role'],
                         'id_mahasiswa' => $cekusername['id_mahasiswa'],
