@@ -2,9 +2,9 @@
 <?= $this->section('content') ?>
 
 <form class="row g-3 mb-3" method="GET">
-    <div class="col-md-4">
+    <div class="col-md-2">
         <select name="filter_bulan" class="form-select">
-            <option value="">-- Pilih Bulan --</option>
+            <option value="" selected disabled>-- Pilih Bulan --</option>
             <?php
             $bulan_array = [
                 '01' => 'Januari',
@@ -27,15 +27,25 @@
             ?>
         </select>
     </div>
-
-    <div class="col-md-4">
+    <div class="col-md-2">
         <select name="filter_tahun" class="form-select">
-            <option value="">-- Pilih Tahun --</option>
+            <option value="" selected disabled>-- Pilih Tahun --</option>
             <?php
             $tahun_sekarang = date('Y');
             for ($i = $tahun_sekarang; $i >= $tahun_sekarang - 5; $i--) {
                 $selected = ($filter_tahun ?? '') == $i ? 'selected' : '';
                 echo "<option value='$i' $selected>$i</option>";
+            }
+            ?>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select name="filter_matkul" class="form-select">
+            <option value="" selected disabled>-- Mata Kuliah --</option>
+            <?php
+            foreach ($mata_kuliah as $matkul) {
+                $selected = ($filter_matkul ?? '') == $i ? 'selected' : '';
+                echo "<option value='".$matkul['id']."' $selected>".$matkul['matkul']."</option>";
             }
             ?>
         </select>

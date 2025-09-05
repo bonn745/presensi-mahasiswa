@@ -56,7 +56,9 @@
     $tanggal = Carbon::createFromDate($tahun, $bulan, 1);
     ?>
     <p><strong>Bulan:</strong> <?= $tanggal->isoFormat('MMMM YYYY') ?></p>
-
+    <?php if($matkul != null) : ?>
+    <p><strong>Mata Kuliah:</strong> <?= $matkul ?></p>
+        <?php endif ?>
 
     <table>
         <thead>
