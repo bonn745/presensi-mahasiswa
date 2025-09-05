@@ -3,9 +3,11 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
+use App\Models\DosenModel;
 use App\Models\MatkulModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\PresensiModel;
+use App\Models\ProdiModel;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -199,10 +201,18 @@ class RekapPresensi extends BaseController
     {
         $presensi_model = new PresensiModel();
         $matkul_model = new MatkulModel();
+        $dosen_model = new DosenModel();
+        $prodi_model = new ProdiModel();
         $filter_tanggal = $this->request->getVar('filter_tanggal');
         $filter_bulan = $this->request->getVar('filter_bulan');
         $filter_tahun = $this->request->getVar('filter_tahun');
         $filter_matkul = $this->request->getVar('filter_matkul');
+
+        if (isset($filter_matkul)) {
+            $matkul = $matkul_model->find($filter_matkul);
+            $prodi = $prodi_model->find($matkul['prodi_id']);
+            $dosen = $dosen_model->find($matkul['dosen_pengampu']);
+        }
 
         if ($filter_bulan) {
             if (isset($_GET['pdf'])) {
@@ -256,7 +266,9 @@ class RekapPresensi extends BaseController
                     'rekap_bulanan' => $rekap_bulanan,
                     'bulan' => $filter_bulan,
                     'tahun' => $filter_tahun,
-                    'matkul' => $matkul_model->find($filter_matkul)['matkul'] ?? null
+                    'matkul' => $matkul_model->find($filter_matkul)['matkul'] ?? null,
+                    'prodi' => $prodi['nama'] ?? null,
+                    'dosen' => $dosen['nama_dosen'] ?? null,
                 ];
 
                 $html = view('admin/rekap_presensi/pdf_rekap_bulanan', $data);
@@ -283,6 +295,9 @@ class RekapPresensi extends BaseController
             'rekap_bulanan' => $rekap_bulanan,
             'tanggal' => $filter_tanggal,
             'mata_kuliah' => $matkul_model->findAll(),
+            'prodi' => $prodi['nama'] ?? null,
+            'dosen' => $dosen['nama_dosen'] ?? null,
+            'matkul' => $matkul_model->find($filter_matkul) ?? null
         ];
 
         return view('admin/rekap_presensi/rekap_bulanan', $data);

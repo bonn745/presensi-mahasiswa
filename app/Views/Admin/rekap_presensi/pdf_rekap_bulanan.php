@@ -56,9 +56,13 @@
     $tanggal = Carbon::createFromDate($tahun, $bulan, 1);
     ?>
     <p><strong>Bulan:</strong> <?= $tanggal->isoFormat('MMMM YYYY') ?></p>
-    <?php if($matkul != null) : ?>
-    <p><strong>Mata Kuliah:</strong> <?= $matkul ?></p>
-        <?php endif ?>
+    <?php if ($matkul != null) : ?>
+        <p>
+            <strong>Dosen:</strong> <?= $dosen ?><br>
+            <strong>Program Studi:</strong> <?= $prodi ?><br>
+            <strong>Mata Kuliah:</strong> <?= $matkul ?> <br>
+        </p>
+    <?php endif ?>
 
     <table>
         <thead>
@@ -110,25 +114,32 @@
                         <td><?= $rekap['npm'] ?></td>
                         <td><?= $rekap['nama'] ?></td>
                         <td><?= $rekap['nama_matkul'] ?></td>
-                        <td><?= Carbon::createFromFormat('Y-m-d',date('Y-m-d', strtotime($rekap['tanggal'])))->locale('id')->translatedFormat('l, j F Y') ?></td>
+                        <td><?= Carbon::createFromFormat('Y-m-d', date('Y-m-d', strtotime($rekap['tanggal'])))->locale('id')->translatedFormat('l, j F Y') ?></td>
                         <td><?= date('H:i', strtotime($rekap['jam_masuk'])) ?></td>
                         <td><?= $rekap['jam_keluar'] == '00:00:00' ? '-' : date('H:i', strtotime($rekap['jam_keluar'])) ?></td>
                         <!-- <td><?= $jam . ' jam ' . $menit . ' menit' ?></td>
                         <td>
-                            <?php //if ($jam_terlambat > 0 || $menit_terlambat > 0): ?>
+                            <?php //if ($jam_terlambat > 0 || $menit_terlambat > 0): 
+                            ?>
                                 <span class="badge-danger"><?= $jam_terlambat . ' jam ' . $menit_terlambat . ' menit' ?></span>
-                            <?php //else: ?>
+                            <?php //else: 
+                            ?>
                                 <span class="badge-success">On Time</span>
-                            <?php //endif; ?>
+                            <?php //endif; 
+                            ?>
                         </td>
                         <td>
-                            <?php //if ($rekap['jam_keluar'] == '00:00:00' || $rekap['tanggal'] == null): ?>
+                            <?php //if ($rekap['jam_keluar'] == '00:00:00' || $rekap['tanggal'] == null): 
+                            ?>
                                 <span class="badge-warning">Menunggu Presensi Keluar</span>
-                            <?php //elseif ($cepat_pulang > 0): ?>
+                            <?php //elseif ($cepat_pulang > 0): 
+                            ?>
                                 <span class="badge-warning"><?= $jam_cepat_pulang . ' jam ' . $menit_cepat_pulang . ' menit' ?></span>
-                            <?php //else: ?>
+                            <?php //else: 
+                            ?>
                                 <span class="badge-success">Tepat Waktu</span>
-                            <?php //endif; ?>
+                            <?php //endif; 
+                            ?>
                         </td> -->
                     </tr>
                 <?php endforeach; ?>
