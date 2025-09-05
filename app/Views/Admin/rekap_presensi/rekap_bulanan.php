@@ -45,7 +45,7 @@
             <?php
             foreach ($mata_kuliah as $matkul) {
                 $selected = ($filter_matkul ?? '') == $i ? 'selected' : '';
-                echo "<option value='".$matkul['id']."' $selected>".$matkul['matkul']."</option>";
+                echo "<option value='" . $matkul['id'] . "' $selected>" . $matkul['matkul'] . "</option>";
             }
             ?>
         </select>
@@ -68,8 +68,13 @@ if (empty($tanggal) && !empty($filter_bulan) && !empty($filter_tahun)) {
     $tanggal = $filter_tahun . '-' . $filter_bulan . '-01'; // default ke tanggal 1
 }
 ?>
-<p><strong>Menampilkan data:</strong>
-    <?= Carbon::parse($tanggal ?? Carbon::now())->locale('id')->isoFormat('MMMM YYYY') ?>
+<p>
+    <strong>Menampilkan data:</strong> <?= Carbon::parse($tanggal ?? Carbon::now())->locale('id')->isoFormat('MMMM YYYY') ?> <br>
+    <?php if ($dosen != null) : ?>
+        <strong>Dosen:</strong> <?= $dosen ?><br>
+        <strong>Mata Kuliah:</strong> <?= $matkul['matkul'] ?><br>
+        <strong>Program Studi:</strong> <?= $prodi ?><br>
+    <?php endif; ?>
 </p>
 
 <div class="table-responsive">
