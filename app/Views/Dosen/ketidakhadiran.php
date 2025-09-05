@@ -30,9 +30,9 @@
                         </td>
                         <td>
                             <?php if (!empty($x['file'])) : ?>
-                                <img src="<?= base_url('file_ketidakhadiran/' . $x['file']) ?>"
-                                    alt="Foto Mahasiswa"
-                                    style="width: 60px; height: 60px; object-fit: cover;">
+                                <a class="badge bg-info text-white m-2 p-2" href="<?= base_url('file_ketidakhadiran/' . $x['file']) ?>" target="_blank">
+                                    Lihat File
+                                </a>
                             <?php else : ?>
                                 <span class="text-muted">Tidak Ada Foto</span>
                             <?php endif; ?>
