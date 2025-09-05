@@ -198,13 +198,15 @@ class RekapPresensi extends BaseController
     public function rekap_bulanan()
     {
         $presensi_model = new PresensiModel();
+        $matkul_model = new MatkulModel();
         $filter_tanggal = $this->request->getVar('filter_tanggal');
         $filter_bulan = $this->request->getVar('filter_bulan');
         $filter_tahun = $this->request->getVar('filter_tahun');
+        $filter_matkul = $this->request->getVar('filter_matkul');
 
         if ($filter_bulan) {
             if (isset($_GET['pdf'])) {
-                $rekap_bulanan = $presensi_model->rekap_bulanan_filter($filter_bulan, $filter_tahun);
+                $rekap_bulanan = $presensi_model->rekap_bulanan_filter($filter_bulan, $filter_tahun, $filter_matkul);
 
                 foreach ($rekap_bulanan as &$rekap) {
                     // Hitung total jam kuliah
@@ -254,6 +256,7 @@ class RekapPresensi extends BaseController
                     'rekap_bulanan' => $rekap_bulanan,
                     'bulan' => $filter_bulan,
                     'tahun' => $filter_tahun,
+                    'matkul' => $matkul_model->find($filter_matkul)['matkul'] ?? null
                 ];
 
                 $html = view('admin/rekap_presensi/pdf_rekap_bulanan', $data);
@@ -263,7 +266,7 @@ class RekapPresensi extends BaseController
                 $dompdf->stream('rekap_presensi_bulanan.pdf', ['Attachment' => false]);
                 exit;
             } else {
-                $rekap_bulanan = $presensi_model->rekap_bulanan_filter($filter_bulan, $filter_tahun);
+                $rekap_bulanan = $presensi_model->rekap_bulanan_filter($filter_bulan, $filter_tahun, $filter_matkul);
             }
         } else {
             $rekap_bulanan = $presensi_model->rekap_bulanan();
@@ -278,7 +281,8 @@ class RekapPresensi extends BaseController
             'bulan' => $filter_bulan,
             'tahun' => $filter_tahun,
             'rekap_bulanan' => $rekap_bulanan,
-            'tanggal' => $filter_tanggal
+            'tanggal' => $filter_tanggal,
+            'mata_kuliah' => $matkul_model->findAll(),
         ];
 
         return view('admin/rekap_presensi/rekap_bulanan', $data);
