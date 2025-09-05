@@ -66,6 +66,7 @@ class PresensiModel extends Model
         $builder = $db->table('presensi');
         $builder->select('
         presensi.*, 
+        mahasiswa.npm, 
         mahasiswa.nama, 
         kelas.jam_masuk as jam_masuk_kampus, 
         kelas.jam_pulang as jam_pulang_kampus,
@@ -74,7 +75,7 @@ class PresensiModel extends Model
         $builder->join('mahasiswa', 'mahasiswa.id = presensi.id_mahasiswa');
         $builder->join('kelas', 'kelas.id_matkul = presensi.id_matkul');
         $builder->join('matkul', 'matkul.id = presensi.id_matkul');
-        $builder->where('MONTH(tanggal)', date('m'));
+        $builder->where('MONTH(tanggal)', '08');
         $builder->where('YEAR(tanggal)', date('Y'));
         $builder->orderBy('presensi.tanggal', 'DESC');
         return $builder->get()->getResultArray();
@@ -86,6 +87,7 @@ class PresensiModel extends Model
         $builder = $db->table('presensi');
         $builder->select('
         presensi.*, 
+        mahasiswa.npm, 
         mahasiswa.nama, 
         kelas.jam_masuk as jam_masuk_kampus, 
         kelas.jam_pulang as jam_pulang_kampus,

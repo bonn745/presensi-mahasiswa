@@ -67,14 +67,15 @@ if (empty($tanggal) && !empty($filter_bulan) && !empty($filter_tahun)) {
         <thead class="table-primary">
             <tr>
                 <th>No</th>
+                <th>NPM</th>
                 <th>Nama Mahasiswa</th>
                 <th>Mata Kuliah</th>
                 <th>Tanggal</th>
                 <th>Jam Masuk</th>
                 <th>Jam Keluar</th>
-                <th>Total Jam Kuliah</th>
+                <!-- <th>Total Jam Kuliah</th>
                 <th>Total Keterlambatan</th>
-                <th>Total Cepat Pulang</th>
+                <th>Total Cepat Pulang</th> -->
             </tr>
         </thead>
         <tbody>
@@ -100,7 +101,7 @@ if (empty($tanggal) && !empty($filter_bulan) && !empty($filter_tahun)) {
                     $menit_cepat_pulang = 0;
                     $selisih_cepat_pulang = 0;
 
-                    if ($rekap['jam_keluar'] != '00:00:00' && $rekap['tanggal_keluar'] != null) {
+                    if ($rekap['jam_keluar'] != '00:00:00' && $rekap['tanggal'] != null) {
                         $jam_keluar_real = strtotime($rekap['jam_keluar']);
                         $jam_pulang_kampus = strtotime($rekap['jam_pulang_kampus']);
 
@@ -114,12 +115,13 @@ if (empty($tanggal) && !empty($filter_bulan) && !empty($filter_tahun)) {
                     ?>
                     <tr>
                         <td><?= $no++ ?></td>
+                        <td><?= $rekap['npm'] ?></td>
                         <td><?= $rekap['nama'] ?></td>
                         <td><?= $rekap['nama_matkul'] ?></td>
-                        <td><?= \Carbon\Carbon::parse($rekap['tanggal_masuk'])->locale('id')->isoFormat('D MMMM YYYY') ?></td>
+                        <td><?= \Carbon\Carbon::parse($rekap['tanggal'])->locale('id')->isoFormat('D MMMM YYYY') ?></td>
                         <td><?= $rekap['jam_masuk'] ?></td>
-                        <td><?= $rekap['jam_keluar'] ?></td>
-                        <td>
+                        <td><?= $rekap['jam_keluar'] == '00:00:00' ? '-' : date('H:i', strtotime($rekap['jam_keluar'])) ?></td>
+                        <!-- <td>
                             <?php if ($rekap['jam_keluar'] == '00:00:00') : ?>
                                 0 Jam 0 Menit
                             <?php else : ?>
@@ -136,8 +138,8 @@ if (empty($tanggal) && !empty($filter_bulan) && !empty($filter_tahun)) {
                             <?php endif; ?>
                         </td>
                         <td>
-                            <?php if ($rekap['jam_keluar'] == '00:00:00' || $rekap['tanggal_keluar'] == null) : ?>
-                                <span class="badge bg-warning">Menunggu Presensi Keluar</span>
+                            <?php if ($rekap['jam_keluar'] == '00:00:00' || $rekap['tanggal'] == null) : ?>
+                                <span class="badge bg-warning">Tidak Ada Presensi Keluar</span>
                             <?php elseif ($selisih_cepat_pulang > 0) : ?>
                                 <span class="badge bg-warning">
                                     <?= $jam_cepat_pulang . ' Jam ' . $menit_cepat_pulang . ' Menit' ?>
@@ -145,7 +147,7 @@ if (empty($tanggal) && !empty($filter_bulan) && !empty($filter_tahun)) {
                             <?php else : ?>
                                 <span class="badge bg-success">Tepat Waktu</span>
                             <?php endif; ?>
-                        </td>
+                        </td> -->
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>
