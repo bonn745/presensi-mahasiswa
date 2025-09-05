@@ -49,7 +49,7 @@ use App\Database\Migrations\Jabatan;
     <!-- ======== sidebar-nav start =========== -->
     <aside class="sidebar-nav-wrapper">
         <div class="navbar-logo">
-            <img style="width: 90%;" src="<?= base_url('assets/images/logo/logo-presensi.png') ?>" alt="logo" />
+            <img style="width: 90%;" src="<?= base_url('assets/images/logo/') ?>" alt="logo" />
             </a>
         </div>
 
