@@ -18,6 +18,7 @@ use DateTime;
 class NotifikasiController extends BaseController
 {
     private $url = 'https://graph.facebook.com/v22.0/614146718458585/messages';
+    private $token = 'EAAPISuPUC9kBPepQcsVeeFTJmzZC0ZB2ZC20RlmVrN0FZBUZAxbVjWNWXfIXTSMS7l5YpML3yGIB6M7bZBGlKQwZBMKQekAHxdP6XcjpGGBsivPdizJK7cRptnvTLi1vjBeZBVPSTc1bwvB74PvZC29GoaKSiSMmfiVEVfBvBSZBmoPNP3kU43M4VLxRtdB6iHfiXwEvUkO0eLCA8SUPPixQQxJYc6nZBPvLIujd0JRVsDn';
 
     public function kirimNotifikasiPembayaran()
     {
@@ -84,7 +85,7 @@ class NotifikasiController extends BaseController
                 $response = $client->post($this->url, [
                     'json' => $data,
                     'headers' => [
-                        'Authorization' => 'Bearer EAAPISuPUC9kBO8ujEdoTqL3wf5pomztI8Vry2enzGaW3gKUk8vO7nRWGKq899CO4egILaY0yoTYzX6hXIvwEKPgaf4qfhysFSeWKBAIFZCcrurae5hAbDXgAAMdrnv41g9CBTFgXre5ibTDL3PEbcGpRfj4ft2dJ6YUYvpu0KsuK8foYYNwokv7jCTXlM0xNnyaTGygpctEF8hpgcWXlD37bB19tO5RR7e9FO',
+                        'Authorization' => "Bearer $this->token",
                         'Content-Type' => 'application/json'
                     ]
                 ]);
@@ -194,7 +195,7 @@ class NotifikasiController extends BaseController
                 $client->post($this->url, [
                     'json' => $data,
                     'headers' => [
-                        'Authorization' => 'Bearer EAAPISuPUC9kBO8ujEdoTqL3wf5pomztI8Vry2enzGaW3gKUk8vO7nRWGKq899CO4egILaY0yoTYzX6hXIvwEKPgaf4qfhysFSeWKBAIFZCcrurae5hAbDXgAAMdrnv41g9CBTFgXre5ibTDL3PEbcGpRfj4ft2dJ6YUYvpu0KsuK8foYYNwokv7jCTXlM0xNnyaTGygpctEF8hpgcWXlD37bB19tO5RR7e9FO',
+                        'Authorization' => "Bearer $this->token",
                         'Content-Type' => 'application/json'
                     ]
                 ]);
