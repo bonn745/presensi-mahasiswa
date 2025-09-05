@@ -126,7 +126,7 @@
                             <div class="profile-box">
                                 <?php
                                 $role     = session()->get('role_id');
-                                $username = session()->get('username');
+                                $username = session()->get('nama_mahasiswa');
                                 $email    = session()->get('email');
                                 $initial  = strtoupper(substr($username, 0, 1));
                                 ?>
