@@ -112,21 +112,27 @@
                 $('#pertemuan').html(option);
                 $('#select-pertemuan').removeClass('d-none');
                 $('#unduh-rekap').removeClass('d-none');
-                $('#unduh-ref').attr('href','<?= url_to("dosen.unduh") ?>?matkul='+id+'&pertemuan='+pertemuan);
+                $('#unduh-ref').attr('href', '<?= url_to("dosen.unduh") ?>?matkul=' + id + '&pertemuan=' + pertemuan);
             },
             error: function(error) {
                 $('#loading-indicator').addClass('d-none');
+                Swal.fire({
+                    icon: "error",
+                    title: "Belum Ada Kelas!",
+                    text: "Tidak ada kelas!",
+                    showConfirmButton: false,
+                    timer: 2000
+                });
                 console.log(error);
             }
         });
     }
 
-    function updatePertemuan()
-    {
+    function updatePertemuan() {
         var id = $('#select-matkul').val();
         var tanggal = $('#pertemuan').val();
         var text = $("#pertemuan option:selected").text();
-        $('#unduh-ref').attr('href','<?= url_to("dosen.unduh") ?>?matkul='+id+'&pertemuan='+tanggal+'&text='+text);
+        $('#unduh-ref').attr('href', '<?= url_to("dosen.unduh") ?>?matkul=' + id + '&pertemuan=' + tanggal + '&text=' + text);
     }
 </script>
 <?= $this->endSection() ?>

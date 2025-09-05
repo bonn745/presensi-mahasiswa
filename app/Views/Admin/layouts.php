@@ -250,14 +250,6 @@ use App\Database\Migrations\Jabatan;
                                             <hr class="dropdown-divider">
                                         </li>
                                         <li>
-                                            <a class="dropdown-item" href="<?= base_url('settings') ?>">
-                                                <i class="fas fa-cog me-2"></i> Pengaturan
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-                                        <li>
                                             <a class="dropdown-item text-danger" href="<?= base_url('logout') ?>">
                                                 <i class="fas fa-sign-out-alt me-2"></i> Keluar
                                             </a>
@@ -266,7 +258,6 @@ use App\Database\Migrations\Jabatan;
                                 </div>
                             </div>
                             <!-- Profile End -->
-
                         </div>
                     </div>
                 </div>
