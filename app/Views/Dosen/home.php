@@ -60,17 +60,18 @@
 </div>
 
 <div class="table-responsive mt-5">
-    <table class="table table-striped table-bordered text-center" id="datatables">
+    <table class="w-100 table table-striped table-bordered text-center" id="datatables">
         <thead class="table-primary">
             <tr>
                 <th rowspan="2" style="width:1%; white-space:nowrap;">No</th>
                 <th rowspan="2">Mata Kuliah</th>
-                <th colspan="3" style="text-align: center;">Jadwal</th>
+                <th colspan="4" style="text-align: center;">Jadwal</th>
             </tr>
             <tr>
                 <th style="text-align: center;">Hari</th>
                 <th style="text-align: center;">Masuk</th>
                 <th style="text-align: center;">Keluar</th>
+                <th style="text-align: center;">Jenis Kelas</th>
             </tr>
         </thead>
         <tbody>
@@ -80,8 +81,14 @@
                     <td><?= $no++ ?></td>
                     <td align="left"><?= $dm['matkul'] ?></td>
                     <td><?= $dm['hari'] ?></td>
-                    <td><?= date('H:i',strtotime($dm['jam_masuk'])) ?></td>
-                    <td><?= date('H:i',strtotime($dm['jam_pulang'])) ?></td>
+                    <td><?= date('H:i', strtotime($dm['jam_masuk'])) ?></td>
+                    <td><?= date('H:i', strtotime($dm['jam_pulang'])) ?></td>
+                    <td class="p-2">
+                        <select class="form-control" name="jenis_kelas" id="jenis_kelas" onchange="updateJenisKelas(<?= $dm['id_kelas'] ?>)">
+                            <option value="Daring" <?= $dm['jenis_kelas'] == 'Daring' ? 'Selected' : '' ?>>Daring</option>
+                            <option value="Luring" <?= $dm['jenis_kelas'] == 'Luring' ? 'Selected' : '' ?>>Luring</option>
+                        </select>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -110,4 +117,41 @@
         padding: 0.5em 0.75em;
     }
 </style>
+<?= $this->endSection() ?>
+<?= $this->section('scripts') ?>
+<script type="application/javascript">
+    function updateJenisKelas(id) {
+        var jenisKelas = $('#jenis_kelas option:selected').val();
+        var data = {
+            id: id,
+            jenis: jenisKelas
+        }
+        $.ajax({
+            url: '<?= route_to('dosen.updateJenisKelas') ?>',
+            method: 'POST',
+            data: data,
+            success: function(response) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Berhasil!",
+                    text: response.message,
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            },
+            error: function(error) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Update gagal!",
+                    text: error.message,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+                setTimeout(function() {
+                    window.location.reload();
+                }, 2000);
+            }
+        });
+    }
+</script>
 <?= $this->endSection() ?>

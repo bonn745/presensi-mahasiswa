@@ -66,6 +66,7 @@ class PresensiModel extends Model
         $builder = $db->table('presensi');
         $builder->select('
         presensi.*, 
+        mahasiswa.npm, 
         mahasiswa.nama, 
         kelas.jam_masuk as jam_masuk_kampus, 
         kelas.jam_pulang as jam_pulang_kampus,
@@ -80,12 +81,13 @@ class PresensiModel extends Model
         return $builder->get()->getResultArray();
     }
 
-    public function rekap_bulanan_filter($filter_bulan, $filter_tahun)
+    public function rekap_bulanan_filter($filter_bulan, $filter_tahun, $filter_matkul = null)
     {
         $db      = \Config\Database::connect();
         $builder = $db->table('presensi');
         $builder->select('
         presensi.*, 
+        mahasiswa.npm, 
         mahasiswa.nama, 
         kelas.jam_masuk as jam_masuk_kampus, 
         kelas.jam_pulang as jam_pulang_kampus,
@@ -96,6 +98,9 @@ class PresensiModel extends Model
         $builder->join('matkul', 'matkul.id = presensi.id_matkul');
         $builder->where('MONTH(tanggal)', $filter_bulan);
         $builder->where('YEAR(tanggal)', $filter_tahun);
+        if($filter_matkul != null) {
+            $builder->where('presensi.id_matkul', $filter_matkul);
+        }
         $builder->orderBy('presensi.tanggal', 'DESC');
         return $builder->get()->getResultArray();
     }

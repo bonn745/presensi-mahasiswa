@@ -43,7 +43,7 @@ class RekapPresensi extends BaseController
         $id_mhs = session()->get('id_mahasiswa');
         $matkul = $matkul_mhs->where('mhs_id', $id_mhs)->findAll();
 
-        $dataMatkul = $matkulModel->whereIn('id', array_column($matkul, 'id'))->findAll();
+        $dataMatkul = $matkulModel->whereIn('id', array_column($matkul, 'matkul_id'))->findAll();
 
         $presensiModel = new PresensiModel();
         $filter_matkul = $this->request->getVar('matkul');

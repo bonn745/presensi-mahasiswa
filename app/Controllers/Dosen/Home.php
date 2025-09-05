@@ -3,10 +3,13 @@
 namespace App\Controllers\Dosen;
 
 use App\Controllers\BaseController;
+use App\Models\KelasModel;
 use App\Models\MahasiswaModel;
 use App\Models\PresensiModel;
 use App\Models\KetidakhadiranModel;
 use App\Models\MatkulModel;
+use CodeIgniter\Debug\Toolbar\Collectors\Logs;
+use Exception;
 
 class Home extends BaseController
 {
@@ -117,9 +120,28 @@ class Home extends BaseController
     private function getMataKuliah()
     {
         $matkulModel = new MatkulModel();
-        return $matkulModel->select('matkul.matkul, kelas.hari, kelas.jam_masuk, kelas.jam_pulang')
+        return $matkulModel->select('matkul.matkul, kelas.hari, kelas.jam_masuk, kelas.jam_pulang, kelas.jenis_kelas, kelas.id as id_kelas')
             ->where('dosen_pengampu', session('id_dosen'))
-            ->join('kelas','kelas.id_matkul = matkul.id')
+            ->join('kelas', 'kelas.id_matkul = matkul.id')
             ->findAll();
+    }
+
+    public function updateJenisKelas()
+    {
+        $id = $this->request->getPost('id');
+        $jenis = $this->request->getPost('jenis');
+        $kelasModel = new KelasModel();
+        try {
+            $kelasModel->update($id, ['jenis_kelas' => $jenis]);
+        } catch (Exception $e) {
+            log_message('error', $e);
+            return response()->setStatusCode(400)->setJSON(array(
+                'message' => 'Permintaan tidak dapat diproses.'
+            ));
+        }
+
+        return response()->setStatusCode(200)->setJSON(array(
+            'message' => 'Jenis kelas berhasil diperbarui.'
+        ));
     }
 }

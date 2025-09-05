@@ -2,9 +2,9 @@
 <?= $this->section('content') ?>
 
 <form class="row g-3 mb-3" method="GET">
-    <div class="col-md-4">
+    <div class="col-md-2">
         <select name="filter_bulan" class="form-select">
-            <option value="">-- Pilih Bulan --</option>
+            <option value="" selected disabled>-- Pilih Bulan --</option>
             <?php
             $bulan_array = [
                 '01' => 'Januari',
@@ -27,15 +27,25 @@
             ?>
         </select>
     </div>
-
-    <div class="col-md-4">
+    <div class="col-md-2">
         <select name="filter_tahun" class="form-select">
-            <option value="">-- Pilih Tahun --</option>
+            <option value="" selected disabled>-- Pilih Tahun --</option>
             <?php
             $tahun_sekarang = date('Y');
             for ($i = $tahun_sekarang; $i >= $tahun_sekarang - 5; $i--) {
                 $selected = ($filter_tahun ?? '') == $i ? 'selected' : '';
                 echo "<option value='$i' $selected>$i</option>";
+            }
+            ?>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select name="filter_matkul" class="form-select">
+            <option value="" selected disabled>-- Mata Kuliah --</option>
+            <?php
+            foreach ($mata_kuliah as $matkul) {
+                $selected = ($filter_matkul ?? '') == $i ? 'selected' : '';
+                echo "<option value='" . $matkul['id'] . "' $selected>" . $matkul['matkul'] . "</option>";
             }
             ?>
         </select>
@@ -58,8 +68,13 @@ if (empty($tanggal) && !empty($filter_bulan) && !empty($filter_tahun)) {
     $tanggal = $filter_tahun . '-' . $filter_bulan . '-01'; // default ke tanggal 1
 }
 ?>
-<p><strong>Menampilkan data:</strong>
-    <?= Carbon::parse($tanggal ?? Carbon::now())->locale('id')->isoFormat('MMMM YYYY') ?>
+<p>
+    <strong>Menampilkan data:</strong> <?= Carbon::parse($tanggal ?? Carbon::now())->locale('id')->isoFormat('MMMM YYYY') ?> <br>
+    <?php if ($dosen != null) : ?>
+        <strong>Dosen:</strong> <?= $dosen ?><br>
+        <strong>Mata Kuliah:</strong> <?= $matkul['matkul'] ?><br>
+        <strong>Program Studi:</strong> <?= $prodi ?><br>
+    <?php endif; ?>
 </p>
 
 <div class="table-responsive">
@@ -67,14 +82,15 @@ if (empty($tanggal) && !empty($filter_bulan) && !empty($filter_tahun)) {
         <thead class="table-primary">
             <tr>
                 <th>No</th>
+                <th>NPM</th>
                 <th>Nama Mahasiswa</th>
                 <th>Mata Kuliah</th>
                 <th>Tanggal</th>
                 <th>Jam Masuk</th>
                 <th>Jam Keluar</th>
-                <th>Total Jam Kuliah</th>
+                <!-- <th>Total Jam Kuliah</th>
                 <th>Total Keterlambatan</th>
-                <th>Total Cepat Pulang</th>
+                <th>Total Cepat Pulang</th> -->
             </tr>
         </thead>
         <tbody>
@@ -100,7 +116,7 @@ if (empty($tanggal) && !empty($filter_bulan) && !empty($filter_tahun)) {
                     $menit_cepat_pulang = 0;
                     $selisih_cepat_pulang = 0;
 
-                    if ($rekap['jam_keluar'] != '00:00:00' && $rekap['tanggal_keluar'] != null) {
+                    if ($rekap['jam_keluar'] != '00:00:00' && $rekap['tanggal'] != null) {
                         $jam_keluar_real = strtotime($rekap['jam_keluar']);
                         $jam_pulang_kampus = strtotime($rekap['jam_pulang_kampus']);
 
@@ -114,12 +130,13 @@ if (empty($tanggal) && !empty($filter_bulan) && !empty($filter_tahun)) {
                     ?>
                     <tr>
                         <td><?= $no++ ?></td>
+                        <td><?= $rekap['npm'] ?></td>
                         <td><?= $rekap['nama'] ?></td>
                         <td><?= $rekap['nama_matkul'] ?></td>
-                        <td><?= \Carbon\Carbon::parse($rekap['tanggal_masuk'])->locale('id')->isoFormat('D MMMM YYYY') ?></td>
+                        <td><?= \Carbon\Carbon::parse($rekap['tanggal'])->locale('id')->isoFormat('D MMMM YYYY') ?></td>
                         <td><?= $rekap['jam_masuk'] ?></td>
-                        <td><?= $rekap['jam_keluar'] ?></td>
-                        <td>
+                        <td><?= $rekap['jam_keluar'] == '00:00:00' ? '-' : date('H:i', strtotime($rekap['jam_keluar'])) ?></td>
+                        <!-- <td>
                             <?php if ($rekap['jam_keluar'] == '00:00:00') : ?>
                                 0 Jam 0 Menit
                             <?php else : ?>
@@ -136,8 +153,8 @@ if (empty($tanggal) && !empty($filter_bulan) && !empty($filter_tahun)) {
                             <?php endif; ?>
                         </td>
                         <td>
-                            <?php if ($rekap['jam_keluar'] == '00:00:00' || $rekap['tanggal_keluar'] == null) : ?>
-                                <span class="badge bg-warning">Menunggu Presensi Keluar</span>
+                            <?php if ($rekap['jam_keluar'] == '00:00:00' || $rekap['tanggal'] == null) : ?>
+                                <span class="badge bg-warning">Tidak Ada Presensi Keluar</span>
                             <?php elseif ($selisih_cepat_pulang > 0) : ?>
                                 <span class="badge bg-warning">
                                     <?= $jam_cepat_pulang . ' Jam ' . $menit_cepat_pulang . ' Menit' ?>
@@ -145,7 +162,7 @@ if (empty($tanggal) && !empty($filter_bulan) && !empty($filter_tahun)) {
                             <?php else : ?>
                                 <span class="badge bg-success">Tepat Waktu</span>
                             <?php endif; ?>
-                        </td>
+                        </td> -->
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>
