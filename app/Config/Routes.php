@@ -92,6 +92,7 @@ $routes->get('dosen/rekap-presensi/unduh', 'Dosen\RekapPresensi::unduh', ['filte
 $routes->get('dosen/ketidakhadiran', 'Dosen\Home::ketidakhadiran', ['filter' => 'dosenFilter', 'as' => 'dosen.ketidakhadiran']);
 $routes->get('dosen/ketidakhadiran/terima/(:segment)', 'Dosen\Home::terimaKetidakhadiran/$1', ['filter' => 'dosenFilter', 'as' => 'dosen.terimaKetidakhadiran']);
 $routes->get('dosen/ketidakhadiran/tolak/(:segment)', 'Dosen\Home::tolakKetidakhadiran/$1', ['filter' => 'dosenFilter', 'as' => 'dosen.tolakKetidakhadiran']);
+$routes->post('dosen/kelas/update', 'Dosen\Home::updateJenisKelas', ['filter' => 'dosenFilter', 'as' => 'dosen.updateJenisKelas']);
 
 
 $routes->get('mahasiswa/home', 'Mahasiswa\Home::index', ['filter' => 'mahasiswaFilter', 'as' => 'mahasiswa.home']);

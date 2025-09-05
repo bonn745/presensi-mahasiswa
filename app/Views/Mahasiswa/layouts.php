@@ -46,7 +46,7 @@
     <aside class="sidebar-nav-wrapper">
         <div class="navbar-logo">
             <a href="home">
-                <img style="width: 90%;" src="<?= base_url('assets/images/logo/logo-presensi.png') ?>" alt="logo" />
+                <img style="width: 90%;" src="https://bunghatta.ac.id/v.5/images/logo/logo3.png" alt="logo" />
             </a>
         </div>
         <nav class="sidebar-nav ">
