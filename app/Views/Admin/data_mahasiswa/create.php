@@ -10,7 +10,7 @@
 
             <!-- NIM -->
             <div class="input-style-1">
-                <label for="npm">NIM</label>
+                <label for="npm">NPM</label>
                 <input type="text" class="form-control<?= ($validation->hasError('npm')) ? ' is-invalid' : '' ?>"
                     name="npm" id="npm" placeholder="Nomor Pokok Mahasiswa"
                     value="<?= set_value('npm', $mahasiswa['npm'] ?? '') ?>" />
@@ -50,7 +50,7 @@
                 <label for="no_handphone">No Handphone</label>
                 <input id="no_handphone" type="text" class="form-control<?= ($validation->hasError('no_handphone')) ? ' is-invalid' : '' ?>"
                     name="no_handphone" placeholder="No Handphone"
-                    value="<?= set_value('no_handphone', $mahasiswa['no_handphone'] ?? '') ?>" onblur="formatPhoneNumber(this)"/>
+                    value="<?= set_value('no_handphone', $mahasiswa['no_handphone'] ?? '') ?>" onblur="formatPhoneNumber(this)" />
                 <div class="invalid-feedback"><?= $validation->getError('no_handphone') ?></div>
             </div>
 
@@ -89,7 +89,7 @@
                 <label for="username">Username</label>
                 <input type="text" id="username" class="form-control<?= ($validation->hasError('username')) ? ' is-invalid' : '' ?>"
                     name="username" placeholder="Username"
-                    value="<?= set_value('username', $mahasiswa['username'] ?? '') ?>" autocomplete="username"/>
+                    value="<?= set_value('username', $mahasiswa['username'] ?? '') ?>" autocomplete="username" />
                 <div class="invalid-feedback"><?= $validation->getError('username') ?></div>
             </div>
 
@@ -108,10 +108,10 @@
                     name="konfirmasi_password" placeholder="Konfirmasi Password" />
                 <div class="invalid-feedback"><?= $validation->getError('konfirmasi_password') ?></div>
             </div>
-            
+
             <hr>
             <div class="text-dark w-100 text-center">Data Orang Tua</div>
-            
+
             <!-- Nama Orang Tua -->
             <div class="input-style-1">
                 <label for="nama_ortu">Nama Orang Tua</label>
@@ -120,7 +120,7 @@
                     value="<?= set_value('nama_ortu', $mahasiswa['nama_ortu'] ?? '') ?>" />
                 <div class="invalid-feedback"><?= $validation->getError('nama_ortu') ?></div>
             </div>
-            
+
             <!-- Jenis Kelamin Orang Tua -->
             <div class="input-style-1">
                 <label for="jenis_kelamin_ortu">Jenis Kelamin</label>
@@ -131,13 +131,13 @@
                 </select>
                 <div class="invalid-feedback"><?= $validation->getError('jenis_kelamin_ortu') ?></div>
             </div>
-            
+
             <!-- No WhatsApp Orang Tua -->
             <div class="input-style-1">
                 <label for="no_whatsapp">No WhatsApp</label>
                 <input id="no_whatsapp" type="tel" class="form-control<?= ($validation->hasError('no_whatsapp')) ? ' is-invalid' : '' ?>"
                     name="no_whatsapp" placeholder="No WhatsApp"
-                    value="<?= set_value('no_whatsapp', $mahasiswa['no_whatsapp'] ?? '') ?>" onblur="formatPhoneNumber(this)"/>
+                    value="<?= set_value('no_whatsapp', $mahasiswa['no_whatsapp'] ?? '') ?>" onblur="formatPhoneNumber(this)" />
                 <div class="invalid-feedback"><?= $validation->getError('no_whatsapp') ?></div>
             </div>
             <button type="submit" class="btn btn-primary">Simpan</button>

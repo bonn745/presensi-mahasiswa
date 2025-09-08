@@ -22,6 +22,7 @@
                     <option value="" disabled selected>Pilih Alamat Lokasi</option>
                     <option value="Universitas Bung Hatta I" <?= old('alamat_lokasi') == 'Universitas Bung Hatta I' ? 'selected' : '' ?>>Universitas Bung Hatta I</option>
                     <option value="Universitas Bung Hatta II" <?= old('alamat_lokasi') == 'Universitas Bung Hatta II' ? 'selected' : '' ?>>Universitas Bung Hatta II</option>
+                    <option value="Universitas Bung Hatta III" <?= old('alamat_lokasi') == 'Universitas Bung Hatta III' ? 'selected' : '' ?>>Universitas Bung Hatta III</option>
                 </select>
                 <div class="invalid-feedback"><?= $validation->getError('alamat_lokasi') ?></div>
             </div>
@@ -64,13 +65,19 @@
         <script>
             const tipeLokasiData = {
                 "Universitas Bung Hatta I": [
-                    "Fakultas Teknik Mesin",
-                    "Fakultas Teknik Sipil"
+                    "Fakultas Perikanan dan Ilmu Kelautan",
+                    "Fakultas Teknik Sipil dan Perencanaan"
                 ],
                 "Universitas Bung Hatta II": [
-                    "Fakultas FKIP",
+                    "Fakultas Keguruan dan Ilmu Pendidikan",
                     "Fakultas Ekonomi",
+                    "Fakultas Ilmu Budaya",
                     "Fakultas Hukum"
+                ],
+                "Universitas Bung Hatta III": [
+                    "Fakultas Teknik Kimia",
+                    "Fakultas Teknologi Industri",
+                    "Fakultas Teknik Rekayasa Komputer Jaringan"
                 ]
             };
 

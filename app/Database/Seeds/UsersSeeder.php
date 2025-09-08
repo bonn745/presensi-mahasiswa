@@ -12,7 +12,7 @@ class UsersSeeder extends Seeder
             'id_mahasiswa' => null,
             'id_dosen'     => null,
             'username'     => 'admin',
-            'password'     => password_hash('admin123', PASSWORD_DEFAULT),
+            'password'     => password_hash('admin12345', PASSWORD_DEFAULT),
             'status'       => 'aktif',
             'role'         => 'admin',
             'created_at'   => date('Y-m-d H:i:s'),
