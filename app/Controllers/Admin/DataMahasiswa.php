@@ -19,7 +19,7 @@ class DataMahasiswa extends BaseController
         $mahasiswaModel = new MahasiswaModel();
         $data = [
             'title' => 'Data mahasiswa',
-            'mahasiswa' => $mahasiswaModel->select('mahasiswa.id, npm, mahasiswa.nama as nama_mahasiswa, jenis_kelamin, semester, prodi.nama as nama_prodi, foto, nama_ortu, nohp_ortu')->join('prodi', 'prodi.id = mahasiswa.prodi')->findAll()
+            'mahasiswa' => $mahasiswaModel->select('mahasiswa.id, npm, mahasiswa.nama as nama_mahasiswa, jenis_kelamin, semester, prodi.nama as nama_prodi, foto, nama_ortu, nohp_ortu')->join('prodi', 'prodi.id = mahasiswa.prodi', 'left')->findAll()
         ];
         return view('admin/data_mahasiswa/data_mahasiswa', $data);
     }
