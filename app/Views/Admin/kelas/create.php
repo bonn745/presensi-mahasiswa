@@ -15,7 +15,7 @@
                 <select id="ruangan" name="ruangan" class="form-control">
                     <option value="" selected disabled>-- Pilih Ruangan --</option>
                     <?php foreach ($ruangan as $r): ?>
-                        <option value="<?= $r['id'] ?>"><?= $r['nama_ruangan'].' - '.$r['tipe_lokasi'].' - '.$r['alamat_lokasi'] ?></option>
+                        <option value="<?= $r['id'] ?>"><?= $r['nama_ruangan'] . ' - ' . $r['tipe_lokasi'] . ' - ' . $r['alamat_lokasi'] ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -23,7 +23,7 @@
             <div class="mb-3">
                 <label for="hari" class="form-label">Hari</label>
                 <select class="form-select" id="hari" name="hari" required>
-                    <option value="">Pilih Hari</option>
+                    <option value="" selected disabled>Pilih Hari</option>
                     <?php
                     $hariList = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
                     foreach ($hariList as $h): ?>
@@ -64,8 +64,8 @@
                 <label for="jenis_kelas" class="form-label">Jenis Kelas</label>
                 <select id="jenis_kelas" name="jenis_kelas" class="form-control">
                     <option value="" selected disabled>-- Pilih Jenis Kelas --</option>
-                        <option value="Daring">Daring</option>
-                        <option value="Luring">Luring</option>
+                    <option value="Daring">Daring</option>
+                    <option value="Luring">Luring</option>
                 </select>
             </div>
 
